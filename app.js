@@ -128,7 +128,8 @@ function toast(msg){ const el = document.getElementById('toast'); el.textContent
 const Views = {};
 function navigate(route){
   State.route = route;
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.nav === route));
+  const activeNav = route === 'statsDetail' ? 'stats' : route;
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.nav === activeNav));
   const app = document.getElementById('app');
   app.innerHTML = '';
   const v = Views[route] || Views.home;
@@ -334,10 +335,9 @@ function renderFlashDone(app){
 /* ============================================================
    VIEW: QUIZ
    ============================================================ */
-const QZ = { mode: null, queue: [], idx: 0, correct: 0, wrong: 0, answered: false, q: null };
-const QUIZ_LEN = 10;
+const QZ = { mode: null, level: 'all', limit: 10, queue: [], idx: 0, correct: 0, wrong: 0, answered: false, q: null };
 const MODES = {
-  1: { name: 'Kanji → Arti', icon: '🇩🇵', desc: 'Tebak arti dari kanji' },
+  1: { name: 'Kanji → Arti', icon: '🇯🇵', desc: 'Tebak arti dari kanji' },
   2: { name: 'Kanji → Furigana', icon: '🔤', desc: 'Tebak cara baca kanji' },
   3: { name: 'Arti → Kanji', icon: '🔄', desc: 'Tebak kanji dari arti' },
   4: { name: 'Random Campuran', icon: '🎲', desc: 'Campuran semua tipe' },
@@ -350,7 +350,29 @@ Views.quiz = (app) => {
 function renderQuizMenu(app){
   app.innerHTML = `
     <div class="view quiz-wrap">
-      <h1 class="page-title">Quiz<span class="sub">Uji ingatanmu · ${QUIZ_LEN} soal per sesi</span></h1>
+      <h1 class="page-title">Quiz<span class="sub">Uji ingatanmu · Pilih level dan jumlah soal</span></h1>
+      
+      <div class="quiz-setup card">
+        <div class="setup-group">
+          <label class="section-label">Materi Quiz</label>
+          <div class="segmented full" id="qzLv">
+            <button data-lv="all" class="${QZ.level==='all'?'active':''}">Semua</button>
+            <button data-lv="N4" class="${QZ.level==='N4'?'active':''}">N4</button>
+            <button data-lv="N3" class="${QZ.level==='N3'?'active':''}">N3</button>
+          </div>
+        </div>
+        <div class="setup-group" style="margin-top:14px">
+          <label class="section-label">Jumlah Soal</label>
+          <div class="segmented full" id="qzLimit">
+            <button data-lim="5" class="${QZ.limit===5?'active':''}">5</button>
+            <button data-lim="10" class="${QZ.limit===10?'active':''}">10</button>
+            <button data-lim="20" class="${QZ.limit===20?'active':''}">20</button>
+            <button data-lim="30" class="${QZ.limit===30?'active':''}">30</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="section-label">Pilih Mode Quiz</p>
       <div class="grid mode-grid">
         ${Object.entries(MODES).map(([k,m]) => `
           <button class="mode-card" data-mode="${k}">
@@ -361,11 +383,26 @@ function renderQuizMenu(app){
           </button>`).join('')}
       </div>
     </div>`;
+
+  app.querySelectorAll('#qzLv button').forEach(b => {
+    b.onclick = () => {
+      QZ.level = b.dataset.lv;
+      app.querySelectorAll('#qzLv button').forEach(btn => btn.classList.toggle('active', btn.dataset.lv === QZ.level));
+    };
+  });
+
+  app.querySelectorAll('#qzLimit button').forEach(b => {
+    b.onclick = () => {
+      QZ.limit = +b.dataset.lim;
+      app.querySelectorAll('#qzLimit button').forEach(btn => btn.classList.toggle('active', +btn.dataset.lim === QZ.limit));
+    };
+  });
+
   app.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => startQuiz(+b.dataset.mode, app));
 }
 function startQuiz(mode, app){
   QZ.mode = mode; QZ.idx = 0; QZ.correct = 0; QZ.wrong = 0; QZ.answered = false;
-  QZ.queue = studyQueue('all').slice(0, QUIZ_LEN);
+  QZ.queue = studyQueue(QZ.level).slice(0, QZ.limit);
   if(QZ.queue.length < 4){ toast('Kosakata belum cukup untuk quiz.'); QZ.mode = null; return; }
   buildQuestion();
   renderQuizQuestion(app);
@@ -826,11 +863,11 @@ Views.stats = (app) => {
       </section>
 
       <section>
-        <p class="section-label">Aktivitas Review</p>
+        <p class="section-label">Aktivitas Review (Klik untuk detail)</p>
         <div class="grid stat-grid">
           <div class="stat"><span class="ico">🔁</span><div class="val">${totalReviews}</div><div class="lbl">Total review</div></div>
-          <div class="stat"><span class="ico">✅</span><div class="val">${totalCorrect}</div><div class="lbl">Jawaban benar</div></div>
-          <div class="stat"><span class="ico">❌</span><div class="val">${totalWrong}</div><div class="lbl">Jawaban salah</div></div>
+          <div class="stat clickable" id="btnCorrectReviews"><span class="ico">✅</span><div class="val">${totalCorrect}</div><div class="lbl">Jawaban benar</div></div>
+          <div class="stat clickable" id="btnWrongReviews"><span class="ico">❌</span><div class="val">${totalWrong}</div><div class="lbl">Jawaban salah</div></div>
           <div class="stat"><span class="ico">🔥</span><div class="val">${currentStreak()}</div><div class="lbl">Streak (hari)</div></div>
         </div>
       </section>
@@ -839,6 +876,15 @@ Views.stats = (app) => {
         <button class="btn ghost block" id="reset">🗑️ Reset semua progress</button>
       </section>
     </div>`;
+
+  app.querySelector('#btnCorrectReviews').onclick = () => {
+    StatsDetailState.type = 'correct';
+    navigate('statsDetail');
+  };
+  app.querySelector('#btnWrongReviews').onclick = () => {
+    StatsDetailState.type = 'wrong';
+    navigate('statsDetail');
+  };
   app.querySelector('#reset').onclick = () => {
     if(confirm('Yakin ingin menghapus semua progress belajar? Tindakan ini tidak bisa dibatalkan.')){
       State.progress = {}; State.streak = { current:0, last:null, best:0 };
@@ -846,6 +892,69 @@ Views.stats = (app) => {
       toast('Progress direset'); navigate('stats');
     }
   };
+};
+
+/* ============================================================
+   VIEW: DETAIL STATISTIK (Correct/Wrong list)
+   ============================================================ */
+const StatsDetailState = { type: 'correct' };
+Views.statsDetail = (app) => {
+  const type = StatsDetailState.type;
+  const isCorrect = type === 'correct';
+  const title = isCorrect ? 'Daftar Jawaban Benar' : 'Daftar Jawaban Salah';
+  const subtitle = isCorrect ? 'Kosakata yang dijawab benar setidaknya satu kali' : 'Kosakata yang dijawab salah setidaknya satu kali';
+  const label = isCorrect ? 'Benar' : 'Salah';
+  const color = isCorrect ? 'var(--green)' : 'var(--red)';
+  const icon = isCorrect ? '✅' : '❌';
+
+  const filtered = State.vocab.filter(v => {
+    const s = State.progress[v.id];
+    if(!s) return false;
+    return isCorrect ? (s.correct > 0) : (s.wrong > 0);
+  }).sort((a,b) => {
+    const sA = State.progress[a.id];
+    const sB = State.progress[b.id];
+    const valA = isCorrect ? (sA.correct || 0) : (sA.wrong || 0);
+    const valB = isCorrect ? (sB.correct || 0) : (sB.wrong || 0);
+    return valB - valA;
+  });
+
+  app.innerHTML = `
+    <div class="view">
+      <div class="toolbar" style="margin-bottom: 20px;">
+        <button class="btn ghost" id="backToStats" style="height: 40px; padding: 0 16px; border-radius: 12px; font-size: 14px;">
+          ← Kembali ke Statistik
+        </button>
+      </div>
+
+      <h1 class="page-title">${esc(title)}<span class="sub">${esc(subtitle)}</span></h1>
+      
+      <p class="count-note">${filtered.length} kosakata ditemukan</p>
+      
+      <div class="vocab-grid">
+        ${filtered.length ? filtered.map(v => {
+          const s = State.progress[v.id];
+          const count = isCorrect ? s.correct : s.wrong;
+          return `
+            <div class="vocab-card">
+              <span class="lv ${v.level}">${v.level}</span>
+              <div class="kanji">${esc(v.kanji)}</div>
+              <div class="furi">${esc(v.furigana)}</div>
+              <div class="arti">${esc(v.arti)}</div>
+              <div style="margin-top:10px; font-size:12.5px; font-weight:700; color:${color}; display:flex; align-items:center; gap:6px; border-top:1px solid var(--border-soft); padding-top:8px;">
+                <span>${icon} ${count}x ${label}</span>
+              </div>
+            </div>`;
+        }).join('') : `
+          <div class="empty" style="grid-column: 1 / -1">
+            <div class="big">💭</div>
+            Belum ada data review.
+          </div>
+        `}
+      </div>
+    </div>`;
+
+  app.querySelector('#backToStats').onclick = () => navigate('stats');
 };
 
 function emptyState(msg){ return `<div class="view"><div class="empty"><div class="big">💭</div>${esc(msg)}</div></div>`; }
