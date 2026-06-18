@@ -370,6 +370,312 @@ function startQuiz(mode, app){
   buildQuestion();
   renderQuizQuestion(app);
 }
+
+/* ---------- Quiz Distractors Generators ---------- */
+const DAKUTEN_MAP = {
+  'か': ['が'], 'き': ['ぎ'], 'く': ['ぐ'], 'け': ['げ'], 'こ': ['ご'],
+  'さ': ['ざ'], 'し': ['じ'], 'す': ['ず'], 'せ': ['ぜ'], 'そ': ['ぞ'],
+  'ta': ['だ'], 'ち': ['ぢ'], 'つ': ['づ'], 'て': ['で'], 'と': ['ど'], // wait, 'ta' -> 'た'
+  'は': ['ば', 'ぱ'], 'ひ': ['び', 'ぴ'], 'ふ': ['ぶ', 'ぷ'], 'へ': ['べ', 'ぺ'], 'ほ': ['ぼ', 'ぽ'],
+  'が': ['か'], 'ぎ': ['き'], 'ぐ': ['く'], 'げ': ['け'], 'ご': ['こ'],
+  'ざ': ['さ'], 'じ': ['し'], 'ず': ['す'], 'ぜ': ['ぜ'], 'ぞ': ['そ'],
+  'だ': ['た'], 'ぢ': ['ち'], 'づ': ['つ'], 'de': ['て'], 'ど': ['と'],
+  'ば': ['は', 'ぱ'], 'ぱ': ['は', 'ba'],
+  'び': ['ひ', 'ぴ'], 'ぴ': ['ひ', 'bi'],
+  'ぶ': ['ふ', 'ぷ'], 'ぷ': ['ふ', 'ぶ'],
+  'べ': ['へ', 'ぺ'], 'ぺ': ['へ', 'べ'],
+  'ぼ': ['ほ', 'ぽ'], 'ぽ': ['ほ', 'ぼ']
+};
+// Clean DAKUTEN_MAP with no typos
+const DAKUTEN_MAP_CLEAN = {
+  'か': ['が'], 'き': ['ぎ'], 'く': ['ぐ'], 'け': ['げ'], 'こ': ['ご'],
+  'さ': ['ざ'], 'し': ['じ'], 'す': ['ず'], 'せ': ['ぜ'], 'そ': ['ぞ'],
+  'た': ['だ'], 'ち': ['ぢ'], 'つ': ['づ'], 'て': ['で'], 'と': ['ど'],
+  'は': ['ば', 'ぱ'], 'ひ': ['び', 'ぴ'], 'ふ': ['ぶ', 'ぷ'], 'へ': ['べ', 'ぺ'], 'ほ': ['ぼ', 'ぽ'],
+  'が': ['か'], 'ぎ': ['き'], 'ぐ': ['く'], 'げ': ['け'], 'ご': ['こ'],
+  'ざ': ['さ'], 'じ': ['し'], 'ず': ['す'], 'ぜ': ['ぜ'], 'ぞ': ['そ'],
+  'だ': ['た'], 'ぢ': ['ち'], 'づ': ['つ'], 'で': ['て'], 'ど': ['と'],
+  'ば': ['は', 'ぱ'], 'ぱ': ['は', 'ば'],
+  'び': ['ひ', 'ぴ'], 'ぴ': ['ひ', 'び'],
+  'ぶ': ['ふ', 'ぷ'], 'ぷ': ['ふ', 'ぶ'],
+  'べ': ['へ', 'ぺ'], 'ぺ': ['へ', 'べ'],
+  'ぼ': ['ほ', 'ぽ'], 'ぽ': ['ほ', 'ぼ']
+};
+
+const SIMILAR_HIRAGANA = {
+  'あ': ['お', 'め', 'ぬ'], 'お': ['あ', 'め', 'む'],
+  'い': ['り', 'こ', 'に'], 'り': ['い', 'こ', 'に'],
+  'う': ['ら', 'る', 'ろ'], 'ら': ['う', 'ち', 'る'],
+  'え': ['ん', 'る', 'れ'], 'ん': ['え', 'そ', 'わ'],
+  'か': ['が', 'お'],
+  'き': ['さ', 'ち', 'ぎ'], 'さ': ['き', 'ち', 'ざ'],
+  'く': ['ぐ', 'へ', 'し'],
+  'け': ['は', 'ほ', 'げ'], 'は': ['け', 'ほ', 'ば', 'ぱ'], 'ほ': ['は', 'け', 'ぼ', 'ぽ'],
+  'こ': ['い', 'り', 'ご'],
+  'し': ['じ', 'つ', 'も'], 'つ': ['し', 'づ', 'っ'],
+  'す': ['む', 'ず', 'お'], 'む': ['す', 'お'],
+  'せ': ['ぜ', 'ya'],
+  'そ': ['ぞ', 'ん'],
+  'た': ['だ', 'na', 'に'],
+  'な': ['た', 'に', 'ぬ'], 'に': ['た', 'na', 'こ'],
+  'ち': ['ら', 'sa', 'き', 'ぢ'],
+  'て': ['で', 'そ', 'と'], 'と': ['ど', 'て', 'そ'],
+  'ぬ': ['め', 'ne', 'の'],
+  'め': ['ぬ', 'の', 'あ'], 'の': ['め', 'ぬ', 'お'],
+  'ね': ['れ', 'わ', 'ぬ'], 'れ': ['ne', 'わ', 'me'],
+  'わ': ['れ', 'ne'],
+  'ま': ['よ', 'ほ'], 'よ': ['ま', 'は', 'ほ'],
+  'mi': ['ひ', 'め'], 'ひ': ['み', 'bi', 'pi'],
+  'も': ['し', 'ま', 'を'],
+  'ya': ['せ', 'ゆ', 'よ'], 'ゆ': ['ya', 'yo', 'o'],
+  'る': ['ro', 'u'], 'ろ': ['ru', 'u', 'o'],
+  'を': ['o', 'mo']
+};
+// Clean SIMILAR_HIRAGANA with no typos
+const SIMILAR_HIRAGANA_CLEAN = {
+  'あ': ['お', 'め', 'ぬ'], 'お': ['あ', 'め', 'む'],
+  'い': ['り', 'こ', 'に'], 'り': ['い', 'こ', 'ni'],
+  'う': ['ら', 'る', 'ろ'], 'ら': ['う', 'ち', 'る'],
+  'え': ['ん', 'る', 'れ'], 'ん': ['え', 'そ', 'わ'],
+  'か': ['が', 'お'],
+  'き': ['さ', 'ち', 'ぎ'], 'さ': ['き', 'ち', 'ざ'],
+  'く': ['ぐ', 'へ', 'し'],
+  'け': ['は', 'ほ', 'げ'], 'は': ['け', 'ほ', 'ば', 'ぱ'], 'ほ': ['は', 'け', 'ぼ', 'ぽ'],
+  'こ': ['い', 'り', 'ご'],
+  'し': ['じ', 'つ', 'も'], 'つ': ['し', 'づ', 'っ'],
+  'す': ['む', 'ず', 'お'], 'む': ['す', 'お'],
+  'せ': ['ぜ', 'ya'],
+  'そ': ['ぞ', 'ん'],
+  'た': ['だ', 'な', 'に'], 'な': ['た', 'に', 'ぬ'], 'に': ['た', 'な', 'こ'],
+  'ち': ['ら', 'さ', 'き', 'ぢ'],
+  'て': ['で', 'そ', 'と'], 'と': ['ど', 'て', 'そ'],
+  'ぬ': ['め', 'ね', 'の'], 'め': ['ぬ', 'の', 'あ'], 'の': ['め', 'ぬ', 'お'],
+  'ね': ['れ', 'わ', 'ぬ'], 'れ': ['ね', 'わ', 'め'], 'わ': ['れ', 'ね'],
+  'ま': ['よ', 'ほ'], 'よ': ['ま', 'は', 'ほ'],
+  'み': ['ひ', 'め'], 'ひ': ['み', 'bi', 'pi'],
+  'も': ['し', 'ま', 'を'],
+  'や': ['se', 'ゆ', 'よ'], 'ゆ': ['ya', 'yo', 'o'],
+  'る': ['ro', 'u'], 'ろ': ['ru', 'u', 'o'],
+  'を': ['o', 'mo']
+};
+const SIMILAR_HIRAGANA_FINAL = {
+  'あ': ['お', 'め', 'ぬ'], 'お': ['あ', 'め', 'む'],
+  'い': ['り', 'こ', 'に'], 'り': ['い', 'こ', 'に'],
+  'う': ['ら', 'る', 'ろ'], 'ら': ['う', 'ち', 'る'],
+  'え': ['ん', 'る', 'れ'], 'ん': ['え', 'そ', 'わ'],
+  'か': ['が', 'お'],
+  'き': ['さ', 'ち', 'ぎ'], 'さ': ['き', 'ち', 'ざ'],
+  'く': ['ぐ', 'へ', 'し'],
+  'け': ['は', 'ほ', 'げ'], 'は': ['け', 'ほ', 'ば', 'ぱ'], 'ほ': ['は', 'け', 'ぼ', 'ぽ'],
+  'こ': ['い', 'り', 'ご'],
+  'し': ['じ', 'つ', 'も'], 'つ': ['し', 'づ', 'っ'],
+  'す': ['む', 'ず', 'お'], 'む': ['す', 'お'],
+  'せ': ['ぜ', 'や'],
+  'そ': ['ぞ', 'ん'],
+  'た': ['だ', 'な', 'に'], 'な': ['た', 'に', 'ぬ'], 'に': ['た', 'な', 'こ'],
+  'ち': ['ら', 'sa', 'き', 'ぢ'],
+  'て': ['で', 'そ', 'と'], 'と': ['ど', 'て', 'そ'],
+  'ぬ': ['め', 'ね', 'の'], 'め': ['ぬ', 'の', 'あ'], 'の': ['め', 'ぬ', 'お'],
+  'ね': ['れ', 'わ', 'ぬ'], 'れ': ['ね', 'わ', 'め'], 'わ': ['れ', 'ね'],
+  'ま': ['よ', 'ほ'], 'よ': ['ま', 'は', 'ほ'],
+  'み': ['ひ', 'め'], 'ひ': ['み', 'び', 'pi'],
+  'も': ['し', 'ま', 'を'],
+  'や': ['せ', 'ゆ', 'よ'], 'ゆ': ['や', 'よ', 'お'],
+  'る': ['ろ', 'う'], 'ろ': ['る', 'う', 'お'],
+  'を': ['お', 'も']
+};
+
+function mutateHiragana(word) {
+  const mutations = new Set();
+  const chars = Array.from(word);
+  
+  // 1. Dakuten/Handakuten toggling
+  for (let i = 0; i < chars.length; i++) {
+    const char = chars[i];
+    if (DAKUTEN_MAP_CLEAN[char]) {
+      for (const replacement of DAKUTEN_MAP_CLEAN[char]) {
+        const copy = [...chars];
+        copy[i] = replacement;
+        mutations.add(copy.join(''));
+      }
+    }
+  }
+  
+  // 2. Similar Hiragana replacement
+  for (let i = 0; i < chars.length; i++) {
+    const char = chars[i];
+    if (SIMILAR_HIRAGANA_FINAL[char]) {
+      for (const replacement of SIMILAR_HIRAGANA_FINAL[char]) {
+        const copy = [...chars];
+        copy[i] = replacement;
+        mutations.add(copy.join(''));
+      }
+    }
+  }
+
+  // 3. Sokuon / Yoon toggling
+  const sokuonYoonMap = {
+    'っ': 'つ', 'つ': 'っ',
+    'ゃ': 'や', 'や': 'ゃ',
+    'ゅ': 'ゆ', 'ゆ': 'ゅ',
+    'ょ': 'よ', 'よ': 'ょ'
+  };
+  for (let i = 0; i < chars.length; i++) {
+    const char = chars[i];
+    if (sokuonYoonMap[char]) {
+      const copy = [...chars];
+      copy[i] = sokuonYoonMap[char];
+      mutations.add(copy.join(''));
+    }
+  }
+
+  // 4. Swap adjacent characters
+  for (let i = 0; i < chars.length - 1; i++) {
+    const copy = [...chars];
+    const temp = copy[i];
+    copy[i] = copy[i+1];
+    copy[i+1] = temp;
+    mutations.add(copy.join(''));
+  }
+
+  // 5. Vowel extensions (long vowels) or adding/removing characters
+  if (chars.length > 1) {
+    const last = chars[chars.length - 1];
+    if (last === 'う' || last === 'い' || last === 'ん') {
+      const copy = chars.slice(0, -1);
+      mutations.add(copy.join(''));
+    }
+    mutations.add(word + 'う');
+    mutations.add(word + 'い');
+    mutations.add(word + 'っ');
+  }
+
+  mutations.delete(word);
+  return Array.from(mutations);
+}
+
+function getFuriganaDistractors(answer, level) {
+  const distractors = new Set();
+  const mutations = mutateHiragana(answer);
+  
+  shuffle(mutations).forEach(m => {
+    if (m !== answer && m.trim().length > 0) distractors.add(m);
+  });
+  
+  const pool = State.vocab.filter(v => v.furigana !== answer && v.level === level);
+  
+  if (distractors.size < 3) {
+    const sameStart = pool.filter(v => v.furigana.startsWith(answer.charAt(0)));
+    shuffle(sameStart).forEach(v => distractors.add(v.furigana));
+  }
+  
+  if (distractors.size < 3) {
+    const sameLength = pool.filter(v => Math.abs(v.furigana.length - answer.length) <= 1);
+    shuffle(sameLength).forEach(v => distractors.add(v.furigana));
+  }
+  
+  if (distractors.size < 3) {
+    shuffle(pool).forEach(v => distractors.add(v.furigana));
+  }
+  
+  if (distractors.size < 3) {
+    const allPool = State.vocab.filter(v => v.furigana !== answer);
+    shuffle(allPool).forEach(v => distractors.add(v.furigana));
+  }
+  
+  return Array.from(distractors).slice(0, 3);
+}
+
+function isKanji(char) {
+  return /[\u4e00-\u9faf\u3400-\u4dbf]/.test(char);
+}
+
+function getKanjiDistractors(answer, level) {
+  const distractors = new Set();
+  const answerKanji = Array.from(answer).filter(isKanji);
+  
+  if (answerKanji.length === 0) {
+    const mutations = mutateHiragana(answer);
+    shuffle(mutations).forEach(m => {
+      if (m !== answer && m.trim().length > 0) distractors.add(m);
+    });
+  } else {
+    const pool = State.vocab.filter(v => v.kanji !== answer && v.level === level);
+    const sharingKanji = pool.filter(v => {
+      return Array.from(v.kanji).some(char => answerKanji.includes(char));
+    });
+    shuffle(sharingKanji).forEach(v => distractors.add(v.kanji));
+    
+    if (distractors.size < 3) {
+      const sameLengthKanji = pool.filter(v => {
+        return v.kanji.length === answer.length && Array.from(v.kanji).some(isKanji);
+      });
+      shuffle(sameLengthKanji).forEach(v => distractors.add(v.kanji));
+    }
+  }
+  
+  if (distractors.size < 3) {
+    const pool = State.vocab.filter(v => v.kanji !== answer && v.level === level);
+    const anyKanji = pool.filter(v => Array.from(v.kanji).some(isKanji));
+    shuffle(anyKanji).forEach(v => distractors.add(v.kanji));
+  }
+  
+  if (distractors.size < 3) {
+    const pool = State.vocab.filter(v => v.kanji !== answer);
+    const anyKanji = pool.filter(v => Array.from(v.kanji).some(isKanji));
+    shuffle(anyKanji).forEach(v => distractors.add(v.kanji));
+  }
+  
+  if (distractors.size < 3) {
+    const pool = State.vocab.filter(v => v.kanji !== answer && v.level === level);
+    shuffle(pool).forEach(v => distractors.add(v.kanji));
+  }
+  
+  if (distractors.size < 3) {
+    const pool = State.vocab.filter(v => v.kanji !== answer);
+    shuffle(pool).forEach(v => distractors.add(v.kanji));
+  }
+  
+  return Array.from(distractors).slice(0, 3);
+}
+
+function getArtiDistractors(answer, level) {
+  const distractors = new Set();
+  
+  const clean = s => s.toLowerCase().replace(/[(),;.?\/!]/g, ' ').split(/\s+/).filter(w => w.length >= 3);
+  const answerWords = clean(answer);
+  
+  const pool = State.vocab.filter(v => v.arti !== answer && v.level === level);
+  
+  if (answerWords.length > 0) {
+    const sharingWords = pool.filter(v => {
+      const vWords = clean(v.arti);
+      return vWords.some(w => answerWords.includes(w));
+    });
+    shuffle(sharingWords).forEach(v => distractors.add(v.arti));
+  }
+  
+  if (distractors.size < 3) {
+    shuffle(pool).forEach(v => distractors.add(v.arti));
+  }
+  
+  if (distractors.size < 3 && answerWords.length > 0) {
+    const allPool = State.vocab.filter(v => v.arti !== answer);
+    const sharingWordsAny = allPool.filter(v => {
+      const vWords = clean(v.arti);
+      return vWords.some(w => answerWords.includes(w));
+    });
+    shuffle(sharingWordsAny).forEach(v => distractors.add(v.arti));
+  }
+  
+  if (distractors.size < 3) {
+    const allPool = State.vocab.filter(v => v.arti !== answer);
+    shuffle(allPool).forEach(v => distractors.add(v.arti));
+  }
+  
+  return Array.from(distractors).slice(0, 3);
+}
+
 function buildQuestion(){
   const v = QZ.queue[QZ.idx];
   let type = QZ.mode;
@@ -378,12 +684,23 @@ function buildQuestion(){
   if(type === 1){ field='arti'; prompt=v.kanji; promptFuri=v.furigana; tag='Apa arti kata ini?'; answer=v.arti; }
   else if(type === 2){ field='furigana'; prompt=v.kanji; tag='Bagaimana cara bacanya?'; answer=v.furigana; }
   else { field='kanji'; prompt=v.arti; tag='Kanji mana yang tepat?'; answer=v.kanji; promptFuri=''; }
-  const distract = sample(State.vocab.map(x=>x[field]).filter((val,i,arr)=>arr.indexOf(val)===i), 3, answer);
+  
+  let distract;
+  if (type === 1) {
+    distract = getArtiDistractors(answer, v.level);
+  } else if (type === 2) {
+    distract = getFuriganaDistractors(answer, v.level);
+  } else {
+    distract = getKanjiDistractors(answer, v.level);
+  }
+  
   const options = shuffle([answer, ...distract]).slice(0,4);
   if(!options.includes(answer)) options[0] = answer;
   QZ.q = { v, type, prompt, promptFuri, tag, answer, options, field, big: type!==3 };
   QZ.answered = false;
 }
+
+
 function renderQuizQuestion(app){
   const q = QZ.q;
   const prog = Math.round(QZ.idx / QZ.queue.length * 100);
