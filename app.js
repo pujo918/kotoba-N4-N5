@@ -91,10 +91,17 @@ function studyQueue(level){
   return pool.map(v => {
     const s = State.progress[v.id];
     let prio;
-    if(!s || !s.seen) prio = 1000;                       // baru: prioritas tinggi
-    else if(s.due <= t) prio = 500 + s.wrong*10 - s.box; // jatuh tempo
-    else prio = -s.due/1e9;                               // belum jatuh tempo: jarang
-    prio += (s ? s.wrong*5 - s.box*3 : 0);
+    if(!s || !s.seen) {
+      prio = 1000; // Unseen cards: highest priority
+    } else {
+      // (t - s.due) / DAY gives how many days overdue the card is (positive if due, negative if not due yet)
+      const daysOverdue = (t - s.due) / DAY;
+      if(s.due <= t) {
+        prio = 500 + daysOverdue - s.box * 10;
+      } else {
+        prio = daysOverdue - s.box * 10;
+      }
+    }
     return { v, prio, r: Math.random() };
   }).sort((a,b) => (b.prio - a.prio) || (a.r - b.r)).map(x => x.v);
 }
@@ -166,10 +173,10 @@ Views.home = (app) => {
 
       <section>
         <div class="grid stat-grid">
-          <div class="stat"><span class="ico">🔵</span><div class="val">${n4}</div><div class="lbl">Kosakata N4</div></div>
-          <div class="stat"><span class="ico">🟢</span><div class="val">${n3}</div><div class="lbl">Kosakata N3</div></div>
-          <div class="stat"><span class="ico">📖</span><div class="val">${learned}</div><div class="lbl">Sudah dipelajari</div></div>
-          <div class="stat"><span class="ico">🏆</span><div class="val">${mastered}</div><div class="lbl">Sudah dikuasai</div></div>
+          <div class="stat clickable" data-stat="N4"><span class="ico">🔵</span><div class="val">${n4}</div><div class="lbl">Kosakata N4</div></div>
+          <div class="stat clickable" data-stat="N3"><span class="ico">🟢</span><div class="val">${n3}</div><div class="lbl">Kosakata N3</div></div>
+          <div class="stat clickable" data-stat="learned"><span class="ico">📖</span><div class="val">${learned}</div><div class="lbl">Sudah dipelajari</div></div>
+          <div class="stat clickable" data-stat="mastered"><span class="ico">🏆</span><div class="val">${mastered}</div><div class="lbl">Sudah dikuasai</div></div>
         </div>
       </section>
 
@@ -194,14 +201,40 @@ Views.home = (app) => {
         </div>
       </section>
     </div>`;
-  app.querySelectorAll('[data-go]').forEach(b => b.onclick = () => navigate(b.dataset.go));
+
+  app.querySelectorAll('[data-stat]').forEach(b => b.onclick = () => {
+    const s = b.dataset.stat;
+    if (s === 'N4' || s === 'N3') {
+      ListState.level = s;
+      ListState.filter = 'all';
+    } else if (s === 'learned') {
+      ListState.level = 'all';
+      ListState.filter = 'learned';
+    } else if (s === 'mastered') {
+      ListState.level = 'all';
+      ListState.filter = 'mastered';
+    }
+    ListState.q = '';
+    ListState.limit = 60;
+    navigate('list');
+  });
+
+  app.querySelectorAll('[data-go]').forEach(b => b.onclick = () => {
+    const dest = b.dataset.go;
+    if (dest === 'list') {
+      ListState.level = 'all';
+      ListState.filter = 'all';
+      ListState.q = '';
+    }
+    navigate(dest);
+  });
 };
 function greet(){ const h = new Date().getHours(); if(h<11) return 'Selamat pagi'; if(h<15) return 'Selamat siang'; if(h<19) return 'Selamat sore'; return 'Selamat malam'; }
 
 /* ============================================================
    VIEW: DAFTAR KOSAKATA (List)
    ============================================================ */
-const ListState = { q: '', level: 'all', limit: 60 };
+const ListState = { q: '', level: 'all', filter: 'all', limit: 60 };
 Views.list = (app) => {
   app.innerHTML = `
     <div class="view">
@@ -216,6 +249,11 @@ Views.list = (app) => {
           <button data-lv="N4" class="${ListState.level==='N4'?'active':''}">N4</button>
           <button data-lv="N3" class="${ListState.level==='N3'?'active':''}">N3</button>
         </div>
+        <div class="segmented" id="statusFilter">
+          <button data-filter="all" class="${ListState.filter==='all'?'active':''}">Semua Status</button>
+          <button data-filter="learned" class="${ListState.filter==='learned'?'active':''}">Dipelajari</button>
+          <button data-filter="mastered" class="${ListState.filter==='mastered'?'active':''}">Dikuasai</button>
+        </div>
       </div>
       <p class="count-note" id="countNote"></p>
       <div class="vocab-grid" id="vgrid"></div>
@@ -225,12 +263,15 @@ Views.list = (app) => {
   const q = app.querySelector('#q');
   q.oninput = () => { ListState.q = q.value; ListState.limit = 60; renderList(); };
   app.querySelectorAll('#lvFilter button').forEach(b => b.onclick = () => { ListState.level = b.dataset.lv; ListState.limit = 60; navigate('list'); });
+  app.querySelectorAll('#statusFilter button').forEach(b => b.onclick = () => { ListState.filter = b.dataset.filter; ListState.limit = 60; navigate('list'); });
   renderList();
 };
 function filteredVocab(){
   const q = ListState.q.trim().toLowerCase();
   return State.vocab.filter(v => {
     if(ListState.level !== 'all' && v.level !== ListState.level) return false;
+    if(ListState.filter === 'learned' && !isLearned(v.id)) return false;
+    if(ListState.filter === 'mastered' && !isMastered(v.id)) return false;
     if(!q) return true;
     return v.kanji.toLowerCase().includes(q) || v.furigana.toLowerCase().includes(q) || v.arti.toLowerCase().includes(q);
   });
@@ -829,8 +870,8 @@ Views.stats = (app) => {
 
       <section>
         <div class="grid stat-grid">
-          <div class="stat"><span class="ico">📖</span><div class="val">${learned}</div><div class="lbl">Total dipelajari</div></div>
-          <div class="stat"><span class="ico">🏆</span><div class="val">${mastered}</div><div class="lbl">Total dikuasai</div></div>
+          <div class="stat clickable" data-stat="learned"><span class="ico">📖</span><div class="val">${learned}</div><div class="lbl">Total dipelajari</div></div>
+          <div class="stat clickable" data-stat="mastered"><span class="ico">🏆</span><div class="val">${mastered}</div><div class="lbl">Total dikuasai</div></div>
           <div class="stat"><span class="ico">💭</span><div class="val">${notyet}</div><div class="lbl">Belum dipelajari</div></div>
           <div class="stat"><span class="ico">🎯</span><div class="val">${acc}%</div><div class="lbl">Akurasi review</div></div>
         </div>
@@ -876,6 +917,20 @@ Views.stats = (app) => {
         <button class="btn ghost block" id="reset">🗑️ Reset semua progress</button>
       </section>
     </div>`;
+
+  app.querySelectorAll('[data-stat]').forEach(b => b.onclick = () => {
+    const s = b.dataset.stat;
+    if (s === 'learned') {
+      ListState.level = 'all';
+      ListState.filter = 'learned';
+    } else if (s === 'mastered') {
+      ListState.level = 'all';
+      ListState.filter = 'mastered';
+    }
+    ListState.q = '';
+    ListState.limit = 60;
+    navigate('list');
+  });
 
   app.querySelector('#btnCorrectReviews').onclick = () => {
     StatsDetailState.type = 'correct';
@@ -966,7 +1021,14 @@ async function boot(){
   applySettings();
   document.getElementById('furiToggle').onclick = toggleFurigana;
   document.getElementById('themeToggle').onclick = toggleTheme;
-  document.querySelectorAll('.nav-item').forEach(b => b.onclick = () => navigate(b.dataset.nav));
+  document.querySelectorAll('.nav-item').forEach(b => b.onclick = () => {
+    if(b.dataset.nav === 'list'){
+      ListState.level = 'all';
+      ListState.filter = 'all';
+      ListState.q = '';
+    }
+    navigate(b.dataset.nav);
+  });
 
   try {
     const res = await fetch('data/vocabulary.json');
