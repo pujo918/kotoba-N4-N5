@@ -33,26 +33,28 @@ const MASTER_BOX = 5; // box >= 5 dianggap dikuasai
 /* ---------- Progress utils ---------- */
 function stat(id){
   let s = State.progress[id];
-  if(!s){ s = { correct:0, wrong:0, last:null, box:0, due:0, seen:false }; State.progress[id] = s; }
+  if(!s){ s = { correct:0, wrong:0, last:null, box:0, due:0, seen:false, lastIncorrect:false }; State.progress[id] = s; }
   return s;
 }
 function isLearned(id){ const s = State.progress[id]; return !!(s && (s.seen || s.correct+s.wrong>0)); }
 function isMastered(id){ const s = State.progress[id]; return !!(s && s.box >= MASTER_BOX); }
 function masteryPct(id){ const s = State.progress[id]; return s ? Math.min(100, Math.round(s.box / MAX_BOX * 100)) : 0; }
 
-/* Record a review result. quality: 'hard' | 'medium' | 'easy' (or boolean correct) */
 function review(id, quality){
   const s = stat(id);
   s.seen = true;
   if(quality === 'hard' || quality === false){
     s.wrong++;
     s.box = Math.max(0, s.box - 1);
+    s.lastIncorrect = true;
   } else if(quality === 'medium'){
     s.correct++;
     s.box = Math.min(MAX_BOX, s.box + 1);
+    s.lastIncorrect = false;
   } else { // easy or true
     s.correct++;
     s.box = Math.min(MAX_BOX, s.box + 2);
+    s.lastIncorrect = false;
   }
   s.last = new Date().toISOString();
   s.due = now() + BOX_DAYS[s.box] * DAY;
@@ -92,13 +94,18 @@ function studyQueue(level){
     const s = State.progress[v.id];
     let prio;
     if(!s || !s.seen) {
-      prio = 1000; // Unseen cards: highest priority
+      prio = 10000; // Unseen cards: Tier 4 (highest priority)
+    } else if(s.lastIncorrect) {
+      // Last answer was incorrect: Tier 3 (priority 8000+). More wrongs = higher priority.
+      prio = 8000 + (s.wrong || 0) * 10;
     } else {
       // (t - s.due) / DAY gives how many days overdue the card is (positive if due, negative if not due yet)
-      const daysOverdue = (t - s.due) / DAY;
+      const daysOverdue = Math.min(100, (t - s.due) / DAY);
       if(s.due <= t) {
-        prio = 500 + daysOverdue - s.box * 10;
+        // Due cards: Tier 2 (priority 5000+)
+        prio = 5000 + daysOverdue - s.box * 10;
       } else {
+        // Not due cards: Tier 1 (priority < 0)
         prio = daysOverdue - s.box * 10;
       }
     }
