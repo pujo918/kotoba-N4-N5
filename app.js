@@ -9,6 +9,7 @@ const K = {
   settings: 'kotoba.settings',
   progress: 'kotoba.progress',
   streak: 'kotoba.streak',
+  wrongSolved: 'kotoba.wrongSolved',
 };
 const load = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch { return def; } };
 const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -23,7 +24,16 @@ const State = {
   progress: load(K.progress, {}),   // id -> {correct,wrong,last,box,due,seen}
   streak: load(K.streak, { current: 0, last: null, best: 0 }),
   route: 'home',
+  wrongSolved: load(K.wrongSolved, {}),
 };
+let listObserver = null;
+
+function effectiveWrong(id) {
+  const s = State.progress[id];
+  if (!s) return 0;
+  const solved = State.wrongSolved[id] || 0;
+  return Math.max(0, (s.wrong || 0) - solved);
+}
 
 /* Leitner intervals (days) per box level 0..6 */
 const BOX_DAYS = [0, 1, 2, 4, 8, 16, 30];
@@ -141,8 +151,15 @@ function toast(msg){ const el = document.getElementById('toast'); el.textContent
 /* ---------- Router ---------- */
 const Views = {};
 function navigate(route){
+  if (listObserver) {
+    listObserver.disconnect();
+    listObserver = null;
+  }
   State.route = route;
-  const activeNav = route === 'statsDetail' ? 'stats' : route;
+  let activeNav = route;
+  if (route === 'statsDetail' || route === 'statsDetailQuiz') {
+    activeNav = 'stats';
+  }
   document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.nav === activeNav));
   const app = document.getElementById('app');
   app.innerHTML = '';
@@ -198,15 +215,6 @@ Views.home = (app) => {
         </div>
       </section>
 
-      <section>
-        <p class="section-label">Mulai Belajar</p>
-        <div class="grid action-grid">
-          <button class="action" data-go="flashcard"><span class="ico">🃏</span><h3>Flashcard</h3><p>Active recall</p></button>
-          <button class="action" data-go="quiz"><span class="ico">✏️</span><h3>Quiz</h3><p>4 mode soal</p></button>
-          <button class="action" data-go="list"><span class="ico">📚</span><h3>Daftar</h3><p>Telusuri kosakata</p></button>
-          <button class="action" data-go="stats"><span class="ico">📊</span><h3>Statistik</h3><p>Lihat progress</p></button>
-        </div>
-      </section>
     </div>`;
 
   app.querySelectorAll('[data-stat]').forEach(b => b.onclick = () => {
@@ -224,16 +232,6 @@ Views.home = (app) => {
     ListState.q = '';
     ListState.limit = 60;
     navigate('list');
-  });
-
-  app.querySelectorAll('[data-go]').forEach(b => b.onclick = () => {
-    const dest = b.dataset.go;
-    if (dest === 'list') {
-      ListState.level = 'all';
-      ListState.filter = 'all';
-      ListState.q = '';
-    }
-    navigate(dest);
   });
 };
 function greet(){ const h = new Date().getHours(); if(h<11) return 'Selamat pagi'; if(h<15) return 'Selamat siang'; if(h<19) return 'Selamat sore'; return 'Selamat malam'; }
@@ -275,12 +273,17 @@ Views.list = (app) => {
 };
 function filteredVocab(){
   const q = ListState.q.trim().toLowerCase();
-  return State.vocab.filter(v => {
+  const res = State.vocab.filter(v => {
     if(ListState.level !== 'all' && v.level !== ListState.level) return false;
     if(ListState.filter === 'learned' && !isLearned(v.id)) return false;
     if(ListState.filter === 'mastered' && !isMastered(v.id)) return false;
     if(!q) return true;
     return v.kanji.toLowerCase().includes(q) || v.furigana.toLowerCase().includes(q) || v.arti.toLowerCase().includes(q);
+  });
+  return res.sort((a, b) => {
+    const masteryA = masteryPct(a.id);
+    const masteryB = masteryPct(b.id);
+    return masteryB - masteryA;
   });
 }
 function renderList(){
@@ -293,8 +296,28 @@ function renderList(){
     ? slice.map(cardHTML).join('')
     : `<div class="empty" style="grid-column:1/-1"><div class="big">🔍</div>Tidak ada kosakata yang cocok.</div>`;
   const more = document.getElementById('more');
-  if(res.length > ListState.limit){ more.innerHTML = `<button class="btn ghost">Tampilkan lebih banyak (${res.length-ListState.limit} lagi)</button>`; more.firstElementChild.onclick = () => { ListState.limit += 60; renderList(); }; }
-  else more.innerHTML = '';
+  if(!more) return;
+
+  if (listObserver) {
+    listObserver.disconnect();
+    listObserver = null;
+  }
+
+  if(res.length > ListState.limit){
+    more.innerHTML = `<div style="padding:20px 0;color:var(--text-dim);font-size:13.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px">
+      <span class="spinner"></span>
+      Memuat lebih banyak...
+    </div>`;
+    listObserver = new IntersectionObserver((entries) => {
+      if(entries[0].isIntersecting){
+        ListState.limit += 60;
+        renderList();
+      }
+    }, { rootMargin: '200px' });
+    listObserver.observe(more);
+  } else {
+    more.innerHTML = res.length > 0 ? `<div style="padding:20px 0;color:var(--text-dim);font-size:13.5px;font-weight:600">✨ Semua kosakata telah ditampilkan</div>` : '';
+  }
 }
 function cardHTML(v){
   const m = masteryPct(v.id);
@@ -355,6 +378,7 @@ function renderFlashcard(app){
   const card = app.querySelector('#card');
   card.onclick = () => { FC.flipped = !FC.flipped; card.classList.toggle('flipped', FC.flipped); app.querySelector('#fcBtns').classList.toggle('locked', !FC.flipped); };
   app.querySelectorAll('#fcLv button').forEach(b => b.onclick = (e) => { e.stopPropagation(); startFlashcards(b.dataset.lv); renderFlashcard(app); });
+
   app.querySelectorAll('#fcBtns .fc-btn').forEach(b => b.onclick = () => {
     if(!FC.flipped) return;
     review(v.id, b.dataset.q);
@@ -445,6 +469,7 @@ function renderQuizMenu(app){
       app.querySelectorAll('#qzLimit button').forEach(btn => btn.classList.toggle('active', +btn.dataset.lim === QZ.limit));
     };
   });
+
 
   app.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => startQuiz(+b.dataset.mode, app));
 }
@@ -791,6 +816,11 @@ function renderQuizQuestion(app){
   const prog = Math.round(QZ.idx / QZ.queue.length * 100);
   app.innerHTML = `
     <div class="view quiz-wrap">
+      <div class="toolbar" style="margin-bottom: 20px;">
+        <button class="btn ghost" id="exitQuiz" style="height: 40px; padding: 0 16px; border-radius: 12px; font-size: 14px;">
+          🔕 Keluar Kuis
+        </button>
+      </div>
       <div class="quiz-meta"><span>Soal ${QZ.idx+1} / ${QZ.queue.length}</span><span><span class="ok">✔ ${QZ.correct}</span> · <span class="no">✖ ${QZ.wrong}</span></span></div>
       <div class="quiz-progress"><i style="width:${prog}%"></i></div>
       <div class="quiz-q">
@@ -802,6 +832,15 @@ function renderQuizQuestion(app){
       </div>
       <div id="qnext"></div>
     </div>`;
+
+  app.querySelector('#exitQuiz').onclick = () => {
+    if (confirm('Yakin ingin membatalkan kuis ini?')) {
+      QZ.mode = null;
+      QZ.queue = [];
+      QZ.idx = 0;
+      renderQuizMenu(app);
+    }
+  };
   app.querySelectorAll('#opts .opt').forEach(b => b.onclick = () => answerQuiz(b.dataset.val, app));
 }
 function answerQuiz(val, app){
@@ -812,7 +851,23 @@ function answerQuiz(val, app){
   if(correct){ QZ.correct++; review(q.v.id, 'easy'); } else { QZ.wrong++; review(q.v.id, 'hard'); }
   app.querySelectorAll('#opts .opt').forEach(b => {
     b.disabled = true;
-    if(b.dataset.val === q.answer){ b.classList.add('correct'); b.innerHTML += '<span class="badge">✔</span>'; }
+    if(b.dataset.val === q.answer){
+      b.classList.add('correct');
+      let extra = '';
+      if (q.field === 'furigana') {
+        extra = q.v.arti;
+      } else if (q.field === 'kanji') {
+        extra = q.v.furigana;
+      }
+      if (extra) {
+        b.innerHTML = `<div style="display:flex; flex-direction:column; gap:2px; flex:1;">
+          <div>${esc(q.answer)}</div>
+          <div style="font-size: 13px; font-weight: 500; opacity: 0.8; line-height: 1.25;">${esc(extra)}</div>
+        </div><span class="badge">✔</span>`;
+      } else {
+        b.innerHTML = `${esc(q.answer)}<span class="badge">✔</span>`;
+      }
+    }
     else if(b.dataset.val === val){ b.classList.add('wrong'); b.innerHTML += '<span class="badge">✖</span>'; }
   });
   const next = document.getElementById('qnext');
@@ -879,15 +934,15 @@ Views.stats = (app) => {
         <div class="grid stat-grid">
           <div class="stat clickable" data-stat="learned"><span class="ico">📖</span><div class="val">${learned}</div><div class="lbl">Total dipelajari</div></div>
           <div class="stat clickable" data-stat="mastered"><span class="ico">🏆</span><div class="val">${mastered}</div><div class="lbl">Total dikuasai</div></div>
-          <div class="stat"><span class="ico">💭</span><div class="val">${notyet}</div><div class="lbl">Belum dipelajari</div></div>
-          <div class="stat"><span class="ico">🎯</span><div class="val">${acc}%</div><div class="lbl">Akurasi review</div></div>
+          <div class="stat" data-stat="notyet"><span class="ico">💭</span><div class="val">${notyet}</div><div class="lbl">Belum dipelajari</div></div>
+          <div class="stat" data-stat="accuracy"><span class="ico">🎯</span><div class="val">${acc}%</div><div class="lbl">Akurasi review</div></div>
         </div>
       </section>
 
       <section>
         <p class="section-label">Ringkasan Penguasaan</p>
         <div class="card donut-wrap">
-          <div class="donut" style="--a:${segMaster};--b:${segLearned}">
+          <div class="donut" style="--a:${segMaster}%;--b:${segLearned}%">
             <div class="mid"><b>${total?Math.round(learned/total*100):0}%</b><small>dipelajari</small></div>
           </div>
           <div class="legend">
@@ -900,7 +955,7 @@ Views.stats = (app) => {
 
       <section>
         <p class="section-label">Progress per Level</p>
-        <div class="card" style="padding:20px">
+        <div class="card progress-level-card" style="padding:24px">
           ${levels.map(x => `
             <div class="bar-row">
               <div class="top"><span>${x.lv} <span class="muted">· ${x.tot} kata</span></span><span>${x.lp}%</span></div>
@@ -913,10 +968,10 @@ Views.stats = (app) => {
       <section>
         <p class="section-label">Aktivitas Review (Klik untuk detail)</p>
         <div class="grid stat-grid">
-          <div class="stat"><span class="ico">🔁</span><div class="val">${totalReviews}</div><div class="lbl">Total review</div></div>
-          <div class="stat clickable" id="btnCorrectReviews"><span class="ico">✅</span><div class="val">${totalCorrect}</div><div class="lbl">Jawaban benar</div></div>
-          <div class="stat clickable" id="btnWrongReviews"><span class="ico">❌</span><div class="val">${totalWrong}</div><div class="lbl">Jawaban salah</div></div>
-          <div class="stat"><span class="ico">🔥</span><div class="val">${currentStreak()}</div><div class="lbl">Streak (hari)</div></div>
+          <div class="stat" data-stat="reviews"><span class="ico">🔁</span><div class="val">${totalReviews}</div><div class="lbl">Total review</div></div>
+          <div class="stat clickable" id="btnCorrectReviews" data-stat="correct"><span class="ico">✅</span><div class="val">${totalCorrect}</div><div class="lbl">Jawaban benar</div></div>
+          <div class="stat clickable" id="btnWrongReviews" data-stat="wrong"><span class="ico">❌</span><div class="val">${totalWrong}</div><div class="lbl">Jawaban salah</div></div>
+          <div class="stat" data-stat="streak"><span class="ico">🔥</span><div class="val">${currentStreak()}</div><div class="lbl">Streak (hari)</div></div>
         </div>
       </section>
 
@@ -949,8 +1004,8 @@ Views.stats = (app) => {
   };
   app.querySelector('#reset').onclick = () => {
     if(confirm('Yakin ingin menghapus semua progress belajar? Tindakan ini tidak bisa dibatalkan.')){
-      State.progress = {}; State.streak = { current:0, last:null, best:0 };
-      save(K.progress, State.progress); save(K.streak, State.streak);
+      State.progress = {}; State.streak = { current:0, last:null, best:0 }; State.wrongSolved = {};
+      save(K.progress, State.progress); save(K.streak, State.streak); save(K.wrongSolved, State.wrongSolved);
       toast('Progress direset'); navigate('stats');
     }
   };
@@ -970,23 +1025,32 @@ Views.statsDetail = (app) => {
   const icon = isCorrect ? '✅' : '❌';
 
   const filtered = State.vocab.filter(v => {
-    const s = State.progress[v.id];
-    if(!s) return false;
-    return isCorrect ? (s.correct > 0) : (s.wrong > 0);
+    if (isCorrect) {
+      const s = State.progress[v.id];
+      return s && s.correct > 0;
+    } else {
+      return effectiveWrong(v.id) > 0;
+    }
   }).sort((a,b) => {
-    const sA = State.progress[a.id];
-    const sB = State.progress[b.id];
-    const valA = isCorrect ? (sA.correct || 0) : (sA.wrong || 0);
-    const valB = isCorrect ? (sB.correct || 0) : (sB.wrong || 0);
-    return valB - valA;
+    if (isCorrect) {
+      const sA = State.progress[a.id];
+      const sB = State.progress[b.id];
+      return (sB ? sB.correct || 0 : 0) - (sA ? sA.correct || 0 : 0);
+    } else {
+      return effectiveWrong(b.id) - effectiveWrong(a.id);
+    }
   });
 
   app.innerHTML = `
     <div class="view">
-      <div class="toolbar" style="margin-bottom: 20px;">
+      <div class="toolbar" style="margin-bottom: 20px; justify-content: space-between; align-items: center; width: 100%; display: flex; flex-wrap: wrap; gap: 10px;">
         <button class="btn ghost" id="backToStats" style="height: 40px; padding: 0 16px; border-radius: 12px; font-size: 14px;">
           ← Kembali ke Statistik
         </button>
+        ${!isCorrect && filtered.length > 0 ? `
+        <button class="btn" id="startWrongQuiz" style="height: 40px; padding: 0 16px; border-radius: 12px; font-size: 14px; background: linear-gradient(135deg, var(--red), #ff7e5f); color: white; border: none; box-shadow: 0 4px 10px var(--red-soft); font-weight: 700;">
+          🎯 Latihan Soal Salah
+        </button>` : ''}
       </div>
 
       <h1 class="page-title">${esc(title)}<span class="sub">${esc(subtitle)}</span></h1>
@@ -996,7 +1060,7 @@ Views.statsDetail = (app) => {
       <div class="vocab-grid">
         ${filtered.length ? filtered.map(v => {
           const s = State.progress[v.id];
-          const count = isCorrect ? s.correct : s.wrong;
+          const count = isCorrect ? (s ? s.correct : 0) : effectiveWrong(v.id);
           return `
             <div class="vocab-card">
               <span class="lv ${v.level}">${v.level}</span>
@@ -1017,7 +1081,187 @@ Views.statsDetail = (app) => {
     </div>`;
 
   app.querySelector('#backToStats').onclick = () => navigate('stats');
+  const startBtn = app.querySelector('#startWrongQuiz');
+  if (startBtn) {
+    startBtn.onclick = () => navigate('statsDetailQuiz');
+  }
 };
+
+/* ============================================================
+   VIEW: DETAIL STATISTIK - KUIS KHUSUS JAWABAN SALAH
+   ============================================================ */
+const WQ = { queue: [], idx: 0, correct: 0, wrong: 0, answered: false, q: null };
+
+Views.statsDetailQuiz = (app) => {
+  if (!WQ.queue.length || WQ.idx >= WQ.queue.length) {
+    const wrongVocab = State.vocab.filter(v => {
+      return effectiveWrong(v.id) > 0;
+    }).sort((a, b) => {
+      return effectiveWrong(b.id) - effectiveWrong(a.id);
+    });
+
+    WQ.queue = wrongVocab.slice(0, 10);
+    WQ.idx = 0;
+    WQ.correct = 0;
+    WQ.wrong = 0;
+    WQ.answered = false;
+
+    if (WQ.queue.length === 0) {
+      navigate('statsDetail');
+      return;
+    }
+    buildWrongQuestion();
+  }
+  renderWrongQuestion(app);
+};
+
+function startWrongQuiz(app) {
+  const wrongVocab = State.vocab.filter(v => {
+    return effectiveWrong(v.id) > 0;
+  }).sort((a, b) => {
+    return effectiveWrong(b.id) - effectiveWrong(a.id);
+  });
+
+  WQ.queue = wrongVocab.slice(0, 10);
+  WQ.idx = 0;
+  WQ.correct = 0;
+  WQ.wrong = 0;
+  WQ.answered = false;
+
+  if (WQ.queue.length === 0) {
+    navigate('statsDetail');
+    return;
+  }
+  buildWrongQuestion();
+  renderWrongQuestion(app);
+}
+
+function buildWrongQuestion(){
+  const v = WQ.queue[WQ.idx];
+  let type = 1 + Math.floor(Math.random()*3);
+  let prompt, promptFuri = '', tag, answer, field;
+  if(type === 1){ field='arti'; prompt=v.kanji; promptFuri=v.furigana; tag='Apa arti kata ini?'; answer=v.arti; }
+  else if(type === 2){ field='furigana'; prompt=v.kanji; tag='Bagaimana cara bacanya?'; answer=v.furigana; }
+  else { field='kanji'; prompt=v.arti; tag='Kanji mana yang tepat?'; answer=v.kanji; promptFuri=''; }
+  
+  let distract;
+  if (type === 1) {
+    distract = getArtiDistractors(answer, v.level);
+  } else if (type === 2) {
+    distract = getFuriganaDistractors(answer, v.level);
+  } else {
+    distract = getKanjiDistractors(answer, v.level);
+  }
+  
+  const options = shuffle([answer, ...distract]).slice(0, 4);
+  if(!options.includes(answer)) options[0] = answer;
+  WQ.q = { v, type, prompt, promptFuri, tag, answer, options, field, big: type!==3 };
+  WQ.answered = false;
+}
+
+function renderWrongQuestion(app){
+  const q = WQ.q;
+  const prog = Math.round(WQ.idx / WQ.queue.length * 100);
+  app.innerHTML = `
+    <div class="view quiz-wrap">
+      <div class="toolbar" style="margin-bottom: 20px;">
+        <button class="btn ghost" id="exitWrongQuiz" style="height: 40px; padding: 0 16px; border-radius: 12px; font-size: 14px;">
+          🔕 Keluar Latihan
+        </button>
+      </div>
+      <h1 class="page-title" style="font-size:20px;margin-bottom:10px">Latihan Kosakata Salah<span class="sub">Prioritas kata yang sering salah</span></h1>
+      <div class="quiz-meta" style="margin-top:10px"><span>Soal ${WQ.idx+1} / ${WQ.queue.length}</span><span><span class="ok">✔ ${WQ.correct}</span> · <span class="no">✖ ${WQ.wrong}</span></span></div>
+      <div class="quiz-progress"><i style="width:${prog}%"></i></div>
+      <div class="quiz-q">
+        <div class="tag">${esc(q.tag)}</div>
+        ${q.big ? `<div class="big">${esc(q.prompt)}</div>${q.type===1?`<div class="furi">${esc(q.promptFuri)}</div>`:''}` : `<div class="med">${esc(q.prompt)}</div>`}
+      </div>
+      <div class="options" id="opts">
+        ${q.options.map(o => `<button class="opt" data-val="${esc(o)}">${esc(o)}</button>`).join('')}
+      </div>
+      <div id="qnext" style="margin-top:18px"></div>
+    </div>`;
+  
+  app.querySelector('#exitWrongQuiz').onclick = () => {
+    if (confirm('Yakin ingin membatalkan latihan ini?')) {
+      WQ.queue = [];
+      WQ.idx = 0;
+      navigate('statsDetail');
+    }
+  };
+  app.querySelectorAll('#opts .opt').forEach(b => b.onclick = () => answerWrongQuiz(b.dataset.val, app));
+}
+
+function answerWrongQuiz(val, app){
+  if(WQ.answered) return;
+  WQ.answered = true;
+  const q = WQ.q;
+  const correct = val === q.answer;
+  if(correct){
+    WQ.correct++;
+    State.wrongSolved[q.v.id] = (State.wrongSolved[q.v.id] || 0) + 1;
+    save(K.wrongSolved, State.wrongSolved);
+  } else {
+    WQ.wrong++;
+  }
+  app.querySelectorAll('#opts .opt').forEach(b => {
+    b.disabled = true;
+    if(b.dataset.val === q.answer){
+      b.classList.add('correct');
+      let extra = '';
+      if (q.field === 'furigana') {
+        extra = q.v.arti;
+      } else if (q.field === 'kanji') {
+        extra = q.v.furigana;
+      }
+      if (extra) {
+        b.innerHTML = `<div style="display:flex; flex-direction:column; gap:2px; flex:1;">
+          <div>${esc(q.answer)}</div>
+          <div style="font-size: 13px; font-weight: 500; opacity: 0.8; line-height: 1.25;">${esc(extra)}</div>
+        </div><span class="badge">✔</span>`;
+      } else {
+        b.innerHTML = `${esc(q.answer)}<span class="badge">✔</span>`;
+      }
+    }
+    else if(b.dataset.val === val){ b.classList.add('wrong'); b.innerHTML += '<span class="badge">✖</span>'; }
+  });
+  const next = document.getElementById('qnext');
+  next.innerHTML = `<button class="quiz-next">${WQ.idx+1 >= WQ.queue.length ? 'Lihat Hasil' : 'Soal Berikutnya →'}</button>`;
+  next.firstElementChild.onclick = () => {
+    WQ.idx++;
+    if(WQ.idx >= WQ.queue.length){ renderWrongQuizResult(app); }
+    else { buildWrongQuestion(); renderWrongQuestion(app); }
+  };
+}
+
+function renderWrongQuizResult(app){
+  const total = WQ.correct + WQ.wrong;
+  const pct = total ? Math.round(WQ.correct/total*100) : 0;
+  const emoji = pct>=80?'🏆':pct>=50?'👍':'💪';
+  const msg = pct>=80?'Luar biasa! Kamu menguasai sesi latihan ini.':pct>=50?'Bagus! Terus latih kata yang salah.':'Tetap semangat, ulangi latihan lagi ya!';
+  app.innerHTML = `
+    <div class="view quiz-wrap">
+      <div class="result">
+        <div class="big">${emoji}</div>
+        <div class="score">${WQ.correct}/${total}</div>
+        <h2>${pct}% Benar</h2>
+        <p>${msg}</p>
+        <p style="font-size:12px;color:var(--text-dim);margin-top:-10px;margin-bottom:20px;">Latihan ini bersifat mandiri dan tidak mengubah progress belajar utama Anda.</p>
+        <div class="btn-row" style="justify-content:center">
+          <button class="btn" id="retryWrong">Latih Lagi</button>
+          <button class="btn ghost" id="backToDetail">Kembali</button>
+        </div>
+      </div>
+    </div>`;
+  app.querySelector('#retryWrong').onclick = () => {
+    startWrongQuiz(app);
+  };
+  app.querySelector('#backToDetail').onclick = () => {
+    WQ.queue = [];
+    WQ.idx = 0;
+    navigate('statsDetail');
+  };
+}
 
 function emptyState(msg){ return `<div class="view"><div class="empty"><div class="big">💭</div>${esc(msg)}</div></div>`; }
 
