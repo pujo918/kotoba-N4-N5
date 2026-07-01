@@ -13,7 +13,7 @@ const K = {
 };
 const load = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch { return def; } };
 const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
-const todayStr = () => { const d = new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 const now = () => Date.now();
 const DAY = 86400000;
 
@@ -41,23 +41,23 @@ const MAX_BOX = BOX_DAYS.length - 1;
 const MASTER_BOX = 5; // box >= 5 dianggap dikuasai
 
 /* ---------- Progress utils ---------- */
-function stat(id){
+function stat(id) {
   let s = State.progress[id];
-  if(!s){ s = { correct:0, wrong:0, last:null, box:0, due:0, seen:false, lastIncorrect:false }; State.progress[id] = s; }
+  if (!s) { s = { correct: 0, wrong: 0, last: null, box: 0, due: 0, seen: false, lastIncorrect: false }; State.progress[id] = s; }
   return s;
 }
-function isLearned(id){ const s = State.progress[id]; return !!(s && (s.seen || s.correct+s.wrong>0)); }
-function isMastered(id){ const s = State.progress[id]; return !!(s && s.box >= MASTER_BOX); }
-function masteryPct(id){ const s = State.progress[id]; return s ? Math.min(100, Math.round(s.box / MAX_BOX * 100)) : 0; }
+function isLearned(id) { const s = State.progress[id]; return !!(s && (s.seen || s.correct + s.wrong > 0)); }
+function isMastered(id) { const s = State.progress[id]; return !!(s && s.box >= MASTER_BOX); }
+function masteryPct(id) { const s = State.progress[id]; return s ? Math.min(100, Math.round(s.box / MAX_BOX * 100)) : 0; }
 
-function review(id, quality){
+function review(id, quality) {
   const s = stat(id);
   s.seen = true;
-  if(quality === 'hard' || quality === false){
+  if (quality === 'hard' || quality === false) {
     s.wrong++;
     s.box = Math.max(0, s.box - 1);
     s.lastIncorrect = true;
-  } else if(quality === 'medium'){
+  } else if (quality === 'medium') {
     s.correct++;
     s.box = Math.min(MAX_BOX, s.box + 1);
     s.lastIncorrect = false;
@@ -73,45 +73,45 @@ function review(id, quality){
 }
 
 /* ---------- Streak ---------- */
-function bumpStreak(){
+function bumpStreak() {
   const t = todayStr();
   const st = State.streak;
-  if(st.last === t) { return; }
+  if (st.last === t) { return; }
   const y = new Date(Date.now() - DAY);
-  const yStr = y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');
-  if(st.last === yStr) st.current += 1; else st.current = 1;
+  const yStr = y.getFullYear() + '-' + String(y.getMonth() + 1).padStart(2, '0') + '-' + String(y.getDate()).padStart(2, '0');
+  if (st.last === yStr) st.current += 1; else st.current = 1;
   st.last = t;
-  if(st.current > (st.best||0)) st.best = st.current;
+  if (st.current > (st.best || 0)) st.best = st.current;
   save(K.streak, st);
 }
-function currentStreak(){
+function currentStreak() {
   const st = State.streak;
-  if(!st.last) return 0;
+  if (!st.last) return 0;
   const t = todayStr();
   const y = new Date(Date.now() - DAY);
-  const yStr = y.getFullYear()+'-'+String(y.getMonth()+1).padStart(2,'0')+'-'+String(y.getDate()).padStart(2,'0');
-  if(st.last === t || st.last === yStr) return st.current;
+  const yStr = y.getFullYear() + '-' + String(y.getMonth() + 1).padStart(2, '0') + '-' + String(y.getDate()).padStart(2, '0');
+  if (st.last === t || st.last === yStr) return st.current;
   return 0; // streak putus
 }
 
 /* ---------- Spaced-repetition study queue ---------- */
 /* Cards that are due, never seen, or low box appear first; more wrong = higher priority */
-function studyQueue(level){
+function studyQueue(level) {
   let pool = State.vocab.slice();
-  if(level && level !== 'all') pool = pool.filter(v => v.level === level);
+  if (level && level !== 'all') pool = pool.filter(v => v.level === level);
   const t = now();
   return pool.map(v => {
     const s = State.progress[v.id];
     let prio;
-    if(!s || !s.seen) {
+    if (!s || !s.seen) {
       prio = 10000; // Unseen cards: Tier 4 (highest priority)
-    } else if(s.lastIncorrect) {
+    } else if (s.lastIncorrect) {
       // Last answer was incorrect: Tier 3 (priority 8000+). More wrongs = higher priority.
       prio = 8000 + (s.wrong || 0) * 10;
     } else {
       // (t - s.due) / DAY gives how many days overdue the card is (positive if due, negative if not due yet)
       const daysOverdue = Math.min(100, (t - s.due) / DAY);
-      if(s.due <= t) {
+      if (s.due <= t) {
         // Due cards: Tier 2 (priority 5000+)
         prio = 5000 + daysOverdue - s.box * 10;
       } else {
@@ -120,41 +120,56 @@ function studyQueue(level){
       }
     }
     return { v, prio, r: Math.random() };
-  }).sort((a,b) => (b.prio - a.prio) || (a.r - b.r)).map(x => x.v);
+  }).sort((a, b) => (b.prio - a.prio) || (a.r - b.r)).map(x => x.v);
 }
 
 /* ---------- Furigana / Theme ---------- */
-function applySettings(){
+function applySettings() {
   document.body.classList.toggle('furi-on', State.settings.furigana);
   document.body.classList.toggle('furi-off', !State.settings.furigana);
   document.documentElement.setAttribute('data-theme', State.settings.theme);
   const ft = document.getElementById('furiToggle');
-  if(ft) ft.textContent = State.settings.furigana ? '📖 Furigana ON' : '📖 Furigana OFF';
+  if (ft) ft.textContent = State.settings.furigana ? '📖 Furigana ON' : '📖 Furigana OFF';
   const tt = document.getElementById('themeToggle');
-  if(tt) tt.textContent = State.settings.theme === 'dark' ? '🌙' : '☀️';
+  if (tt) tt.textContent = State.settings.theme === 'dark' ? '🌙' : '☀️';
   const meta = document.querySelector('meta[name=theme-color]');
-  if(meta) meta.setAttribute('content', State.settings.theme === 'dark' ? '#0f1115' : '#6c5ce7');
+  if (meta) meta.setAttribute('content', State.settings.theme === 'dark' ? '#0f1115' : '#6c5ce7');
 }
-function toggleFurigana(){ State.settings.furigana = !State.settings.furigana; save(K.settings, State.settings); applySettings(); toast(State.settings.furigana ? 'Furigana ditampilkan' : 'Furigana disembunyikan'); }
-function toggleTheme(){ State.settings.theme = State.settings.theme === 'dark' ? 'light' : 'dark'; save(K.settings, State.settings); applySettings(); }
+function toggleFurigana() { State.settings.furigana = !State.settings.furigana; save(K.settings, State.settings); applySettings(); toast(State.settings.furigana ? 'Furigana ditampilkan' : 'Furigana disembunyikan'); }
+function toggleTheme() { State.settings.theme = State.settings.theme === 'dark' ? 'light' : 'dark'; save(K.settings, State.settings); applySettings(); }
 
 /* ---------- Helpers ---------- */
-const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const esc = (s) => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 /* ruby element: kanji with furigana that follows global toggle */
-function ruby(v){ return `<ruby>${esc(v.kanji)}<rt>${esc(v.furigana)}</rt></ruby>`; }
-function shuffle(a){ a = a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
-function sample(arr, n, exclude){ const pool = arr.filter(x => x !== exclude); return shuffle(pool).slice(0, n); }
+function ruby(v) { return `<ruby>${esc(v.kanji)}<rt>${esc(v.furigana)}</rt></ruby>`; }
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; }
+function sample(arr, n, exclude) { const pool = arr.filter(x => x !== exclude); return shuffle(pool).slice(0, n); }
 
 let toastTimer;
-function toast(msg){ const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(()=>el.classList.remove('show'), 1800); }
+function toast(msg) { const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 1800); }
+
+function toggleBottomNav(show) {
+  const nav = document.querySelector('.bottom-nav');
+  if (nav) {
+    if (show) {
+      nav.style.transform = 'translateX(-50%)';
+      nav.style.pointerEvents = '';
+    } else {
+      nav.style.transform = 'translateX(-50%) translateY(120px)';
+      nav.style.pointerEvents = 'none';
+    }
+  }
+}
 
 /* ---------- Router ---------- */
 const Views = {};
-function navigate(route){
+function navigate(route) {
   if (listObserver) {
     listObserver.disconnect();
     listObserver = null;
   }
+  document.body.classList.remove('hide-nav');
+  toggleBottomNav(true);
   State.route = route;
   let activeNav = route;
   if (route === 'statsDetail' || route === 'statsDetailQuiz') {
@@ -165,7 +180,7 @@ function navigate(route){
   app.innerHTML = '';
   const v = Views[route] || Views.home;
   v(app);
-  window.scrollTo(0,0);
+  window.scrollTo(0, 0);
 }
 
 /* ============================================================
@@ -173,11 +188,11 @@ function navigate(route){
    ============================================================ */
 Views.home = (app) => {
   const total = State.vocab.length;
-  const n4 = State.vocab.filter(v=>v.level==='N4').length;
-  const n3 = State.vocab.filter(v=>v.level==='N3').length;
-  const learned = State.vocab.filter(v=>isLearned(v.id)).length;
-  const mastered = State.vocab.filter(v=>isMastered(v.id)).length;
-  const pct = total ? Math.round(learned/total*100) : 0;
+  const n4 = State.vocab.filter(v => v.level === 'N4').length;
+  const n3 = State.vocab.filter(v => v.level === 'N3').length;
+  const learned = State.vocab.filter(v => isLearned(v.id)).length;
+  const mastered = State.vocab.filter(v => isMastered(v.id)).length;
+  const pct = total ? Math.round(learned / total * 100) : 0;
   const streak = currentStreak();
 
   app.innerHTML = `
@@ -191,7 +206,7 @@ Views.home = (app) => {
             <div class="big">${streak} Hari</div>
             <div class="cap">Streak Belajar</div>
           </div>
-          <div class="right">Rekor terbaik<br><b style="font-size:18px">${State.streak.best||0} hari</b></div>
+          <div class="right">Rekor terbaik<br><b style="font-size:18px">${State.streak.best || 0} hari</b></div>
         </div>
       </section>
 
@@ -210,7 +225,7 @@ Views.home = (app) => {
           <div class="info">
             <h3>Progress Belajar</h3>
             <p>${learned} dari ${total} kosakata sudah kamu pelajari.</p>
-            <p style="margin-top:4px">🏆 ${mastered} kosakata sudah dikuasai (${total?Math.round(mastered/total*100):0}%).</p>
+            <p style="margin-top:4px">🏆 ${mastered} kosakata sudah dikuasai (${total ? Math.round(mastered / total * 100) : 0}%).</p>
           </div>
         </div>
       </section>
@@ -234,7 +249,7 @@ Views.home = (app) => {
     navigate('list');
   });
 };
-function greet(){ const h = new Date().getHours(); if(h<11) return 'Selamat pagi'; if(h<15) return 'Selamat siang'; if(h<19) return 'Selamat sore'; return 'Selamat malam'; }
+function greet() { const h = new Date().getHours(); if (h < 11) return 'Selamat pagi'; if (h < 15) return 'Selamat siang'; if (h < 19) return 'Selamat sore'; return 'Selamat malam'; }
 
 /* ============================================================
    VIEW: DAFTAR KOSAKATA (List)
@@ -250,14 +265,14 @@ Views.list = (app) => {
           <input id="q" type="text" placeholder="Cari kanji, furigana, atau arti..." value="${esc(ListState.q)}" />
         </div>
         <div class="segmented" id="lvFilter">
-          <button data-lv="all" class="${ListState.level==='all'?'active':''}">Semua</button>
-          <button data-lv="N4" class="${ListState.level==='N4'?'active':''}">N4</button>
-          <button data-lv="N3" class="${ListState.level==='N3'?'active':''}">N3</button>
+          <button data-lv="all" class="${ListState.level === 'all' ? 'active' : ''}">Semua</button>
+          <button data-lv="N4" class="${ListState.level === 'N4' ? 'active' : ''}">N4</button>
+          <button data-lv="N3" class="${ListState.level === 'N3' ? 'active' : ''}">N3</button>
         </div>
         <div class="segmented" id="statusFilter">
-          <button data-filter="all" class="${ListState.filter==='all'?'active':''}">Semua Status</button>
-          <button data-filter="learned" class="${ListState.filter==='learned'?'active':''}">Dipelajari</button>
-          <button data-filter="mastered" class="${ListState.filter==='mastered'?'active':''}">Dikuasai</button>
+          <button data-filter="all" class="${ListState.filter === 'all' ? 'active' : ''}">Semua Status</button>
+          <button data-filter="learned" class="${ListState.filter === 'learned' ? 'active' : ''}">Dipelajari</button>
+          <button data-filter="mastered" class="${ListState.filter === 'mastered' ? 'active' : ''}">Dikuasai</button>
         </div>
       </div>
       <p class="count-note" id="countNote"></p>
@@ -271,13 +286,13 @@ Views.list = (app) => {
   app.querySelectorAll('#statusFilter button').forEach(b => b.onclick = () => { ListState.filter = b.dataset.filter; ListState.limit = 60; navigate('list'); });
   renderList();
 };
-function filteredVocab(){
+function filteredVocab() {
   const q = ListState.q.trim().toLowerCase();
   const res = State.vocab.filter(v => {
-    if(ListState.level !== 'all' && v.level !== ListState.level) return false;
-    if(ListState.filter === 'learned' && !isLearned(v.id)) return false;
-    if(ListState.filter === 'mastered' && !isMastered(v.id)) return false;
-    if(!q) return true;
+    if (ListState.level !== 'all' && v.level !== ListState.level) return false;
+    if (ListState.filter === 'learned' && !isLearned(v.id)) return false;
+    if (ListState.filter === 'mastered' && !isMastered(v.id)) return false;
+    if (!q) return true;
     return v.kanji.toLowerCase().includes(q) || v.furigana.toLowerCase().includes(q) || v.arti.toLowerCase().includes(q);
   });
   return res.sort((a, b) => {
@@ -286,30 +301,30 @@ function filteredVocab(){
     return masteryB - masteryA;
   });
 }
-function renderList(){
+function renderList() {
   const target = document.getElementById('vgrid');
   const res = filteredVocab();
   const note = document.getElementById('countNote');
-  if(note) note.textContent = `${res.length} kosakata ditemukan`;
+  if (note) note.textContent = `${res.length} kosakata ditemukan`;
   const slice = res.slice(0, ListState.limit);
   target.innerHTML = slice.length
     ? slice.map(cardHTML).join('')
     : `<div class="empty" style="grid-column:1/-1"><div class="big">🔍</div>Tidak ada kosakata yang cocok.</div>`;
   const more = document.getElementById('more');
-  if(!more) return;
+  if (!more) return;
 
   if (listObserver) {
     listObserver.disconnect();
     listObserver = null;
   }
 
-  if(res.length > ListState.limit){
+  if (res.length > ListState.limit) {
     more.innerHTML = `<div style="padding:20px 0;color:var(--text-dim);font-size:13.5px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px">
       <span class="spinner"></span>
       Memuat lebih banyak...
     </div>`;
     listObserver = new IntersectionObserver((entries) => {
-      if(entries[0].isIntersecting){
+      if (entries[0].isIntersecting) {
         ListState.limit += 60;
         renderList();
       }
@@ -319,14 +334,14 @@ function renderList(){
     more.innerHTML = res.length > 0 ? `<div style="padding:20px 0;color:var(--text-dim);font-size:13.5px;font-weight:600">✨ Semua kosakata telah ditampilkan</div>` : '';
   }
 }
-function cardHTML(v){
+function cardHTML(v) {
   const m = masteryPct(v.id);
   return `<div class="vocab-card">
     <span class="lv ${v.level}">${v.level}</span>
     <div class="kanji">${esc(v.kanji)}</div>
     <div class="furi">${esc(v.furigana)}</div>
     <div class="arti">${esc(v.arti)}</div>
-    ${m>0?`<div class="mastery"><i style="width:${m}%"></i></div>`:''}
+    ${m > 0 ? `<div class="mastery"><i style="width:${m}%"></i></div>` : ''}
   </div>`;
 }
 
@@ -335,29 +350,29 @@ function cardHTML(v){
    ============================================================ */
 const FC = { queue: [], idx: 0, flipped: false, level: 'all', done: 0 };
 Views.flashcard = (app) => {
-  if(!FC.queue.length || FC.idx >= FC.queue.length){ startFlashcards(FC.level); }
+  if (!FC.queue.length || FC.idx >= FC.queue.length) { startFlashcards(FC.level); }
   renderFlashcard(app);
 };
-function startFlashcards(level){ FC.level = level; FC.queue = studyQueue(level).slice(0, 30); FC.idx = 0; FC.flipped = false; FC.done = 0; }
-function renderFlashcard(app){
-  if(!FC.queue.length){ app.innerHTML = emptyState('Belum ada kartu.'); return; }
-  if(FC.idx >= FC.queue.length){ renderFlashDone(app); return; }
+function startFlashcards(level) { FC.level = level; FC.queue = studyQueue(level).slice(0, 30); FC.idx = 0; FC.flipped = false; FC.done = 0; }
+function renderFlashcard(app) {
+  if (!FC.queue.length) { app.innerHTML = emptyState('Belum ada kartu.'); return; }
+  if (FC.idx >= FC.queue.length) { renderFlashDone(app); return; }
   const v = FC.queue[FC.idx];
   app.innerHTML = `
     <div class="view fc-wrap">
       <h1 class="page-title">Flashcard<span class="sub">Active recall · ketuk kartu untuk membalik</span></h1>
       <div class="toolbar" style="justify-content:center">
         <div class="segmented" id="fcLv">
-          <button data-lv="all" class="${FC.level==='all'?'active':''}">Semua</button>
-          <button data-lv="N4" class="${FC.level==='N4'?'active':''}">N4</button>
-          <button data-lv="N3" class="${FC.level==='N3'?'active':''}">N3</button>
+          <button data-lv="all" class="${FC.level === 'all' ? 'active' : ''}">Semua</button>
+          <button data-lv="N4" class="${FC.level === 'N4' ? 'active' : ''}">N4</button>
+          <button data-lv="N3" class="${FC.level === 'N3' ? 'active' : ''}">N3</button>
         </div>
       </div>
-      <div class="fc-top"><span>Kartu ${FC.idx+1} / ${FC.queue.length}</span><span>${v.level}</span></div>
-      <div class="flashcard ${FC.flipped?'flipped':''}" id="card">
+      <div class="fc-top"><span>Kartu ${FC.idx + 1} / ${FC.queue.length}</span><span>${v.level}</span></div>
+      <div class="flashcard ${FC.flipped ? 'flipped' : ''}" id="card">
         <div class="inner">
           <div class="face front">
-            <span class="lv ${v.level==='N4'?'lv':''}" style="background:var(--bg-soft);color:var(--text-soft)">${v.level}</span>
+            <span class="lv ${v.level === 'N4' ? 'lv' : ''}" style="background:var(--bg-soft);color:var(--text-soft)">${v.level}</span>
             <div class="kanji">${esc(v.kanji)}</div>
             <div class="furi">${esc(v.furigana)}</div>
             <div class="hint">Ketuk untuk lihat arti</div>
@@ -369,7 +384,7 @@ function renderFlashcard(app){
           </div>
         </div>
       </div>
-      <div class="fc-buttons ${FC.flipped?'':'locked'}" id="fcBtns">
+      <div class="fc-buttons ${FC.flipped ? '' : 'locked'}" id="fcBtns">
         <button class="fc-btn hard" data-q="hard"><span class="e">😵</span>Sulit</button>
         <button class="fc-btn med" data-q="medium"><span class="e">🤔</span>Lumayan</button>
         <button class="fc-btn easy" data-q="easy"><span class="e">😎</span>Mudah</button>
@@ -380,14 +395,14 @@ function renderFlashcard(app){
   app.querySelectorAll('#fcLv button').forEach(b => b.onclick = (e) => { e.stopPropagation(); startFlashcards(b.dataset.lv); renderFlashcard(app); });
 
   app.querySelectorAll('#fcBtns .fc-btn').forEach(b => b.onclick = () => {
-    if(!FC.flipped) return;
+    if (!FC.flipped) return;
     review(v.id, b.dataset.q);
     FC.done++;
     FC.idx++; FC.flipped = false;
     renderFlashcard(app);
   });
 };
-function renderFlashDone(app){
+function renderFlashDone(app) {
   app.innerHTML = `
     <div class="view fc-wrap">
       <div class="result">
@@ -415,11 +430,13 @@ const MODES = {
   4: { name: 'Random Campuran', icon: '🎲', desc: 'Campuran semua tipe' },
 };
 Views.quiz = (app) => {
-  if(!QZ.mode){ renderQuizMenu(app); return; }
-  if(QZ.idx >= QZ.queue.length){ renderQuizResult(app); return; }
+  if (!QZ.mode) { renderQuizMenu(app); return; }
+  if (QZ.idx >= QZ.queue.length) { renderQuizResult(app); return; }
   renderQuizQuestion(app);
 };
-function renderQuizMenu(app){
+function renderQuizMenu(app) {
+  document.body.classList.remove('hide-nav');
+  toggleBottomNav(true);
   app.innerHTML = `
     <div class="view quiz-wrap">
       <h1 class="page-title">Quiz<span class="sub">Uji ingatanmu · Pilih level dan jumlah soal</span></h1>
@@ -428,25 +445,25 @@ function renderQuizMenu(app){
         <div class="setup-group">
           <label class="section-label">Materi Quiz</label>
           <div class="segmented full" id="qzLv">
-            <button data-lv="all" class="${QZ.level==='all'?'active':''}">Semua</button>
-            <button data-lv="N4" class="${QZ.level==='N4'?'active':''}">N4</button>
-            <button data-lv="N3" class="${QZ.level==='N3'?'active':''}">N3</button>
+            <button data-lv="all" class="${QZ.level === 'all' ? 'active' : ''}">Semua</button>
+            <button data-lv="N4" class="${QZ.level === 'N4' ? 'active' : ''}">N4</button>
+            <button data-lv="N3" class="${QZ.level === 'N3' ? 'active' : ''}">N3</button>
           </div>
         </div>
         <div class="setup-group" style="margin-top:14px">
           <label class="section-label">Jumlah Soal</label>
           <div class="segmented full" id="qzLimit">
-            <button data-lim="5" class="${QZ.limit===5?'active':''}">5</button>
-            <button data-lim="10" class="${QZ.limit===10?'active':''}">10</button>
-            <button data-lim="20" class="${QZ.limit===20?'active':''}">20</button>
-            <button data-lim="30" class="${QZ.limit===30?'active':''}">30</button>
+            <button data-lim="5" class="${QZ.limit === 5 ? 'active' : ''}">5</button>
+            <button data-lim="10" class="${QZ.limit === 10 ? 'active' : ''}">10</button>
+            <button data-lim="20" class="${QZ.limit === 20 ? 'active' : ''}">20</button>
+            <button data-lim="30" class="${QZ.limit === 30 ? 'active' : ''}">30</button>
           </div>
         </div>
       </div>
 
       <p class="section-label">Pilih Mode Quiz</p>
       <div class="grid mode-grid">
-        ${Object.entries(MODES).map(([k,m]) => `
+        ${Object.entries(MODES).map(([k, m]) => `
           <button class="mode-card" data-mode="${k}">
             <span class="ico">${m.icon}</span>
             <h3>Mode ${k}</h3>
@@ -473,10 +490,10 @@ function renderQuizMenu(app){
 
   app.querySelectorAll('[data-mode]').forEach(b => b.onclick = () => startQuiz(+b.dataset.mode, app));
 }
-function startQuiz(mode, app){
+function startQuiz(mode, app) {
   QZ.mode = mode; QZ.idx = 0; QZ.correct = 0; QZ.wrong = 0; QZ.answered = false;
   QZ.queue = studyQueue(QZ.level).slice(0, QZ.limit);
-  if(QZ.queue.length < 4){ toast('Kosakata belum cukup untuk quiz.'); QZ.mode = null; return; }
+  if (QZ.queue.length < 4) { toast('Kosakata belum cukup untuk quiz.'); QZ.mode = null; return; }
   buildQuestion();
   renderQuizQuestion(app);
 }
@@ -598,7 +615,7 @@ const SIMILAR_HIRAGANA_FINAL = {
 function mutateHiragana(word) {
   const mutations = new Set();
   const chars = Array.from(word);
-  
+
   // 1. Dakuten/Handakuten toggling
   for (let i = 0; i < chars.length; i++) {
     const char = chars[i];
@@ -610,7 +627,7 @@ function mutateHiragana(word) {
       }
     }
   }
-  
+
   // 2. Similar Hiragana replacement
   for (let i = 0; i < chars.length; i++) {
     const char = chars[i];
@@ -643,8 +660,8 @@ function mutateHiragana(word) {
   for (let i = 0; i < chars.length - 1; i++) {
     const copy = [...chars];
     const temp = copy[i];
-    copy[i] = copy[i+1];
-    copy[i+1] = temp;
+    copy[i] = copy[i + 1];
+    copy[i + 1] = temp;
     mutations.add(copy.join(''));
   }
 
@@ -667,32 +684,32 @@ function mutateHiragana(word) {
 function getFuriganaDistractors(answer, level) {
   const distractors = new Set();
   const mutations = mutateHiragana(answer);
-  
+
   shuffle(mutations).forEach(m => {
     if (m !== answer && m.trim().length > 0) distractors.add(m);
   });
-  
+
   const pool = State.vocab.filter(v => v.furigana !== answer && v.level === level);
-  
+
   if (distractors.size < 3) {
     const sameStart = pool.filter(v => v.furigana.startsWith(answer.charAt(0)));
     shuffle(sameStart).forEach(v => distractors.add(v.furigana));
   }
-  
+
   if (distractors.size < 3) {
     const sameLength = pool.filter(v => Math.abs(v.furigana.length - answer.length) <= 1);
     shuffle(sameLength).forEach(v => distractors.add(v.furigana));
   }
-  
+
   if (distractors.size < 3) {
     shuffle(pool).forEach(v => distractors.add(v.furigana));
   }
-  
+
   if (distractors.size < 3) {
     const allPool = State.vocab.filter(v => v.furigana !== answer);
     shuffle(allPool).forEach(v => distractors.add(v.furigana));
   }
-  
+
   return Array.from(distractors).slice(0, 3);
 }
 
@@ -703,7 +720,7 @@ function isKanji(char) {
 function getKanjiDistractors(answer, level) {
   const distractors = new Set();
   const answerKanji = Array.from(answer).filter(isKanji);
-  
+
   if (answerKanji.length === 0) {
     const mutations = mutateHiragana(answer);
     shuffle(mutations).forEach(m => {
@@ -715,7 +732,7 @@ function getKanjiDistractors(answer, level) {
       return Array.from(v.kanji).some(char => answerKanji.includes(char));
     });
     shuffle(sharingKanji).forEach(v => distractors.add(v.kanji));
-    
+
     if (distractors.size < 3) {
       const sameLengthKanji = pool.filter(v => {
         return v.kanji.length === answer.length && Array.from(v.kanji).some(isKanji);
@@ -723,40 +740,40 @@ function getKanjiDistractors(answer, level) {
       shuffle(sameLengthKanji).forEach(v => distractors.add(v.kanji));
     }
   }
-  
+
   if (distractors.size < 3) {
     const pool = State.vocab.filter(v => v.kanji !== answer && v.level === level);
     const anyKanji = pool.filter(v => Array.from(v.kanji).some(isKanji));
     shuffle(anyKanji).forEach(v => distractors.add(v.kanji));
   }
-  
+
   if (distractors.size < 3) {
     const pool = State.vocab.filter(v => v.kanji !== answer);
     const anyKanji = pool.filter(v => Array.from(v.kanji).some(isKanji));
     shuffle(anyKanji).forEach(v => distractors.add(v.kanji));
   }
-  
+
   if (distractors.size < 3) {
     const pool = State.vocab.filter(v => v.kanji !== answer && v.level === level);
     shuffle(pool).forEach(v => distractors.add(v.kanji));
   }
-  
+
   if (distractors.size < 3) {
     const pool = State.vocab.filter(v => v.kanji !== answer);
     shuffle(pool).forEach(v => distractors.add(v.kanji));
   }
-  
+
   return Array.from(distractors).slice(0, 3);
 }
 
 function getArtiDistractors(answer, level) {
   const distractors = new Set();
-  
+
   const clean = s => s.toLowerCase().replace(/[(),;.?\/!]/g, ' ').split(/\s+/).filter(w => w.length >= 3);
   const answerWords = clean(answer);
-  
+
   const pool = State.vocab.filter(v => v.arti !== answer && v.level === level);
-  
+
   if (answerWords.length > 0) {
     const sharingWords = pool.filter(v => {
       const vWords = clean(v.arti);
@@ -764,11 +781,11 @@ function getArtiDistractors(answer, level) {
     });
     shuffle(sharingWords).forEach(v => distractors.add(v.arti));
   }
-  
+
   if (distractors.size < 3) {
     shuffle(pool).forEach(v => distractors.add(v.arti));
   }
-  
+
   if (distractors.size < 3 && answerWords.length > 0) {
     const allPool = State.vocab.filter(v => v.arti !== answer);
     const sharingWordsAny = allPool.filter(v => {
@@ -777,24 +794,24 @@ function getArtiDistractors(answer, level) {
     });
     shuffle(sharingWordsAny).forEach(v => distractors.add(v.arti));
   }
-  
+
   if (distractors.size < 3) {
     const allPool = State.vocab.filter(v => v.arti !== answer);
     shuffle(allPool).forEach(v => distractors.add(v.arti));
   }
-  
+
   return Array.from(distractors).slice(0, 3);
 }
 
-function buildQuestion(){
+function buildQuestion() {
   const v = QZ.queue[QZ.idx];
   let type = QZ.mode;
-  if(type === 4) type = 1 + Math.floor(Math.random()*3);
+  if (type === 4) type = 1 + Math.floor(Math.random() * 3);
   let prompt, promptFuri = '', tag, answer, field;
-  if(type === 1){ field='arti'; prompt=v.kanji; promptFuri=v.furigana; tag='Apa arti kata ini?'; answer=v.arti; }
-  else if(type === 2){ field='furigana'; prompt=v.kanji; tag='Bagaimana cara bacanya?'; answer=v.furigana; }
-  else { field='kanji'; prompt=v.arti; tag='Kanji mana yang tepat?'; answer=v.kanji; promptFuri=''; }
-  
+  if (type === 1) { field = 'arti'; prompt = v.kanji; promptFuri = v.furigana; tag = 'Apa arti kata ini?'; answer = v.arti; }
+  else if (type === 2) { field = 'furigana'; prompt = v.kanji; tag = 'Bagaimana cara bacanya?'; answer = v.furigana; }
+  else { field = 'kanji'; prompt = v.arti; tag = 'Kanji mana yang tepat?'; answer = v.kanji; promptFuri = ''; }
+
   let distract;
   if (type === 1) {
     distract = getArtiDistractors(answer, v.level);
@@ -803,15 +820,17 @@ function buildQuestion(){
   } else {
     distract = getKanjiDistractors(answer, v.level);
   }
-  
-  const options = shuffle([answer, ...distract]).slice(0,4);
-  if(!options.includes(answer)) options[0] = answer;
-  QZ.q = { v, type, prompt, promptFuri, tag, answer, options, field, big: type!==3 };
+
+  const options = shuffle([answer, ...distract]).slice(0, 4);
+  if (!options.includes(answer)) options[0] = answer;
+  QZ.q = { v, type, prompt, promptFuri, tag, answer, options, field, big: type !== 3 };
   QZ.answered = false;
 }
 
 
-function renderQuizQuestion(app){
+function renderQuizQuestion(app) {
+  document.body.classList.add('hide-nav');
+  toggleBottomNav(false);
   const q = QZ.q;
   const prog = Math.round(QZ.idx / QZ.queue.length * 100);
   app.innerHTML = `
@@ -821,11 +840,11 @@ function renderQuizQuestion(app){
           🔕 Keluar Kuis
         </button>
       </div>
-      <div class="quiz-meta"><span>Soal ${QZ.idx+1} / ${QZ.queue.length}</span><span><span class="ok">✔ ${QZ.correct}</span> · <span class="no">✖ ${QZ.wrong}</span></span></div>
+      <div class="quiz-meta"><span>Soal ${QZ.idx + 1} / ${QZ.queue.length}</span><span><span class="ok">✔ ${QZ.correct}</span> · <span class="no">✖ ${QZ.wrong}</span></span></div>
       <div class="quiz-progress"><i style="width:${prog}%"></i></div>
       <div class="quiz-q">
         <div class="tag">${esc(q.tag)}</div>
-        ${q.big ? `<div class="big">${esc(q.prompt)}</div>${q.type===1?`<div class="furi">${esc(q.promptFuri)}</div>`:''}` : `<div class="med">${esc(q.prompt)}</div>`}
+        ${q.big ? `<div class="big">${esc(q.prompt)}</div>${q.type === 1 ? `<div class="furi">${esc(q.promptFuri)}</div>` : ''}` : `<div class="med">${esc(q.prompt)}</div>`}
       </div>
       <div class="options" id="opts">
         ${q.options.map(o => `<button class="opt" data-val="${esc(o)}">${esc(o)}</button>`).join('')}
@@ -843,21 +862,23 @@ function renderQuizQuestion(app){
   };
   app.querySelectorAll('#opts .opt').forEach(b => b.onclick = () => answerQuiz(b.dataset.val, app));
 }
-function answerQuiz(val, app){
-  if(QZ.answered) return;
+function answerQuiz(val, app) {
+  if (QZ.answered) return;
   QZ.answered = true;
   const q = QZ.q;
   const correct = val === q.answer;
-  if(correct){ QZ.correct++; review(q.v.id, 'easy'); } else { QZ.wrong++; review(q.v.id, 'hard'); }
+  if (correct) { QZ.correct++; review(q.v.id, 'easy'); } else { QZ.wrong++; review(q.v.id, 'hard'); }
   app.querySelectorAll('#opts .opt').forEach(b => {
     b.disabled = true;
-    if(b.dataset.val === q.answer){
+    if (b.dataset.val === q.answer) {
       b.classList.add('correct');
       let extra = '';
       if (q.field === 'furigana') {
         extra = q.v.arti;
       } else if (q.field === 'kanji') {
         extra = q.v.furigana;
+      } else if (q.field === 'arti') {
+        extra = q.v.kanji === q.v.furigana ? q.v.furigana : `${q.v.kanji} (${q.v.furigana})`;
       }
       if (extra) {
         b.innerHTML = `<div style="display:flex; flex-direction:column; gap:2px; flex:1;">
@@ -868,21 +889,23 @@ function answerQuiz(val, app){
         b.innerHTML = `${esc(q.answer)}<span class="badge">✔</span>`;
       }
     }
-    else if(b.dataset.val === val){ b.classList.add('wrong'); b.innerHTML += '<span class="badge">✖</span>'; }
+    else if (b.dataset.val === val) { b.classList.add('wrong'); b.innerHTML += '<span class="badge">✖</span>'; }
   });
   const next = document.getElementById('qnext');
-  next.innerHTML = `<button class="quiz-next">${QZ.idx+1 >= QZ.queue.length ? 'Lihat Hasil' : 'Soal Berikutnya →'}</button>`;
+  next.innerHTML = `<button class="quiz-next">${QZ.idx + 1 >= QZ.queue.length ? 'Lihat Hasil' : 'Soal Berikutnya →'}</button>`;
   next.firstElementChild.onclick = () => {
     QZ.idx++;
-    if(QZ.idx >= QZ.queue.length){ renderQuizResult(app); }
+    if (QZ.idx >= QZ.queue.length) { renderQuizResult(app); }
     else { buildQuestion(); renderQuizQuestion(app); }
   };
 }
-function renderQuizResult(app){
+function renderQuizResult(app) {
+  document.body.classList.remove('hide-nav');
+  toggleBottomNav(true);
   const total = QZ.correct + QZ.wrong;
-  const pct = total ? Math.round(QZ.correct/total*100) : 0;
-  const emoji = pct>=80?'🏆':pct>=50?'👍':'💪';
-  const msg = pct>=80?'Luar biasa! Kamu menguasai sesi ini.':pct>=50?'Bagus! Terus berlatih.':'Tetap semangat, ulangi lagi ya!';
+  const pct = total ? Math.round(QZ.correct / total * 100) : 0;
+  const emoji = pct >= 80 ? '🏆' : pct >= 50 ? '👍' : '💪';
+  const msg = pct >= 80 ? 'Luar biasa! Kamu menguasai sesi ini.' : pct >= 50 ? 'Bagus! Terus berlatih.' : 'Tetap semangat, ulangi lagi ya!';
   app.innerHTML = `
     <div class="view quiz-wrap">
       <div class="result">
@@ -905,26 +928,26 @@ function renderQuizResult(app){
    ============================================================ */
 Views.stats = (app) => {
   const total = State.vocab.length;
-  const learned = State.vocab.filter(v=>isLearned(v.id)).length;
-  const mastered = State.vocab.filter(v=>isMastered(v.id)).length;
+  const learned = State.vocab.filter(v => isLearned(v.id)).length;
+  const mastered = State.vocab.filter(v => isMastered(v.id)).length;
   const notyet = total - learned;
-  const a = total?learned/total*100:0;       // learned (incl mastered)
-  const b = total?mastered/total*100:0;       // mastered portion
+  const a = total ? learned / total * 100 : 0;       // learned (incl mastered)
+  const b = total ? mastered / total * 100 : 0;       // mastered portion
   // donut: green=mastered, orange=learned-not-mastered, rest=belum
-  const segMaster = total?mastered/total*100:0;
-  const segLearned = total?learned/total*100:0;
+  const segMaster = total ? mastered / total * 100 : 0;
+  const segLearned = total ? learned / total * 100 : 0;
 
-  const levels = ['N4','N3'].map(lv => {
-    const arr = State.vocab.filter(v=>v.level===lv);
-    const l = arr.filter(v=>isLearned(v.id)).length;
-    const m = arr.filter(v=>isMastered(v.id)).length;
-    return { lv, tot: arr.length, l, m, lp: arr.length?Math.round(l/arr.length*100):0, mp: arr.length?Math.round(m/arr.length*100):0 };
+  const levels = ['N4', 'N3'].map(lv => {
+    const arr = State.vocab.filter(v => v.level === lv);
+    const l = arr.filter(v => isLearned(v.id)).length;
+    const m = arr.filter(v => isMastered(v.id)).length;
+    return { lv, tot: arr.length, l, m, lp: arr.length ? Math.round(l / arr.length * 100) : 0, mp: arr.length ? Math.round(m / arr.length * 100) : 0 };
   });
 
   let totalReviews = 0, totalCorrect = 0, totalWrong = 0;
-  Object.values(State.progress).forEach(s => { totalCorrect += s.correct||0; totalWrong += s.wrong||0; });
+  Object.values(State.progress).forEach(s => { totalCorrect += s.correct || 0; totalWrong += s.wrong || 0; });
   totalReviews = totalCorrect + totalWrong;
-  const acc = totalReviews ? Math.round(totalCorrect/totalReviews*100) : 0;
+  const acc = totalReviews ? Math.round(totalCorrect / totalReviews * 100) : 0;
 
   app.innerHTML = `
     <div class="view">
@@ -943,11 +966,11 @@ Views.stats = (app) => {
         <p class="section-label">Ringkasan Penguasaan</p>
         <div class="card donut-wrap">
           <div class="donut" style="--a:${segMaster}%;--b:${segLearned}%">
-            <div class="mid"><b>${total?Math.round(learned/total*100):0}%</b><small>dipelajari</small></div>
+            <div class="mid"><b>${total ? Math.round(learned / total * 100) : 0}%</b><small>dipelajari</small></div>
           </div>
           <div class="legend">
             <div class="row"><span class="dot" style="background:var(--green)"></span> Dikuasai <b>${mastered}</b></div>
-            <div class="row"><span class="dot" style="background:var(--orange)"></span> Dipelajari <b>${learned-mastered}</b></div>
+            <div class="row"><span class="dot" style="background:var(--orange)"></span> Dipelajari <b>${learned - mastered}</b></div>
             <div class="row"><span class="dot" style="background:var(--bg-soft)"></span> Belum <b>${notyet}</b></div>
           </div>
         </div>
@@ -1003,8 +1026,8 @@ Views.stats = (app) => {
     navigate('statsDetail');
   };
   app.querySelector('#reset').onclick = () => {
-    if(confirm('Yakin ingin menghapus semua progress belajar? Tindakan ini tidak bisa dibatalkan.')){
-      State.progress = {}; State.streak = { current:0, last:null, best:0 }; State.wrongSolved = {};
+    if (confirm('Yakin ingin menghapus semua progress belajar? Tindakan ini tidak bisa dibatalkan.')) {
+      State.progress = {}; State.streak = { current: 0, last: null, best: 0 }; State.wrongSolved = {};
       save(K.progress, State.progress); save(K.streak, State.streak); save(K.wrongSolved, State.wrongSolved);
       toast('Progress direset'); navigate('stats');
     }
@@ -1031,7 +1054,7 @@ Views.statsDetail = (app) => {
     } else {
       return effectiveWrong(v.id) > 0;
     }
-  }).sort((a,b) => {
+  }).sort((a, b) => {
     if (isCorrect) {
       const sA = State.progress[a.id];
       const sB = State.progress[b.id];
@@ -1059,9 +1082,9 @@ Views.statsDetail = (app) => {
       
       <div class="vocab-grid">
         ${filtered.length ? filtered.map(v => {
-          const s = State.progress[v.id];
-          const count = isCorrect ? (s ? s.correct : 0) : effectiveWrong(v.id);
-          return `
+    const s = State.progress[v.id];
+    const count = isCorrect ? (s ? s.correct : 0) : effectiveWrong(v.id);
+    return `
             <div class="vocab-card">
               <span class="lv ${v.level}">${v.level}</span>
               <div class="kanji">${esc(v.kanji)}</div>
@@ -1071,7 +1094,7 @@ Views.statsDetail = (app) => {
                 <span>${icon} ${count}x ${label}</span>
               </div>
             </div>`;
-        }).join('') : `
+  }).join('') : `
           <div class="empty" style="grid-column: 1 / -1">
             <div class="big">💭</div>
             Belum ada data review.
@@ -1136,14 +1159,14 @@ function startWrongQuiz(app) {
   renderWrongQuestion(app);
 }
 
-function buildWrongQuestion(){
+function buildWrongQuestion() {
   const v = WQ.queue[WQ.idx];
-  let type = 1 + Math.floor(Math.random()*3);
+  let type = 1 + Math.floor(Math.random() * 3);
   let prompt, promptFuri = '', tag, answer, field;
-  if(type === 1){ field='arti'; prompt=v.kanji; promptFuri=v.furigana; tag='Apa arti kata ini?'; answer=v.arti; }
-  else if(type === 2){ field='furigana'; prompt=v.kanji; tag='Bagaimana cara bacanya?'; answer=v.furigana; }
-  else { field='kanji'; prompt=v.arti; tag='Kanji mana yang tepat?'; answer=v.kanji; promptFuri=''; }
-  
+  if (type === 1) { field = 'arti'; prompt = v.kanji; promptFuri = v.furigana; tag = 'Apa arti kata ini?'; answer = v.arti; }
+  else if (type === 2) { field = 'furigana'; prompt = v.kanji; tag = 'Bagaimana cara bacanya?'; answer = v.furigana; }
+  else { field = 'kanji'; prompt = v.arti; tag = 'Kanji mana yang tepat?'; answer = v.kanji; promptFuri = ''; }
+
   let distract;
   if (type === 1) {
     distract = getArtiDistractors(answer, v.level);
@@ -1152,14 +1175,16 @@ function buildWrongQuestion(){
   } else {
     distract = getKanjiDistractors(answer, v.level);
   }
-  
+
   const options = shuffle([answer, ...distract]).slice(0, 4);
-  if(!options.includes(answer)) options[0] = answer;
-  WQ.q = { v, type, prompt, promptFuri, tag, answer, options, field, big: type!==3 };
+  if (!options.includes(answer)) options[0] = answer;
+  WQ.q = { v, type, prompt, promptFuri, tag, answer, options, field, big: type !== 3 };
   WQ.answered = false;
 }
 
-function renderWrongQuestion(app){
+function renderWrongQuestion(app) {
+  document.body.classList.add('hide-nav');
+  toggleBottomNav(false);
   const q = WQ.q;
   const prog = Math.round(WQ.idx / WQ.queue.length * 100);
   app.innerHTML = `
@@ -1170,18 +1195,18 @@ function renderWrongQuestion(app){
         </button>
       </div>
       <h1 class="page-title" style="font-size:20px;margin-bottom:10px">Latihan Kosakata Salah<span class="sub">Prioritas kata yang sering salah</span></h1>
-      <div class="quiz-meta" style="margin-top:10px"><span>Soal ${WQ.idx+1} / ${WQ.queue.length}</span><span><span class="ok">✔ ${WQ.correct}</span> · <span class="no">✖ ${WQ.wrong}</span></span></div>
+      <div class="quiz-meta" style="margin-top:10px"><span>Soal ${WQ.idx + 1} / ${WQ.queue.length}</span><span><span class="ok">✔ ${WQ.correct}</span> · <span class="no">✖ ${WQ.wrong}</span></span></div>
       <div class="quiz-progress"><i style="width:${prog}%"></i></div>
       <div class="quiz-q">
         <div class="tag">${esc(q.tag)}</div>
-        ${q.big ? `<div class="big">${esc(q.prompt)}</div>${q.type===1?`<div class="furi">${esc(q.promptFuri)}</div>`:''}` : `<div class="med">${esc(q.prompt)}</div>`}
+        ${q.big ? `<div class="big">${esc(q.prompt)}</div>${q.type === 1 ? `<div class="furi">${esc(q.promptFuri)}</div>` : ''}` : `<div class="med">${esc(q.prompt)}</div>`}
       </div>
       <div class="options" id="opts">
         ${q.options.map(o => `<button class="opt" data-val="${esc(o)}">${esc(o)}</button>`).join('')}
       </div>
       <div id="qnext" style="margin-top:18px"></div>
     </div>`;
-  
+
   app.querySelector('#exitWrongQuiz').onclick = () => {
     if (confirm('Yakin ingin membatalkan latihan ini?')) {
       WQ.queue = [];
@@ -1192,12 +1217,12 @@ function renderWrongQuestion(app){
   app.querySelectorAll('#opts .opt').forEach(b => b.onclick = () => answerWrongQuiz(b.dataset.val, app));
 }
 
-function answerWrongQuiz(val, app){
-  if(WQ.answered) return;
+function answerWrongQuiz(val, app) {
+  if (WQ.answered) return;
   WQ.answered = true;
   const q = WQ.q;
   const correct = val === q.answer;
-  if(correct){
+  if (correct) {
     WQ.correct++;
     State.wrongSolved[q.v.id] = (State.wrongSolved[q.v.id] || 0) + 1;
     save(K.wrongSolved, State.wrongSolved);
@@ -1206,13 +1231,15 @@ function answerWrongQuiz(val, app){
   }
   app.querySelectorAll('#opts .opt').forEach(b => {
     b.disabled = true;
-    if(b.dataset.val === q.answer){
+    if (b.dataset.val === q.answer) {
       b.classList.add('correct');
       let extra = '';
       if (q.field === 'furigana') {
         extra = q.v.arti;
       } else if (q.field === 'kanji') {
         extra = q.v.furigana;
+      } else if (q.field === 'arti') {
+        extra = q.v.kanji === q.v.furigana ? q.v.furigana : `${q.v.kanji} (${q.v.furigana})`;
       }
       if (extra) {
         b.innerHTML = `<div style="display:flex; flex-direction:column; gap:2px; flex:1;">
@@ -1223,22 +1250,24 @@ function answerWrongQuiz(val, app){
         b.innerHTML = `${esc(q.answer)}<span class="badge">✔</span>`;
       }
     }
-    else if(b.dataset.val === val){ b.classList.add('wrong'); b.innerHTML += '<span class="badge">✖</span>'; }
+    else if (b.dataset.val === val) { b.classList.add('wrong'); b.innerHTML += '<span class="badge">✖</span>'; }
   });
   const next = document.getElementById('qnext');
-  next.innerHTML = `<button class="quiz-next">${WQ.idx+1 >= WQ.queue.length ? 'Lihat Hasil' : 'Soal Berikutnya →'}</button>`;
+  next.innerHTML = `<button class="quiz-next">${WQ.idx + 1 >= WQ.queue.length ? 'Lihat Hasil' : 'Soal Berikutnya →'}</button>`;
   next.firstElementChild.onclick = () => {
     WQ.idx++;
-    if(WQ.idx >= WQ.queue.length){ renderWrongQuizResult(app); }
+    if (WQ.idx >= WQ.queue.length) { renderWrongQuizResult(app); }
     else { buildWrongQuestion(); renderWrongQuestion(app); }
   };
 }
 
-function renderWrongQuizResult(app){
+function renderWrongQuizResult(app) {
+  document.body.classList.remove('hide-nav');
+  toggleBottomNav(true);
   const total = WQ.correct + WQ.wrong;
-  const pct = total ? Math.round(WQ.correct/total*100) : 0;
-  const emoji = pct>=80?'🏆':pct>=50?'👍':'💪';
-  const msg = pct>=80?'Luar biasa! Kamu menguasai sesi latihan ini.':pct>=50?'Bagus! Terus latih kata yang salah.':'Tetap semangat, ulangi latihan lagi ya!';
+  const pct = total ? Math.round(WQ.correct / total * 100) : 0;
+  const emoji = pct >= 80 ? '🏆' : pct >= 50 ? '👍' : '💪';
+  const msg = pct >= 80 ? 'Luar biasa! Kamu menguasai sesi latihan ini.' : pct >= 50 ? 'Bagus! Terus latih kata yang salah.' : 'Tetap semangat, ulangi latihan lagi ya!';
   app.innerHTML = `
     <div class="view quiz-wrap">
       <div class="result">
@@ -1263,17 +1292,17 @@ function renderWrongQuizResult(app){
   };
 }
 
-function emptyState(msg){ return `<div class="view"><div class="empty"><div class="big">💭</div>${esc(msg)}</div></div>`; }
+function emptyState(msg) { return `<div class="view"><div class="empty"><div class="big">💭</div>${esc(msg)}</div></div>`; }
 
 /* ============================================================
    BOOT
    ============================================================ */
-async function boot(){
+async function boot() {
   applySettings();
   document.getElementById('furiToggle').onclick = toggleFurigana;
   document.getElementById('themeToggle').onclick = toggleTheme;
   document.querySelectorAll('.nav-item').forEach(b => b.onclick = () => {
-    if(b.dataset.nav === 'list'){
+    if (b.dataset.nav === 'list') {
       ListState.level = 'all';
       ListState.filter = 'all';
       ListState.q = '';
@@ -1283,11 +1312,11 @@ async function boot(){
 
   try {
     const res = await fetch('data/vocabulary.json');
-    if(!res.ok) throw new Error('http ' + res.status);
+    if (!res.ok) throw new Error('http ' + res.status);
     State.vocab = await res.json();
-  } catch(e){
+  } catch (e) {
     // Fallback to embedded data (works even on file://)
-    if(Array.isArray(window.VOCAB) && window.VOCAB.length){
+    if (Array.isArray(window.VOCAB) && window.VOCAB.length) {
       State.vocab = window.VOCAB;
     } else {
       document.getElementById('app').innerHTML = `<div class="view"><div class="empty"><div class="big">⚠️</div>Gagal memuat data kosakata.<br><small>Coba jalankan lewat server: “python3 -m http.server”</small></div></div>`;
@@ -1296,8 +1325,8 @@ async function boot(){
   }
   navigate('home');
 
-  if('serviceWorker' in navigator){
-    window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js').catch(()=>{}));
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js').catch(() => { }));
   }
 }
 boot();
