@@ -303,51 +303,53 @@ Views.list = (app) => {
           <span class="si">🔍</span>
           <input id="q" type="text" placeholder="Cari kanji, furigana, atau arti..." value="${esc(ListState.q)}" />
         </div>
-        <div class="segmented" id="lvFilter">
-          <button data-lv="all" class="${ListState.level === 'all' ? 'active' : ''}">Semua</button>
-          <button data-lv="N4" class="${ListState.level === 'N4' ? 'active' : ''}">N4</button>
-          <button data-lv="N3" class="${ListState.level === 'N3' ? 'active' : ''}">N3</button>
-        </div>
+        <div class="toolbar-controls">
+          <div class="segmented" id="lvFilter">
+            <button data-lv="all" class="${ListState.level === 'all' ? 'active' : ''}">Semua</button>
+            <button data-lv="N4" class="${ListState.level === 'N4' ? 'active' : ''}">N4</button>
+            <button data-lv="N3" class="${ListState.level === 'N3' ? 'active' : ''}">N3</button>
+          </div>
 
-        <!-- DROPDOWN COUNTER TEPAT DI SAMPING SEMUA/N4/N3 -->
-        <div class="counter-dropdown" id="counterDropdown">
-          <button class="counter-dropdown-trigger" id="cdTrigger" type="button" title="Pilih status hafalan">
-            <span>${triggerText}</span>
-            <svg class="cdd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </button>
-          <div class="counter-dropdown-menu" id="cdMenu">
-            <div class="cdd-item ${ListState.filter === 'all' ? 'active' : ''}" data-filter="all">
-              <span class="cdd-lbl">Semua Status</span>
-              <span class="cdd-sep">:</span>
-              <span class="cdd-num">${stats.dikuasai + stats.hampir + stats.setengah + stats.seperempat + stats.belum}</span>
-            </div>
-            <div class="cdd-divider"></div>
-            <div class="cdd-item ${ListState.filter === 'dikuasai' ? 'active' : ''}" data-filter="dikuasai">
-              <span class="cdd-lbl">Dikuasai</span>
-              <span class="cdd-sep">:</span>
-              <span class="cdd-num">${stats.dikuasai}</span>
-            </div>
-            <div class="cdd-item ${ListState.filter === 'hampir' ? 'active' : ''}" data-filter="hampir">
-              <span class="cdd-lbl">Hampir</span>
-              <span class="cdd-sep">:</span>
-              <span class="cdd-num">${stats.hampir}</span>
-            </div>
-            <div class="cdd-item ${ListState.filter === 'setengah' ? 'active' : ''}" data-filter="setengah">
-              <span class="cdd-lbl">Setengah</span>
-              <span class="cdd-sep">:</span>
-              <span class="cdd-num">${stats.setengah}</span>
-            </div>
-            <div class="cdd-item ${ListState.filter === 'seperempat' ? 'active' : ''}" data-filter="seperempat">
-              <span class="cdd-lbl">Seperempat</span>
-              <span class="cdd-sep">:</span>
-              <span class="cdd-num">${stats.seperempat}</span>
-            </div>
-            <div class="cdd-item ${ListState.filter === 'belum' ? 'active' : ''}" data-filter="belum">
-              <span class="cdd-lbl">Belum</span>
-              <span class="cdd-sep">:</span>
-              <span class="cdd-num">${stats.belum}</span>
+          <!-- DROPDOWN COUNTER TEPAT DI SAMPING SEMUA/N4/N3 -->
+          <div class="counter-dropdown" id="counterDropdown">
+            <button class="counter-dropdown-trigger" id="cdTrigger" type="button" title="Pilih status hafalan">
+              <span>${triggerText}</span>
+              <svg class="cdd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="counter-dropdown-menu" id="cdMenu">
+              <div class="cdd-item ${ListState.filter === 'all' ? 'active' : ''}" data-filter="all">
+                <span class="cdd-lbl">Semua Status</span>
+                <span class="cdd-sep">:</span>
+                <span class="cdd-num">${stats.dikuasai + stats.hampir + stats.setengah + stats.seperempat + stats.belum}</span>
+              </div>
+              <div class="cdd-divider"></div>
+              <div class="cdd-item ${ListState.filter === 'dikuasai' ? 'active' : ''}" data-filter="dikuasai">
+                <span class="cdd-lbl">Dikuasai</span>
+                <span class="cdd-sep">:</span>
+                <span class="cdd-num">${stats.dikuasai}</span>
+              </div>
+              <div class="cdd-item ${ListState.filter === 'hampir' ? 'active' : ''}" data-filter="hampir">
+                <span class="cdd-lbl">Hampir</span>
+                <span class="cdd-sep">:</span>
+                <span class="cdd-num">${stats.hampir}</span>
+              </div>
+              <div class="cdd-item ${ListState.filter === 'setengah' ? 'active' : ''}" data-filter="setengah">
+                <span class="cdd-lbl">Setengah</span>
+                <span class="cdd-sep">:</span>
+                <span class="cdd-num">${stats.setengah}</span>
+              </div>
+              <div class="cdd-item ${ListState.filter === 'seperempat' ? 'active' : ''}" data-filter="seperempat">
+                <span class="cdd-lbl">Seperempat</span>
+                <span class="cdd-sep">:</span>
+                <span class="cdd-num">${stats.seperempat}</span>
+              </div>
+              <div class="cdd-item ${ListState.filter === 'belum' ? 'active' : ''}" data-filter="belum">
+                <span class="cdd-lbl">Belum</span>
+                <span class="cdd-sep">:</span>
+                <span class="cdd-num">${stats.belum}</span>
+              </div>
             </div>
           </div>
         </div>

@@ -583,6 +583,12 @@ body.furi-off .furi-line {
   white-space: nowrap;
 }
 
+.counter-dropdown-trigger span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .counter-dropdown-trigger:hover {
   background: var(--bg-elev);
   border-color: var(--border);
@@ -702,6 +708,7 @@ body.furi-off .furi-line {
 .toolbar {
   display: flex;
   gap: 12px;
+  align-items: center;
   flex-wrap: wrap;
   margin-bottom: 18px;
 }
@@ -710,6 +717,72 @@ body.furi-off .furi-line {
   flex: 1;
   min-width: 220px;
   position: relative;
+}
+
+.toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 680px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .search {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .toolbar-controls {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .segmented {
+    flex-shrink: 0;
+  }
+
+  .segmented button {
+    padding: 0 13px;
+    font-size: 13px;
+  }
+
+  .counter-dropdown {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .counter-dropdown-trigger {
+    width: 100%;
+    padding: 0 12px;
+    font-size: 13px;
+    gap: 6px;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 360px) {
+  .toolbar-controls {
+    gap: 6px;
+  }
+
+  .segmented button {
+    padding: 0 9px;
+    font-size: 12px;
+  }
+
+  .counter-dropdown-trigger {
+    padding: 0 9px;
+    font-size: 12px;
+    gap: 4px;
+  }
 }
 
 .search input {
