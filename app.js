@@ -50,6 +50,36 @@ function isLearned(id) { const s = State.progress[id]; return !!(s && (s.seen ||
 function isMastered(id) { const s = State.progress[id]; return !!(s && s.box >= MASTER_BOX); }
 function masteryPct(id) { const s = State.progress[id]; return s ? Math.min(100, Math.round(s.box / MAX_BOX * 100)) : 0; }
 
+function getMasteryStats(level = 'all') {
+  const pool = State.vocab.filter(v => level === 'all' || v.level === level);
+  let dikuasai = 0;
+  let hampir = 0;
+  let setengah = 0;
+  let seperempat = 0;
+  let belum = 0;
+
+  for (let i = 0; i < pool.length; i++) {
+    const v = pool[i];
+    const s = State.progress[v.id];
+    const box = s ? s.box || 0 : 0;
+    const learned = s && (s.seen || s.correct + s.wrong > 0);
+
+    if (box >= 5) {
+      dikuasai++;
+    } else if (box === 4) {
+      hampir++;
+    } else if (box === 3) {
+      setengah++;
+    } else if (box >= 1 && box <= 2) {
+      seperempat++;
+    } else {
+      belum++;
+    }
+  }
+
+  return { dikuasai, hampir, setengah, seperempat, belum };
+}
+
 function review(id, quality) {
   const s = stat(id);
   s.seen = true;
@@ -255,10 +285,19 @@ function greet() { const h = new Date().getHours(); if (h < 11) return 'Selamat 
    VIEW: DAFTAR KOSAKATA (List)
    ============================================================ */
 const ListState = { q: '', level: 'all', filter: 'all', limit: 60 };
+
 Views.list = (app) => {
+  const stats = getMasteryStats(ListState.level);
+  let triggerText = `Dikuasai : ${stats.dikuasai}`;
+  if (ListState.filter === 'hampir') triggerText = `Hampir : ${stats.hampir}`;
+  else if (ListState.filter === 'setengah') triggerText = `Setengah : ${stats.setengah}`;
+  else if (ListState.filter === 'seperempat') triggerText = `Seperempat : ${stats.seperempat}`;
+  else if (ListState.filter === 'belum') triggerText = `Belum : ${stats.belum}`;
+
   app.innerHTML = `
     <div class="view">
       <h1 class="page-title">Daftar Kosakata<span class="sub">${State.vocab.length} kata · JLPT N4 &amp; N3</span></h1>
+
       <div class="toolbar">
         <div class="search">
           <span class="si">🔍</span>
@@ -269,12 +308,51 @@ Views.list = (app) => {
           <button data-lv="N4" class="${ListState.level === 'N4' ? 'active' : ''}">N4</button>
           <button data-lv="N3" class="${ListState.level === 'N3' ? 'active' : ''}">N3</button>
         </div>
-        <div class="segmented" id="statusFilter">
-          <button data-filter="all" class="${ListState.filter === 'all' ? 'active' : ''}">Semua Status</button>
-          <button data-filter="learned" class="${ListState.filter === 'learned' ? 'active' : ''}">Dipelajari</button>
-          <button data-filter="mastered" class="${ListState.filter === 'mastered' ? 'active' : ''}">Dikuasai</button>
+
+        <!-- DROPDOWN COUNTER TEPAT DI SAMPING SEMUA/N4/N3 -->
+        <div class="counter-dropdown" id="counterDropdown">
+          <button class="counter-dropdown-trigger" id="cdTrigger" type="button" title="Pilih status hafalan">
+            <span>${triggerText}</span>
+            <svg class="cdd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+          <div class="counter-dropdown-menu" id="cdMenu">
+            <div class="cdd-item ${ListState.filter === 'all' ? 'active' : ''}" data-filter="all">
+              <span class="cdd-lbl">Semua Status</span>
+              <span class="cdd-sep">:</span>
+              <span class="cdd-num">${stats.dikuasai + stats.hampir + stats.setengah + stats.seperempat + stats.belum}</span>
+            </div>
+            <div class="cdd-divider"></div>
+            <div class="cdd-item ${ListState.filter === 'dikuasai' ? 'active' : ''}" data-filter="dikuasai">
+              <span class="cdd-lbl">Dikuasai</span>
+              <span class="cdd-sep">:</span>
+              <span class="cdd-num">${stats.dikuasai}</span>
+            </div>
+            <div class="cdd-item ${ListState.filter === 'hampir' ? 'active' : ''}" data-filter="hampir">
+              <span class="cdd-lbl">Hampir</span>
+              <span class="cdd-sep">:</span>
+              <span class="cdd-num">${stats.hampir}</span>
+            </div>
+            <div class="cdd-item ${ListState.filter === 'setengah' ? 'active' : ''}" data-filter="setengah">
+              <span class="cdd-lbl">Setengah</span>
+              <span class="cdd-sep">:</span>
+              <span class="cdd-num">${stats.setengah}</span>
+            </div>
+            <div class="cdd-item ${ListState.filter === 'seperempat' ? 'active' : ''}" data-filter="seperempat">
+              <span class="cdd-lbl">Seperempat</span>
+              <span class="cdd-sep">:</span>
+              <span class="cdd-num">${stats.seperempat}</span>
+            </div>
+            <div class="cdd-item ${ListState.filter === 'belum' ? 'active' : ''}" data-filter="belum">
+              <span class="cdd-lbl">Belum</span>
+              <span class="cdd-sep">:</span>
+              <span class="cdd-num">${stats.belum}</span>
+            </div>
+          </div>
         </div>
       </div>
+
       <p class="count-note" id="countNote"></p>
       <div class="vocab-grid" id="vgrid"></div>
       <div id="more" style="text-align:center;margin-top:18px"></div>
@@ -282,16 +360,55 @@ Views.list = (app) => {
 
   const q = app.querySelector('#q');
   q.oninput = () => { ListState.q = q.value; ListState.limit = 60; renderList(); };
-  app.querySelectorAll('#lvFilter button').forEach(b => b.onclick = () => { ListState.level = b.dataset.lv; ListState.limit = 60; navigate('list'); });
-  app.querySelectorAll('#statusFilter button').forEach(b => b.onclick = () => { ListState.filter = b.dataset.filter; ListState.limit = 60; navigate('list'); });
+
+  app.querySelectorAll('#lvFilter button').forEach(b => b.onclick = () => {
+    ListState.level = b.dataset.lv;
+    ListState.limit = 60;
+    navigate('list');
+  });
+
+  const dd = app.querySelector('#counterDropdown');
+  const trigger = app.querySelector('#cdTrigger');
+  if (trigger && dd) {
+    trigger.onclick = (e) => {
+      e.stopPropagation();
+      dd.classList.toggle('open');
+    };
+    app.querySelectorAll('.cdd-item').forEach(item => {
+      item.onclick = (e) => {
+        e.stopPropagation();
+        ListState.filter = item.dataset.filter;
+        ListState.limit = 60;
+        dd.classList.remove('open');
+        navigate('list');
+      };
+    });
+  }
+
+  const closeMenu = (e) => {
+    if (dd && !dd.contains(e.target)) {
+      dd.classList.remove('open');
+    }
+  };
+  document.addEventListener('click', closeMenu);
+
   renderList();
 };
+
 function filteredVocab() {
   const q = ListState.q.trim().toLowerCase();
   const res = State.vocab.filter(v => {
     if (ListState.level !== 'all' && v.level !== ListState.level) return false;
-    if (ListState.filter === 'learned' && !isLearned(v.id)) return false;
-    if (ListState.filter === 'mastered' && !isMastered(v.id)) return false;
+    const s = State.progress[v.id];
+    const box = s ? s.box || 0 : 0;
+    const learned = s && (s.seen || s.correct + s.wrong > 0);
+
+    if (ListState.filter === 'dikuasai' && box < 5) return false;
+    if (ListState.filter === 'hampir' && box !== 4) return false;
+    if (ListState.filter === 'setengah' && box !== 3) return false;
+    if (ListState.filter === 'seperempat' && (box < 1 || box > 2)) return false;
+    if (ListState.filter === 'belum' && (learned && box > 0)) return false;
+
     if (!q) return true;
     return v.kanji.toLowerCase().includes(q) || v.furigana.toLowerCase().includes(q) || v.arti.toLowerCase().includes(q);
   });
@@ -305,7 +422,15 @@ function renderList() {
   const target = document.getElementById('vgrid');
   const res = filteredVocab();
   const note = document.getElementById('countNote');
-  if (note) note.textContent = `${res.length} kosakata ditemukan`;
+  if (note) {
+    let filterName = '';
+    if (ListState.filter === 'dikuasai') filterName = ' · Filter: Dikuasai';
+    else if (ListState.filter === 'hampir') filterName = ' · Filter: Hampir';
+    else if (ListState.filter === 'setengah') filterName = ' · Filter: Setengah';
+    else if (ListState.filter === 'seperempat') filterName = ' · Filter: Seperempat';
+    else if (ListState.filter === 'belum') filterName = ' · Filter: Belum';
+    note.textContent = `${res.length} kosakata ditemukan${filterName}`;
+  }
   const slice = res.slice(0, ListState.limit);
   target.innerHTML = slice.length
     ? slice.map(cardHTML).join('')
