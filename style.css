@@ -278,6 +278,14 @@ body.furi-off .furi-line {
   grid-template-columns: repeat(2, 1fr);
 }
 
+.stat-grid-levels {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.stat-grid-summary {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 .card {
   background: var(--bg-elev);
   border: 1px solid var(--border);
@@ -484,6 +492,10 @@ body.furi-off .furi-line {
 
 .bar.n3>i {
   background: linear-gradient(90deg, var(--green), #6ee7b7);
+}
+
+.bar.n2>i {
+  background: linear-gradient(90deg, var(--orange), #fcd34d);
 }
 
 .bar-row {
@@ -902,6 +914,11 @@ body.furi-off .furi-line {
 .lv.N3 {
   background: var(--green-soft);
   color: var(--green-text);
+}
+
+.lv.N2 {
+  background: var(--orange-soft);
+  color: var(--orange-text);
 }
 
 .vocab-card .kanji {
@@ -1652,6 +1669,24 @@ html:not([data-theme="dark"]) .stat[data-stat="N3"] .ico {
 html:not([data-theme="dark"]) .stat[data-stat="N3"].clickable:hover {
   border-color: rgba(16, 185, 129, 0.3);
   box-shadow: 0 12px 24px -4px rgba(16, 185, 129, 0.08);
+}
+
+html:not([data-theme="dark"]) .stat[data-stat="N2"] {
+  background: linear-gradient(135deg, #ffffff, #fffbeb);
+  border: 1px solid rgba(245, 158, 11, 0.12);
+}
+
+html:not([data-theme="dark"]) .stat[data-stat="N2"] .val {
+  color: #d97706;
+}
+
+html:not([data-theme="dark"]) .stat[data-stat="N2"] .ico {
+  background: rgba(245, 158, 11, 0.08);
+}
+
+html:not([data-theme="dark"]) .stat[data-stat="N2"].clickable:hover {
+  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow: 0 12px 24px -4px rgba(245, 158, 11, 0.08);
 }
 
 html:not([data-theme="dark"]) .stat[data-stat="learned"] {
@@ -2567,4 +2602,653 @@ html:not([data-theme="dark"]) .segmented button.active {
   }
 
 
+}
+
+
+/* ============================================================
+   Sistem Bacaan (Dokkai / Reading System) Styles
+   ============================================================ */
+
+/* Top Sub-Tab Switcher (Materi: Kosakata vs Bacaan) */
+.materi-tabs {
+  display: flex;
+  background: var(--bg-soft);
+  padding: 4px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  border: 1px solid var(--border);
+  gap: 4px;
+}
+
+.materi-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.materi-tab:hover {
+  color: var(--text);
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.materi-tab.active {
+  background: var(--bg-elev);
+  color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="dark"] .materi-tab.active {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Reading List & Cards */
+.reading-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+@media (min-width: 640px) {
+  .reading-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.reading-card {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.reading-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-lg);
+}
+
+.reading-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.reading-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  line-height: 1.4;
+}
+
+.reading-card-subtitle {
+  font-size: 13px;
+  color: var(--text-soft);
+  margin-top: 3px;
+}
+
+.reading-card-preview {
+  font-size: 14px;
+  color: var(--text-dim);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+.reading-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-soft);
+  font-size: 12.5px;
+  color: var(--text-soft);
+}
+
+.reading-card-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--primary-soft);
+  color: var(--primary-text);
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+/* Custom Text Input Mode */
+.custom-reading-box {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.custom-reading-box .input-title {
+  width: 100%;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.custom-reading-box .input-title:focus {
+  border-color: var(--primary);
+}
+
+.custom-reading-box textarea {
+  width: 100%;
+  min-height: 180px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  color: var(--text);
+  font-size: 16px;
+  font-family: 'Noto Sans JP', sans-serif;
+  line-height: 1.8;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.custom-reading-box textarea:focus {
+  border-color: var(--primary);
+}
+
+.custom-reading-box .submit-btn {
+  background: var(--primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.custom-reading-box .submit-btn:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+/* Reader View (Detail / Reading Mode) */
+.reader-wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  padding-bottom: 90px;
+}
+
+.reader-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  color: var(--text-soft);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reader-back:hover {
+  background: var(--bg-elev);
+  color: var(--text);
+  border-color: var(--primary);
+}
+
+.reader-title-box {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  box-shadow: var(--shadow);
+  margin-bottom: 16px;
+}
+
+.reader-title {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.reader-subtitle {
+  font-size: 14.5px;
+  color: var(--text-soft);
+  margin-top: 4px;
+}
+
+.reader-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  align-items: center;
+}
+
+/* Article Container */
+.reader-article {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 18px;
+}
+
+@media (min-width: 640px) {
+  .reader-article {
+    padding: 32px 28px;
+  }
+}
+
+.reader-paragraph {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 18px;
+  line-height: 2.3;
+  color: var(--text);
+  margin-bottom: 22px;
+  letter-spacing: 0.025em;
+  word-break: break-word;
+}
+
+.reader-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* Dokkai Kotoba Highlight: 1 Unified Elegant Style */
+.dokkai-word {
+  display: inline;
+  padding: 2px 4px;
+  margin: 0 1px;
+  border-radius: 6px;
+  background: var(--primary-soft);
+  color: var(--primary-text);
+  border-bottom: 2px solid var(--primary);
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.15s ease, filter 0.15s ease;
+  user-select: text;
+}
+
+.dokkai-word:hover,
+.dokkai-word:active {
+  background: rgba(99, 102, 241, 0.28);
+  filter: brightness(1.08);
+}
+
+/* Translation toggle and container */
+.reader-trans-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 18px;
+  background: var(--bg-soft);
+  border: 1px dashed var(--primary);
+  border-radius: var(--radius-sm);
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+}
+
+.reader-trans-toggle:hover {
+  background: var(--primary-soft);
+}
+
+.reader-trans-box {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  margin-bottom: 20px;
+  display: none;
+}
+
+.reader-trans-box.show {
+  display: block;
+}
+
+.reader-trans-p {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: var(--text-soft);
+  margin-bottom: 14px;
+}
+
+.reader-trans-p:last-child {
+  margin-bottom: 0;
+}
+
+/* Vocab summary list at end of reading */
+.reader-vocab-summary {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-top: 18px;
+}
+
+.reader-vocab-summary h3 {
+  font-size: 15.5px;
+  font-weight: 700;
+  margin: 0 0 14px 0;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reader-vocab-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+
+.reader-mini-chip {
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.reader-mini-chip:hover {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.reader-mini-chip .top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.reader-mini-chip .kj {
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.reader-mini-chip .ar {
+  font-size: 12px;
+  color: var(--text-soft);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================
+   Kotoba Pop-up Modal & Mobile Bottom Sheet
+   ============================================================ */
+.kotoba-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s ease, visibility 0.22s ease;
+}
+
+.kotoba-modal-backdrop.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.kotoba-bottom-sheet {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-width: 520px;
+  padding: 14px 20px 24px 20px;
+  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.35);
+  transform: translateY(100%);
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.kotoba-modal-backdrop.show .kotoba-bottom-sheet {
+  transform: translateY(0);
+}
+
+@media (min-width: 640px) {
+  .kotoba-modal-backdrop {
+    align-items: center;
+    padding: 20px;
+  }
+  .kotoba-bottom-sheet {
+    border-radius: 24px;
+    transform: translateY(16px) scale(0.96);
+  }
+  .kotoba-modal-backdrop.show .kotoba-bottom-sheet {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.kb-handle {
+  width: 38px;
+  height: 4px;
+  background: var(--text-dim);
+  opacity: 0.35;
+  border-radius: 2px;
+  margin: 0 auto 12px auto;
+}
+
+@media (min-width: 640px) {
+  .kb-handle {
+    display: none;
+  }
+}
+
+.kb-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.kb-kanji-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.kb-furigana {
+  font-size: 14px;
+  color: var(--primary);
+  font-weight: 600;
+  font-family: 'Noto Sans JP', sans-serif;
+  line-height: 1.2;
+}
+
+.kb-kanji {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  line-height: 1.2;
+  margin-top: 3px;
+}
+
+.kb-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kb-icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-soft);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.kb-icon-btn:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.kb-meaning {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-soft);
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+.kb-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-soft);
+}
+
+.kb-level-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.kb-status-chip {
+  font-size: 12.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+/* Series badge & Chapter Navigation */
+.reading-card-series {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--primary);
+  letter-spacing: 0.03em;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.reader-nav-row {
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.reader-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: var(--shadow);
+}
+
+.reader-nav-btn:hover {
+  background: var(--primary-soft);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.custom-del-btn {
+  background: transparent;
+  border: none;
+  color: var(--red);
+  cursor: pointer;
+  font-size: 12.5px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: background 0.15s;
+}
+
+.custom-del-btn:hover {
+  background: var(--red-soft);
 }

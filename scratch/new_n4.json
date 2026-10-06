@@ -1,0 +1,222 @@
+[
+  {
+    "id": "n4-s2-1",
+    "series": "Liburan Musim Panas di Pedesaan",
+    "seriesPart": 1,
+    "nextId": "n4-s2-2",
+    "prevId": null,
+    "level": "N4",
+    "title": "おばあちゃんの田舎へ：のどかな村と緑の山",
+    "titleArti": "Menuju Desa Nenek: Desa yang Asri dan Gunung Hijau",
+    "paragraphs": [
+      "夏休みが始まり、ケンジは東京の暑い町を離れて、長野県にある祖父母の田舎へ行くことにしました。朝早く電車に乗り、山の間を走る小さなローカル線に乗り換えました。車窓から見える高い山や澄んだ青空、そして緑の田んぼの景色に、都会の忙しさを忘れて心が洗われるようでした。",
+      "小さな無人駅に到着すると、駅のホームでおじいちゃんとおばあちゃんが笑顔で手を振って待っていてくれました。「よく来たね、ケンジ。遠いところから疲れただろう。」二人の温かい声を聞いた瞬間、旅の疲れが一気に吹き飛びました。",
+      "おじいちゃんの古い軽トラックに乗って、緑豊かな山道を登り、昔ながらの大きな木造の家に到着しました。家に入ると、畳の爽やかな香りと、風鈴の涼しげな音が静かに響いていました。居間の広い窓からは、美しい庭と遠くの山々が一望できました。",
+      "おばあちゃんが冷たい緑茶と手作りの和菓子を出してくれて、家族の近況について楽しく話しました。「今年の夏休みは、ここでたくさんの自然を体験しよう」と、ケンジはこれからの毎日に胸を躍らせました。"
+    ],
+    "translations": [
+      "Liburan musim panas telah dimulai, dan Kenji memutuskan meninggalkan kota Tokyo yang panas menuju pedesaan kakek-neneknya di Prefektur Nagano. Pagi-pagi ia naik kereta, lalu berpindah ke jalur lokal kecil yang melintasi sela-sela pegunungan. Memandang gunung tinggi, langit biru jernih, dan petak sawah hijau dari jendela kereta, ia melupakan kepenatan kota dan hatinya terasa begitu damai.",
+      "Ketika tiba di stasiun kecil tanpa penjaga, kakek dan nenek telah menunggu sambil melambaikan tangan dengan senyum lebar di peron stasiun. \"Selamat datang Kenji, kamu pasti lelah dari perjalanan jauh ya.\" Mendengar suara hangat keduanya, rasa lelah perjalanan seketika sirna.",
+      "Menaiki mobil pikap tua kakek, mereka menyusuri jalan pegunungan yang asri dan tiba di rumah kayu kuno yang besar. Memasuki rumah, tercium aroma segar tatami dan terdengar gemerincing lonceng angin fuurin yang sejuk. Dari jendela ruang keluarga yang luas, terbentang pemandangan taman indah dan jajaran gunung di kejauhan.",
+      "Nenek menyuguhkan teh hijau dingin dan kue tradisional buatan tangan, lalu mereka asyik mengobrol tentang kabar keluarga. \"Liburan musim panas tahun ini, aku akan menikmati banyak alam di sini,\" gumam Kenji dengan penuh semangat menatap hari-hari ke depan."
+    ]
+  },
+  {
+    "id": "n4-s2-2",
+    "series": "Liburan Musim Panas di Pedesaan",
+    "seriesPart": 2,
+    "nextId": "n4-s2-3",
+    "prevId": "n4-s2-1",
+    "level": "N4",
+    "title": "畑での野菜収穫と美味しいスイカ",
+    "titleArti": "Memanen Sayur di Kebun dan Semangka yang Manis",
+    "paragraphs": [
+      "翌朝、小鳥たちの心地よいさえずりで目が覚めました。まだ涼しい朝の空気の中、ケンジはおじいちゃんと一緒に長靴を履いて裏の畑へ向かいました。畑には真っ赤なトマトや大きな胡瓜、紫色のナスが太陽の光を浴びてたくさん実っていました。",
+      "「野菜は朝のうちに収穫するのが一番甘くて美味しいんだよ」とおじいちゃんが教えてくれました。土の匂いを感じながら、みずみずしいトマトを自分の手でもぎ取り、井戸の冷たい水で洗ってその場で丸かじりしました。口いっぱいに広がる濃い甘みと酸味に、ケンジは「本物の野菜の味だ！」と感動しました。",
+      "昼下がりになると、気温が上がり、庭の木陰で蝉の鳴き声が力強く響き渡りました。おばあちゃんが冷たい井戸水で冷やしておいた大きなスイカを包丁で切ってくれました。真っ赤なスイカを家族みんなで縁側に座って食べると、甘い果汁が乾いた喉を潤してくれました。",
+      "種を庭に向かって飛ばす競争をして、おじいちゃんもおばあちゃんも子どもみたいに笑いました。スーパーで買うだけでは分からない、大地が育てた食べ物の恵みと温かい団欒の尊さを深く実感した午後でした。"
+    ],
+    "translations": [
+      "Keesokan paginya, Kenji terbangun oleh kicauan merdu burung-burung kecil. Di tengah udara pagi yang masih sejuk, Kenji mengenakan sepatu bot bersama kakek menuju kebun di belakang rumah. Di kebun, tomat merah segar, mentimun besar, dan terung ungu bermekaran buahnya bermandikan sinar mentari.",
+      "\"Memanen sayuran di pagi hari adalah saat rasanya paling manis dan lezat lho,\" terang kakek. Sambil menghirup aroma tanah, ia memetik tomat segar dengan tangannya sendiri, membilasnya dengan air sumur yang dingin, dan menggigitnya langsung di tempat. Manis dan asam alami yang memenuhi mulut membuatnya terkesima, \"Ini rasa sayur yang asli!\".",
+      "Menjelang siang, suhu menghangat dan suara jangkrik bernyanyi nyaring di rindangnya pepohonan taman. Nenek membelah semangka besar yang telah didinginkan di air sumur dingin dengan pisau dapur. Menyantap semangka merah bersama keluarga di teras engawa, manis sari buahnya membasahi tenggorokan yang haus.",
+      "Mereka berlomba meniup biji semangka ke arah kebun, kakek dan nenek pun tertawa riang layaknya anak-anak. Itu adalah siang hari di mana Kenji merasakan betul anugerah makanan yang ditumbuhkan bumi dan berharganya kebersamaan hangat yang tak ditemukan di supermarket."
+    ]
+  },
+  {
+    "id": "n4-s2-3",
+    "series": "Liburan Musim Panas di Pedesaan",
+    "seriesPart": 3,
+    "nextId": "n4-s2-4",
+    "prevId": "n4-s2-2",
+    "level": "N4",
+    "title": "清流での川遊びと魚釣り",
+    "titleArti": "Bermain di Sungai Jernih dan Memancing Ikan",
+    "paragraphs": [
+      "三日目の午後、近所に住む同年代の少年であるソウタ君が「川に遊びに行こう」とケンジを誘いに来てくれました。二人は麦わら帽子をかぶり、竹の釣り竿と網を持って、村の奥を流れる川へ向かいました。山から流れてくる川の水は、川底の小石がはっきりと見えるほど透き通っていました。",
+      "水の中に足を入れると、氷のように冷たくて、夏の暑さを一瞬で忘れさせてくれました。ソウタ君が石の下をめくって小さな川魚やカニを見つける方法を教えてくれました。最初は素早い魚に逃げられてばかりでしたが、アドバイス通りに静かに待つと、小さな魚を釣り上げることができました。",
+      "「やった！初めて釣れたよ！」とケンジが叫ぶと、ソウタ君も「すごいじゃん、上手だね！」とハイタッチをして喜んでくれました。言葉の細かい文法が完璧でなくても、一緒に自然の中で夢中になって遊ぶことで、二人の距離は一気に縮まりました。",
+      "夕方、赤く染まった空の下を二人で笑いながら歩いて帰りました。川のせせらぎの音と冷たい水の感触は、ケンジの心の中にいつまでも残る忘れられない夏の宝物となりました。"
+    ],
+    "translations": [
+      "Pada siang hari ketiga, Souta, seorang remaja sebaya yang tinggal di dekat rumah nenek, datang mengajak Kenji, \"Ayo bermain ke sungai!\". Keduanya mengenakan topi jerami, membawa joran pancing bambu dan jaring, menuju sungai yang mengalir di pelosok desa. Air sungai yang mengalir dari pegunungan sangat jernih hingga bebatuan di dasar sungai terlihat amat jelas.",
+      "Begitu menjejakkan kaki ke dalam air, dinginnya yang bak es membuat terik musim panas seketika terlupakan. Souta mengajarkan cara membalik batu untuk menemukan ikan sungai kecil dan kepiting. Awalnya ikan-ikan lincah itu selalu lolos, namun setelah bersabar menunggu sesuai petunjuk, Kenji berhasil memancing seekor ikan kecil.",
+      "\"Berhasil! Aku dapat ikan pertamaku!\" seru Kenji, dan Souta pun bertepuk tangan tos dengan gembira, \"Hebat sekali, kamu pintar ya!\". Meskipun tata bahasa Jepangnya belum sempurna, bermain bersama di alam terbuka dengan penuh antusiasme seketika mendekatkan persahabatan mereka.",
+      "Menjelang senja, di bawah langit yang memerah, keduanya melangkah pulang sambil tertawa riang. Gemercik arus sungai dan sejuknya air bening menjadi permata kenangan musim panas yang takkan pernah terlupakan di hati Kenji."
+    ]
+  },
+  {
+    "id": "n4-s2-4",
+    "series": "Liburan Musim Panas di Pedesaan",
+    "seriesPart": 4,
+    "nextId": "n4-s2-5",
+    "prevId": "n4-s2-3",
+    "level": "N4",
+    "title": "夜の縁側と満天の星空",
+    "titleArti": "Teras di Malam Hari dan Langit Berbintang Penuh",
+    "paragraphs": [
+      "夕食におばあちゃんが作ってくれた鮎の塩焼きと山菜ご飯を食べた後、外はすっかり暗くなりました。都会の夜とは違い、街灯がほとんどない田舎の夜は、漆黒の闇に包まれてとても静かでした。遠くの山から聞こえるフクロウの声と、庭の虫たちの声だけが夜の空気に響いていました。",
+      "おじいちゃんが押し入れから線香花火の箱を出してきてくれました。庭に出て火をつけると、小さな火花がチチと音を立てながら、暗闇の中でオレンジ色の繊細な光を放ちました。火玉が落ちないように息を止めてじっと見つめる時間は、とても不思議で穏やかなひとときでした。",
+      "花火が終わった後、縁側に寝転がって夜空を見上げました。そこには、息を呑むほど美しい満天の星空が広がっていました。東京では決して見ることができない天の川が、無数の星たちとともに夜空を白く流れていました。",
+      "「あの明るい星が夏の大三角だよ」とおじいちゃんが指を差して教えてくれました。星々の静かな光を見つめながら、ケンジは世界は広大で美しく、自分もその大きな世界の一部なのだと静かに実感していました。"
+    ],
+    "translations": [
+      "Setelah menyantap ikan ayu bakar garam dan nasi herba pegunungan buatan nenek untuk makan malam, hari di luar telah sepenuhnya gelap gulita. Berbeda dari malam di perkotaan, malam di pedesaan yang nyaris tanpa lampu jalan diselimuti kegelapan pekat yang amat damai. Hanya suara burung hantu di kejauhan gunung dan derik serangga malam di taman yang bergema di udara malam.",
+      "Kakek mengeluarkan sekotak kembang api senkou hanabi dari lemari dinding. Menyalakannya di halaman, percikan api kecil berderik halus mengeluarkan pendar oranye lembut nan anggun di tengah kegelapan. Momen menahan napas menatap bulir api agar tidak jatuh terasa sangat magis dan menenangkan.",
+      "Setelah kembang api selesai, mereka berbaring di teras engawa menengadah ke langit malam. Di sana terbentang langit penuh bintang yang begitu memukau hingga membuat tercekat. Bima Sakti yang tak pernah terlihat di Tokyo mengalir putih melintasi langit malam bersama taburan bintang yang tak terhitung jumlahnya.",
+      "\"Bintang terang di sana itu adalah Segitiga Musim Panas lho,\" tunjuk kakek memberitahu. Menatap sinar tenang gugusan bintang, Kenji meresapi dalam hati betapa dunia ini mahaluas dan memesona, dan dirinya adalah bagian kecil dari alam semesta yang agung."
+    ]
+  },
+  {
+    "id": "n4-s2-5",
+    "series": "Liburan Musim Panas di Pedesaan",
+    "seriesPart": 5,
+    "nextId": null,
+    "prevId": "n4-s2-4",
+    "level": "N4",
+    "title": "別れの朝と心に残る思い出",
+    "titleArti": "Pagi Perpisahan dan Kenangan Manis yang Melekat",
+    "paragraphs": [
+      "一週間の楽しい滞在はあっという間に過ぎ去り、東京へ帰る日の朝がやってきました。朝食の席で、おばあちゃんはケンジのためにたくさんの野菜とお米、そして手作りの味噌を段ボール箱に詰めて準備してくれていました。「東京の一人暮らしは大変だろうから、しっかりご飯を食べるんだよ。」",
+      "駅の改札の前には、ソウタ君も自転車で見送りに来てくれていました。ソウタ君は川で見つけた綺麗な丸い石をプレゼントしてくれ、「来年の夏も絶対に遊びに来てね！もっと大きな魚を釣ろう！」と笑顔で約束を交わしました。",
+      "電車がホームに入ってきて、ドアが開きました。ケンジは荷物を持ち、おじいちゃんとおばあちゃんを強く抱きしめました。「おじいちゃん、おばあちゃん、本当にありがとう。すごく楽しかったよ。体に気をつけてね。」二人は目頭を熱くしながら、「体に気をつけて勉強頑張るんだよ」と手を握り返してくれました。",
+      "電車がゆっくりと走り出し、窓から手を振ると、二人の姿が小さくなって見えなくなるまでずっと見送ってくれました。心の中に温かい家族の絆と自然の優しさをいっぱいに詰め込んで、ケンジは新しい活力を胸に東京への帰路につきました。"
+    ],
+    "translations": [
+      "Satu pekan tinggal di pedesaan berlalu sekejap mata, dan tiba pagi hari kepulangan ke Tokyo. Di meja sarapan, nenek telah menyiapkan kardus berisi aneka sayuran kebun, beras, dan pasta miso buatannya untuk Kenji. \"Hidup mandiri sendirian di Tokyo pasti berat, jadi pastikan selalu makan teratur ya.\"",
+      "Di depan peron stasiun, Souta pun datang bersepeda untuk melepas keberangkatannya. Souta memberikan hadiah batu bulat sungai yang indah dan tersenyum, \"Musim panas tahun depan pasti datang lagi ya! Kita tangkap ikan yang lebih besar!\".",
+      "Kereta memasuki peron dan pintu gerbong terbuka. Kenji membawa tasnya lalu memeluk erat kakek dan neneknya. \"Kakek, Nenek, terima kasih banyak atas segalanya. Liburan ini sangat menyenangkan. Jaga kesehatan selalu ya.\" Mata keduanya berkaca-kaca seraya menggenggam hangat tangannya, \"Jaga kesehatanmu dan semangatlah belajar ya.\"",
+      "Kereta melaju perlahan, dan saat Kenji melambaikan tangan dari jendela, kakek-nenek terus melambaikan tangan hingga sosok mereka mengecil dan tak tampak lagi. Membawa serta kehangatan ikatan keluarga dan kedamaian alam di dalam jiwanya, Kenji melangkah pulang ke Tokyo dengan energi baru yang berlimpah."
+    ]
+  },
+  {
+    "id": "n4-c4",
+    "series": "Budaya & Tradisi",
+    "seriesPart": 4,
+    "nextId": "n4-c5",
+    "prevId": "n4-c3",
+    "level": "N4",
+    "title": "日本の四季の魅力：雪景色と秋の紅葉",
+    "titleArti": "Pesona Empat Musim Jepang: Pemandangan Salju dan Daun Musim Gugur",
+    "paragraphs": [
+      "日本には春、夏、秋、冬という明確な四つの季節があり、それぞれの季節が異なる素晴らしい表情を見せてくれます。季節の移り変わりを感じることは、日本人の美意識や暮らしの習慣において最も大切にされてきた文化の一つです。",
+      "秋になると、山や公園の木の葉が緑から鮮やかな赤や黄色へと色を変えます。この「紅葉」を楽しむために、多くの人々が山歩きや旅行に出かけます。涼しい風が吹く中で、温かいお茶を飲みながら赤く染まった木々を眺める時間は、心に深い落ち着きを与えてくれます。",
+      "そして冬が訪れると、北国や山間部では真っ白な雪が降り積もり、銀世界へと景色が一変します。雪で作る雪だるまや雪景色を見ながら入る温かい温泉は、冬ならではの特別な贅沢です。寒さは厳しいですが、家の中で家族と一緒に食べる温かい鍋料理は格別の美味しさです。",
+      "移り変わる自然の美しさに感謝し、季節ごとの旬の味覚を楽しむ日本の文化は、私たちの毎日の生活に豊かな彩りと喜びを添えてくれるのです。"
+    ],
+    "translations": [
+      "Jepang memiliki empat musim yang jelas yaitu musim semi, panas, gugur, dan dingin, dan masing-masing musim menampilkan pesona menakjubkan yang berbeda. Merasakan pergantian musim adalah salah satu kebudayaan yang paling dihargai dalam cita rasa estetika dan kebiasaan hidup bangsa Jepang.",
+      "Memasuki musim gugur, dedaunan di bukit dan taman kota berubah warna dari hijau menjadi merah dan kuning cerah. Demi menikmati pemandangan daun musim gugur (momiji) ini, banyak orang bepergian mendaki bukit atau bertamasya. Di tengah semilir angin sejuk, menikmati teh hangat sambil memandang pepohonan merah memberi ketenteraman batin yang mendalam.",
+      "Dan tatkala musim dingin tiba, di wilayah utara dan pegunungan turun salju putih tebal, mengubah pemandangan menjadi negeri serba perak. Berendam di pemandian air panas onsen sambil menatap salju atau membuat boneka salju adalah kemewahan tersendiri di musim dingin. Meskipun udaranya membeku, hidangan berkuah hangat (nabemono) yang disantap bersama keluarga di dalam rumah terasa luar biasa lezat.",
+      "Budaya Jepang yang mensyukuri keindahan alam yang silih berganti dan menikmati kelezatan panganan musiman menyuguhkan warna-warni indah dan kegembiraan dalam kehidupan sehari-hari."
+    ]
+  },
+  {
+    "id": "n4-c5",
+    "series": "Budaya & Tradisi",
+    "seriesPart": 5,
+    "nextId": "n4-c6",
+    "prevId": "n4-c4",
+    "level": "N4",
+    "title": "自転車のある生活：便利な街の乗り物と交通ルール",
+    "titleArti": "Kehidupan Bersama Sepeda: Transportasi Praktis Kota dan Peraturannya",
+    "paragraphs": [
+      "日本、特に東京や大阪などの大都市では、自転車は日々の生活に欠かせない極めて身近な移動手段です。子どもを乗せて買い物へ急ぐお母さんから、駅まで通勤・通学する学生や会社員まで、あらゆる世代の人々が自転車を日常的に愛用しています。",
+      "日本の町には、自転車専用の道路や駅前の大きな駐輪場が整備されており、少し離れたスーパーや図書館へ行くのにも非常に便利です。また、最近ではスマートフォンのアプリで簡単に借りて返却できるシェアサイクルも普及し、観光や短時間の移動に広く活用されています。",
+      "しかし、安全に自転車を利用するためには、交通ルールをしっかり守る責任があります。例えば、暗くなったら必ずライトをつけること、二人乗りや傘を差しながらの運転は禁止されていることなど、厳しい規則が定められています。歩行者を最優先し、スピードを出しすぎない配慮が欠かせません。",
+      "ルールを守って風を感じながら町を走る自転車の旅は、電車やバスでは気づかない町の隠れた魅力を発見できる素晴らしい生活の楽しみなのです。"
+    ],
+    "translations": [
+      "Di Jepang, terutama di kota metropolitan seperti Tokyo dan Osaka, sepeda merupakan sarana transportasi yang sangat akrab dan tak terpisahkan dari kehidupan sehari-hari. Mulai dari para ibu yang membonceng anak berbelanja, hingga pelajar dan pegawai kantor yang menggowes ke stasiun, orang-orang dari segala lapisan usia menggunakannya setiap hari.",
+      "Kota-kota di Jepang dilengkapi jalur khusus sepeda dan tempat parkir sepeda luas di depan stasiun, sangat memudahkan mobilitas ke supermarket atau perpustakaan terdekat. Akhir-akhir ini, sepeda sewa berbagi (share cycle) yang dapat disewa dan dikembalikan via aplikasi ponsel pintar pun meluas, dimanfaatkan untuk wisata maupun perjalanan singkat.",
+      "Kendati demikian, demi keselamatan berkendara, wajib mematuhi aturan lalu lintas dengan disiplin. Misalnya, menyalakan lampu saat gelap, larangan berboncengan atau bersepeda sambil membawa payung, serta aturan ketat lainnya. Mengutamakan pejalan kaki dan tidak mengebut adalah keharusan mutlak.",
+      "Menyusuri jalan kota sambil merasakan sejuknya terpaan angin dengan mematuhi aturan bersepeda adalah kesenangan hidup yang memungkinkan kita menemukan pesona tersembunyi kota yang tak terlihat dari dalam kereta atau bus."
+    ]
+  },
+  {
+    "id": "n4-c6",
+    "series": "Budaya & Tradisi",
+    "seriesPart": 6,
+    "nextId": "n4-c7",
+    "prevId": "n4-c5",
+    "level": "N4",
+    "title": "初めてのラーメン屋：食券の買い方と注文のコツ",
+    "titleArti": "Pertama Kali ke Kedai Ramen: Cara Beli Tiket Makan dan Kiat Memesan",
+    "paragraphs": [
+      "日本を訪れる外国人観光客や留学生にとって、本場のラーメン屋さんでの食事は外せない楽しみの一つです。豚骨、醤油、味噌、塩など、地域や店によって独自のこだわりスープがあり、濃厚な味とコシのある麺の組み合わせは世界中で大人気となっています。",
+      "日本のラーメン屋に入ると、入り口のすぐそばに「食券機」と呼ばれる自動券売機が置かれていることがよくあります。初めての人は少し驚くかもしれませんが、まずお金を入れて、食べたいラーメンのボタンを押し、出てきた小さな紙の切符を取って席に着くという仕組みです。",
+      "席に座ると、店員さんに食券を渡します。その際、「麺の硬さ」や「スープの濃さ」、「油の量」について好みを尋ねられる店もあります。「硬めでお願いします」と日本語で伝えられると、まるで常連客のような気分を味わうことができます。",
+      "熱々のどんぶりが運ばれてきたら、フーフーと息を吹きかけながらスープを一口すすります。だしの深い旨味とモチモチした麺が口いっぱいに広がり、心もお腹も満たされる最高の瞬間が訪れます。日本のラーメンは、一杯のどんぶりに職人の情熱が詰まった芸術品なのです。"
+    ],
+    "translations": [
+      "Bagi turis mancanegara maupun mahasiswa asing yang singgah di Jepang, menikmati santapan di kedai ramen autentik adalah salah satu kegembiraan yang wajib dicoba. Kuah kaldu khas seperti tonkotsu, shoyu, miso, dan shio diracik dengan keistimewaan masing-masing kedai dan daerah, paduan rasa gurih pekat dan tekstur mie kenyal disukai luas di seluruh dunia.",
+      "Memasuki kedai ramen di Jepang, tepat di samping pintu masuk kerap diletakkan mesin tiket otomatis bernama \"Shokkenki\". Orang yang baru pertama kali mungkin agak terkejut, namun caranya adalah memasukkan uang terlebih dahulu, memencet tombol menu ramen yang diinginkan, lalu membawa karcis kecil yang keluar dan duduk di kursi makan.",
+      "Saat duduk, karcis diserahkan kepada pelayan. Pada saat itu, ada kedai yang menanyakan selera kekenyalan mie, kepekatan kuah, dan kadar minyak. Mampu menjawab \"Katame de onegaishimasu\" (Tolong mie-nya agak keras) dalam bahasa Jepang membuat kita merasa seperti pelanggan setia.",
+      "Ketika mangkuk ramen panas disajikan, tiuplah perlahan lalu seruput kuahnya sesendok. Gurihnya dashi yang mendalam dan kenyalnya mie merata di dalam mulut, menghadirkan momen terbaik yang memuaskan jiwa dan raga. Ramen Jepang adalah mahakarya seni yang memuat ketulusan dan gairah sang koki di dalam semangkuk mie."
+    ]
+  },
+  {
+    "id": "n4-c7",
+    "series": "Budaya & Tradisi",
+    "seriesPart": 7,
+    "nextId": "n4-c8",
+    "prevId": "n4-c6",
+    "level": "N4",
+    "title": "図書館での静かな時間：本と出会う喜び",
+    "titleArti": "Waktu Hening di Perpustakaan: Kegembiraan Menemukan Buku",
+    "paragraphs": [
+      "日本の町には、誰でも無料で利用できる公立の図書館が数多くあります。静かで清潔な館内には、小説や専門書、雑誌や新聞はもちろんのこと、外国語の本や日本語を学ぶ留学生向けの教材も豊富に揃えられています。",
+      "図書館に入ると、外の騒がしさが嘘のように静まり返っており、ページをめくる音や鉛筆の走る音だけが心地よく響いています。勉強や読書に集中できる自習スペースも完備されており、週末には多くの学生や社会人が資格試験や研究のために熱心に通っています。",
+      "本を借りる手続きもとても簡単です。カウンターで身分証明書を見せて「利用者カード」を作れば、一人で何冊もの本を二週間ほど無料で借りて自宅でゆっくり読むことができます。探している本が見つからない時は、司書さんが親切に棚まで案内してくれます。",
+      "棚に並ぶ無数の本の間を歩きながら、まだ見ぬ新しい知識や感動的な物語と出会う瞬間は、知的好奇心を刺激するかけがえのない贅沢な時間なのです。"
+    ],
+    "translations": [
+      "Di kota-kota Jepang, terdapat banyak perpustakaan umum yang dapat diakses gratis oleh siapa saja. Di dalam gedung yang hening dan bersih, selain novel, buku keilmuan, majalah, dan koran, tersedia pula koleksi melimpah buku bahasa asing dan materi ajar bagi mahasiswa asing yang belajar bahasa Jepang.",
+      "Melangkah masuk ke perpustakaan, kebisingan luar seketika lenyap, hanya suara gemerisik lembaran kertas yang dibalik dan goresan pensil yang terdengar merdu. Dilengkapi pula ruang belajar mandiri yang nyaman, di akhir pekan banyak pelajar dan pekerja datang tekun belajar demi ujian kompetensi maupun riset.",
+      "Prosedur meminjam buku pun sangat mudah. Cukup menunjukkan kartu identitas di loket untuk membuat kartu anggota perpustakaan, kita bisa meminjam beberapa buku sekaligus secara gratis selama dua pekan untuk dibaca di rumah. Jika buku yang dicari tidak ditemukan, pustakawan akan mengantar dengan ramah hingga ke rak buku.",
+      "Menyusuri lorong di antara deretan ribuan buku dan berjumpa dengan pengetahuan baru serta kisah mengharukan adalah momen mewah tak ternilai yang memperkaya wawasan intelektual kita."
+    ]
+  },
+  {
+    "id": "n4-c8",
+    "series": "Budaya & Tradisi",
+    "seriesPart": 8,
+    "nextId": null,
+    "prevId": "n4-c7",
+    "level": "N4",
+    "title": "日本の動物カフェ：猫やフクロウとの触れ合い",
+    "titleArti": "Kafe Hewan di Jepang: Interaksi dengan Kucing dan Burung Hantu",
+    "paragraphs": [
+      "都会の忙しい生活の中で癒しを求める人々の間で、日本発祥の「動物カフェ」が大人気となっています。最も有名な猫カフェをはじめ、犬カフェ、ウサギカフェ、さらにはフクロウやカワウソと触れ合える珍しいカフェまで、様々な施設が街中に存在します。",
+      "日本のアパートやマンションでは、ペットの飼育が禁止されている物件が多いため、「動物が大好きだけど家で飼えない」という人々にとって、動物カフェはかけがえのない憩いのオアシスとなっています。温かい飲み物を片手に、自由に歩き回る可愛い猫たちを撫でていると、日々の疲れやストレスが自然と溶けていきます。",
+      "カフェに入る前には、動物たちの健康と安全を守るために、手の消毒や靴の履き替え、そして「寝ている動物を無理に起こさない」といった丁寧なマナーが求められます。動物たちへの深い愛情と敬意を忘れない姿勢が大切にされています。",
+      "動物たちの無邪気な瞳や温かいぬくもりに触れる時間は、言葉のいらない純粋なコミュニケーションを通じて、私たちの心を優しく包み込んでくれるのです。"
+    ],
+    "translations": [
+      "Di kalangan masyarakat perkotaan yang mencari ketenteraman di tengah kesibukan, \"Animal Cafe\" yang bermula dari Jepang menuai popularitas luar biasa. Mulai dari kafe kucing yang paling tersohor, kafe anjing, kafe kelinci, hingga kafe unik tempat berinteraksi dengan burung hantu dan berang-berang air dapat dijumpai di pusat kota.",
+      "Karena banyak apartemen di Jepang melarang memelihara hewan peliharaan, bagi orang-orang yang mencintai binatang namun tak bisa memelihara di rumah, kafe hewan menjadi oase pelepas penat yang amat berharga. Sambil menikmati minuman hangat dan mengelus kucing-kucing lucu yang berkeliaran bebas, kelelahan dan stres harian mencair dengan sendirinya.",
+      "Sebelum masuk ke kafe, demi menjaga kesehatan dan keselamatan satwa, diterapkan etika tertib seperti mencuci tangan dengan disinfektan, mengganti alas kaki, serta tidak membangunkan hewan yang sedang tidur secara paksa. Sikap mengedepankan kasih sayang dan rasa hormat kepada satwa sangat diutamakan.",
+      "Menatap mata polos binatang dan merasakan kehangatan tubuh mereka menghadirkan komunikasi murni tanpa kata-kata yang memeluk lembut hati kita."
+    ]
+  }
+]

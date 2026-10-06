@@ -1,0 +1,373 @@
+// Generator for 18 new N2 reading passages
+const fs = require('fs');
+
+const n2Readings = [
+  // === SERIES 3: Proyek Revitalisasi Desa Terpencil (5 Bab) ===
+  {
+    id: "n2-s3-1",
+    series: "Proyek Revitalisasi Desa Terpencil",
+    seriesPart: 1,
+    nextId: "n2-s3-2",
+    prevId: null,
+    level: "N2",
+    title: "過疎化の村への赴任と村民の警戒感",
+    titleArti: "Penugasan ke Desa Terpencil yang Mengalami Depopulasi dan Kewaspadaan Warga",
+    paragraphs: [
+      "東京の大手総合商社でのキャリアを捨て、地域おこし協力隊員として四国の山間部に位置する美野村（みらのむら）に降り立った蓮見圭介（はすみ・けいすけ）は、見渡す限りの緑と崩れかけた石垣に圧倒されていました。全人口の六割以上が六十五歳以上の高齢者で占められるこの集落は、典型的な限界集落の危機に直面していました。",
+      "「都会の若者が物珍しさにやって来ても、どうせ冬の厳しさに耐えかねて数ヶ月で音を上げるに決まっている」。村役場の職員や長老たちの視線には、かつて幾多の外部者が無責任に立ち去っていった苦い経験から来る、根強い不信感と警戒感が色濃く漂っていました。",
+      "蓮見は自らの甘い認識を痛感しつつも、言葉による説得ではなく日々の泥臭い行動で信頼を勝ち取る以外に道はないと覚悟を決めました。早朝の集落清掃や水路の泥上げなど、誰からも頼まれない雑務を黙々と引き受けることから彼の挑戦が始まりました。"
+    ],
+    translations: [
+      "Meninggalkan jenjang kariernya di sebuah perusahaan perdagangan multinasional di Tokyo, Keisuke Hasumi menjejakkan kaki di Desa Mirano, sebuah kawasan terpencil di pedalaman pegunungan Pulau Shikoku, sebagai anggota tim penggerak revitalisasi daerah. Ia terpana oleh hamparan hutan lebat yang bersanding dengan tanggul-tanggul batu kuno yang mulai runtuh. Dengan lebih dari enam puluh persen populasinya berusia di atas enam puluh lima tahun, desa ini berada di ambang kepunahan demografis yang nyata.",
+      "'Sekalipun anak muda kota datang ke mari karena rasa penasaran sesaat, mereka pasti akan menyerah dalam hitungan bulan begitu merasakan kerasnya musim dingin.' Tatapan para tetua dan staf kantor desa sarat dengan rasa curiga dan kehati-hatian mendalam, akibat pengalaman pahit masa lalu di mana banyak pihak luar datang lalu pergi begitu saja tanpa tanggung jawab.",
+      "Menyadari betapa naif pandangan awalnya, Keisuke memantapkan tekad bahwa tidak ada jalan lain untuk merebut kepercayaan warga selain melalui kerja nyata yang konsisten di lapangan, alih-alih sekadar retorika manis. Perjuangannya diawali dengan mengerjakan tugas-tugas fisik tanpa pamrih, mulai dari membersihkan jalanan desa saat fajar menyingsing hingga mengeruk lumpur saluran irigasi sawah."
+    ]
+  },
+  {
+    id: "n2-s3-2",
+    series: "Proyek Revitalisasi Desa Terpencil",
+    seriesPart: 2,
+    nextId: "n2-s3-3",
+    prevId: "n2-s3-1",
+    level: "N2",
+    title: "耕作放棄地の再生と有機農業の試み",
+    titleArti: "Pemulihan Lahan Pertanian Terbengkalai dan Percobaan Pertanian Organik",
+    paragraphs: [
+      "日々の誠実な労働が実を結び、村の元農協組合長である徳蔵（とくぞう）老人が、長年手入れが途絶えて雑草に覆われていた棚田を蓮見に貸し与えてくれることになりました。「土を愛せない奴に、この土地の未来は語れん」という言葉とともに手渡された鍬の重みに、蓮見は身が引き締まりました。",
+      "蓮見は農薬や化学肥料に依存せず、山から湧き出るミネラル豊富な雪解け水と堆肥のみを用いた有機農法に挑みました。しかし、初年度は害虫の発生や天候不順に祟られ、収穫量は予想を大幅に下回るという手痛い挫折を味わうことになります。",
+      "落胆する蓮見を支えたのは、かつて冷ややかな視線を向けていた近所の農家たちでした。土壌の改良法や害虫を寄せ付けない伝統的な草木の混植技術など、長年培われた門外不出の知恵を惜しみなく伝授してくれたのです。土を通じて、世代を超えた魂の共鳴が生まれつつありました。"
+    ],
+    translations: [
+      "Kerja kerasnya yang tulus perlahan membuahkan hasil; Tokuzo, seorang tetua mantan ketua koperasi pertanian desa, akhirnya bersedia meminjamkan sawah terasering miliknya yang telah bertahun-tahun terbengkalai dan diselimuti ilalang liar. 'Orang yang tak mencintai tanah tak punya hak berbicara tentang masa depan daerah ini,' ujar sang tetua sembari menyerahkan sebuah cangkul berat, membuat Keisuke menunduk takzim.",
+      "Keisuke memberanikan diri merintis metode pertanian organik tanpa ketergantungan pada pestisida sintetis maupun pupuk kimiawi, hanya mengandalkan air lelehan salju pegunungan yang kaya mineral serta pupuk kompos alami. Namun pada tahun pertama, serangan hama dan anomali cuaca mengakibatkan kegagalan panen yang telak, di mana hasil panen anjlok jauh di bawah proyeksi.",
+      "Di saat dirundung kekecewaan, justru para petani setempat—yang dahulunya menatapnya sinis—datang mengulurkan tangan. Mereka tak segan-segan mewariskan kearifan lokal rahasia yang terasah selama puluhan tahun, seperti teknik pembenahan pH tanah dan pola tumpang sari tanaman pengusir hama. Melalui media tanah garapan, terjalinlah resonansi batin yang melampaui sekat antargenerasi."
+    ]
+  },
+  {
+    id: "n2-s3-3",
+    series: "Proyek Revitalisasi Desa Terpencil",
+    seriesPart: 3,
+    nextId: "n2-s3-4",
+    prevId: "n2-s3-2",
+    level: "N2",
+    title: "空き家リノベーションと若手移住者の誘致",
+    titleArti: "Renovasi Rumah Kosong dan Penarikan Minat Kaum Muda untuk Pindah",
+    paragraphs: [
+      "農業の基盤が整い始めた頃、蓮見は集落内に点在する築百年以上の古民家（空き家）に着目しました。太い梁と精巧な木組みを持つこれらの伝統建築は、放置すれば倒壊の危険がある負の遺産と見なされていましたが、見方を変えれば現代の都市生活者にとって唯一無二の魅力を放つ文化遺産でした。",
+      "蓮見はSNSを駆使して全国から建築を専攻する学生やクリエイターを募り、クラウドファンディングで資金を調達して、古民家をコワーキングスペース兼簡易宿泊施設へとリノベーションするプロジェクトを立ち上げました。解体と補修の作業には村の大工たちも参加し、伝統工芸と現代デザインが見事に融合しました。",
+      "完成した施設「ミミノ・ロッジ」には、テレワークを導入したIT企業の社員やフリーランスの若者たちが長期滞在を希望して殺到しました。静寂な自然環境と高速通信網の両立が、新たな移住の潮流を生み出したのです。"
+    ],
+    translations: [
+      "Ketika fondasi pertanian mulai tertata, Keisuke mengalihkan perhatiannya pada deretan rumah panggung tradisional (kominka) berusia lebih dari satu abad yang terbengkalai di sekeliling desa. Struktur kayu kokoh dengan balok penyangga megah itu kerap dipandang sebagai aset bermasalah yang rawan runtuh jika dibiarkan; namun dari perspektif lain, bangunan tersebut sesungguhnya adalah warisan arsitektur bernilai tinggi yang amat memikat bagi masyarakat urban modern.",
+      "Memanfaatkan jejaring media sosial, Keisuke menghimpun mahasiswa arsitektur dan para pekerja kreatif dari seantero Jepang, menggalang dana melalui crowdfunding, serta meluncurkan inisiatif perombakan kominka menjadi ruang kerja bersama (coworking space) sekaligus penginapan terpadu. Tukang kayu senior desa turut dilibatkan dalam proses restorasi, menciptakan perpaduan estetis antara teknik pertukangan kuno dan rancang bangun kontemporer.",
+      "Begitu fasilitas 'Mimino Lodge' rampung, gelombang pekerja teknologi informasi dan tenaga lepas profesional yang menerapkan kerja jarak jauh berbondong-bondong mengajukan izin tinggal jangka panjang. Keseimbangan harmonis antara ketenteraman alam asri dan jaringan internet berkecepatan tinggi sukses mencetuskan arus migrasi balik yang segar ke pedesaan."
+    ]
+  },
+  {
+    id: "n2-s3-4",
+    series: "Proyek Revitalisasi Desa Terpencil",
+    seriesPart: 4,
+    nextId: "n2-s3-5",
+    prevId: "n2-s3-3",
+    level: "N2",
+    title: "地域特産品のブランド化とネット販売の展開",
+    titleArti: "Branding Produk Khas Daerah dan Ekspansi Penjualan Daring",
+    paragraphs: [
+      "村の定住人口が増加の兆しを見せる中、蓮見が直面した次の課題は「持続可能な経済循環の確立」でした。外部からの補助金や寄付金に頼り続ける構造では、一時的なブームが去れば再び衰退へ逆戻りしてしまう懸念が強かったためです。",
+      "そこで蓮見は、村の特産品である無農薬の柚子（ゆず）と棚田米を活用した独自のプレミアム加工食品の開発に着手しました。移住してきたデザイナーの手によって、洗練されたパッケージと物語性を持つブランディングが施され、「美野の恵み」シリーズとしてオンライン上で直販が開始されました。",
+      "生産者の顔や栽培の背景を動画で発信する手法が功を奏し、商品は都市部の富裕層や環境意識の高い消費者の間で瞬く間に評判を呼びました。適正価格での取引によって農家の収入は飛躍的に向上し、村の経済は自立への確固たる基盤を確立しました。"
+    ],
+    translations: [
+      "Di saat tren populasi tetap mulai memperlihatkan kurva positif, tantangan krusial berikutnya yang dihadapi Keisuke adalah 'pembentukan sirkulasi ekonomi yang berkesinambungan'. Menggantungkan nasib secara permanen pada kucuran dana subsidi pemerintah pusat maupun donasi swasta dikhawatirkan hanya akan mengembalikan desa ke jurang kemunduran saat masa kepopuleran meredup.",
+      "Maka dari itu, Keisuke menginisiasi inovasi diversifikasi komoditas bernilai tambah tinggi dengan mengolah jeruk yuzu bebas pestisida dan beras terasering khas desa menjadi produk pangan premium eksklusif. Berkat tangan dingin desainer yang baru bermukim di desa, rancangan kemasan estetik berbalut narasi emosional diciptakan, lalu dipasarkan langsung secara daring lewat lini jenama 'Mimino no Megumi'.",
+      "Strategi distribusi yang menyiarkan profil otentik petani serta proses budidaya melalui konten video menuai apresiasi luas di kalangan konsumen perkotaan berdaya beli tinggi yang peduli lingkungan. Penjualan berkeadilan ini mendongkrak margin keuntungan petani secara signifikan, meletakkan tonggak kemandirian ekonomi desa yang kokoh."
+    ]
+  },
+  {
+    id: "n2-s3-5",
+    series: "Proyek Revitalisasi Desa Terpencil",
+    seriesPart: 5,
+    nextId: null,
+    prevId: "n2-s3-4",
+    level: "N2",
+    title: "村に響く子供たちの笑い声と未来への確信",
+    titleArti: "Tawa Anak-Anak yang Menggema di Desa dan Keyakinan Akan Masa Depan",
+    paragraphs: [
+      "美野村に着任して三年が経過した春、村に歴史的な出来事が起こりました。二十年間にわたり児童ゼロのため休校となっていた村立小学校の分校が、移住者家族の子供たちの入学に伴って再開されたのです。開校式当日、真新しいランドセルを背負った児童たちの姿に、参列した村民全員が目頭を熱くしました。",
+      "かつて「消滅を待つのみ」と諦念に支配されていた集落は、若者のエネルギーと高齢者の知恵が有機的に交錯する活力に満ちたコミュニティへと劇的な変貌を遂げました。徳蔵老人は蓮見の肩を叩き、「圭介、お前が諦めずに灯してくれた光が、この村に命を吹き返してくれた」と深謝の言葉を述べました。",
+      "蓮見は満開の山桜を見上げながら、過疎化という過酷な現実であっても、人間の誠意と情熱、そして共生の精神があれば必ず乗り越えられるという揺るぎない確信を抱いていました。"
+    ],
+    translations: [
+      "Pada musim semi tahun ketiga sejak penugasan Keisuke di Desa Mirano, sebuah momentum bersejarah terukir: sekolah dasar cabang desa yang sempat ditutup selama dua dekade akibat nihilnya murid, resmi dioperasikan kembali menyusul kedatangan anak-anak dari keluarga perantau yang menetap di sana. Pada upacara pembukaan, pemandangan anak-anak menyandang tas ransel randoseru baru membuat seisi balai desa tak kuasa membendung air mata haru.",
+      "Kawasan permukiman yang dulunya terkekang oleh rasa pasrah menunggu kepunahan telah bertransformasi secara radikal menjadi ekosistem komunal yang dinamis, di mana vitalitas pemuda bersinergi harmonis dengan kearifan para sesepuh. Sembari menepuk pundak Keisuke, Tokuzo berucap tulus: 'Keisuke, pelita harapan yang kau nyalakan tanpa kenal menyerah telah meniupkan kembali denyut kehidupan ke dalam desa ini'.",
+      "Sembari mendongak menatap guguran bunga sakura gunung yang bermekaran sempurna, Keisuke merengkuh keyakinan tak tergoyahkan bahwa seberat apa pun bayang-bayang depopulasi, ketulusan integritas manusia, gelora dedikasi, serta spirit kebersamaan niscaya mampu menaklukkan segala kemustahilan."
+    ]
+  },
+
+  // === SERIES 4: Diplomasi Sains dan Kolaborasi Riset Internasional (5 Bab) ===
+  {
+    id: "n2-s4-1",
+    series: "Diplomasi Sains dan Riset Global",
+    seriesPart: 1,
+    nextId: "n2-s4-2",
+    prevId: null,
+    level: "N2",
+    title: "多国籍研究チームの発足と理念の共有",
+    titleArti: "Pembentukan Tim Riset Multinasional dan Berbagi Visi Penelitian",
+    paragraphs: [
+      "つくば市に拠点を置く国立先端海洋研究所の一室において、次世代海洋プラスチック分解酵素の実用化を目的とした国際共同研究プロジェクト「オアシス」が正式に発足しました。主任研究員を務める篠崎博士（しのざきはかせ）のもとには、ドイツ、アメリカ、シンガポールなど世界各地の学術機関から選りすぐりの精鋭研究者たちが集結していました。",
+      "世界中の海洋生態系を脅かしているマイクロプラスチックの汚染は、一国の努力のみでは到底解決し得ない地球規模の環境危機です。篠崎はキックオフミーティングの冒頭で、「我々の責務は論文の引用数を競い合うことではなく、国境を越えた知見を統合して地球の未来を救う技術を確立することにある」と力説し、チームの志気を高めました。",
+      "各国の異なるバックグラウンドを持つ研究員たちは、篠崎の熱意に強く共鳴し、固い握手を交わして未知の領域への探求を開始しました。"
+    ],
+    translations: [
+      "Di salah satu laboratorium Lembaga Riset Kelautan Terdepan Nasional yang berpusat di Kota Tsukuba, proyek riset kolaboratif internasional bertajuk 'OASIS'—yang berfokus pada aplikasi praktis enzim pengurai mikroplastik kelautan generasi baru—resmi dicanangkan. Di bawah kepemimpinan Dr. Shinozaki selaku kepala peneliti, berkumpul para ilmuwan terkemuka terpilih dari berbagai institusi akademis dunia seperti Jerman, Amerika Serikat, dan Singapura.",
+      "Pencemaran mikroplastik yang merusak ekosistem kelautan global adalah ancaman lingkungan berskala planet yang mustahil dituntaskan oleh upaya sepihak satu negara semata. Pada awal rapat perdana, Dr. Shinozaki membakar semangat timnya: 'Tanggung jawab kita bukanlah beradu jumlah sitasi artikel ilmiah, melainkan mengintegrasikan wawasan lintas batas guna melahirkan teknologi terapan demi menyelamatkan masa depan bumi'.",
+      "Para peneliti dari beraneka latar belakang kebangsaan menyambut visi tersebut dengan penuh simpati, saling berjabat tangan erat untuk memulai penjelajahan saintifik ke wilayah yang belum pernah terjamah."
+    ]
+  },
+  {
+    id: "n2-s4-2",
+    series: "Diplomasi Sains dan Riset Global",
+    seriesPart: 2,
+    nextId: "n2-s4-3",
+    prevId: "n2-s4-1",
+    level: "N2",
+    title: "文化や研究手法の違いから生じる摩擦",
+    titleArti: "Gesekan yang Timbul dari Perbedaan Budaya dan Metodologi Riset",
+    paragraphs: [
+      "しかしながら、意気揚々とスタートしたプロジェクトは間もなく、研究手法やコミュニケーションの様式をめぐる深刻な摩擦に直面することになりました。日本的な「合意形成を重視し、細部まで慎重に検証を重ねるアプローチ」に対し、欧米の研究員たちは「意思決定が遅すぎて研究のスピード感を損なっている」と苛立ちを隠しませんでした。",
+      "さらに、実験プロトコルの記述の粒度やデータの解釈をめぐってラボ内で激しい議論が頻発し、チーム内の空気は次第に険悪なものへと変化していきました。言語の壁もさることながら、暗黙の了解を前提とする文化と論理的自己主張を重んじる文化の衝突が、研究の進捗を鈍化させていたのです。",
+      "篠崎はこの停滞を打破すべく、定期的な形式ばった会議を取りやめ、リラックスした雰囲気で本音をぶつけ合えるフラットなディスカッションの場を毎週設けることを決断しました。"
+    ],
+    translations: [
+      "Kendati demikian, proyek yang bermula dengan gegap gempita itu segera tersandung gesekan internal pelik seputar metodologi riset dan corak komunikasi. Berhadapan dengan pendekatan khas Jepang yang 'menitikberatkan konsensus musyawarah dan verifikasi detail yang berhati-hati', para peneliti dari Barat tidak mampu menyembunyikan kekesalannya, menganggap 'ritme pengambilan keputusan terlalu lamban sehingga menghambat kecepatan akselerasi riset'.",
+      "Ditambah lagi, perdebatan sengit kerap meletup di laboratorium mengenai ketelitian perumusan protokol eksperimen dan interpretasi data mentah, yang lambat laun memanaskan atmosfer kerja tim. Selain kendala bahasa, benturan antara budaya yang mengandalkan pemahaman tersirat (konteks tinggi) dan tradisi yang menuntut artikulasi argumentasi logis yang tegas telah mengebiri laju progres ilmiah.",
+      "Demi mendobrak kebuntuan tersebut, Dr. Shinozaki mengambil langkah berani dengan meniadakan rapat-rapat formal yang kaku, lalu menggantinya dengan forum diskusi santai mingguan yang setara agar setiap anggota dapat menyuarakan isi pikiran secara transparan."
+    ]
+  },
+  {
+    id: "n2-s4-3",
+    series: "Diplomasi Sains dan Riset Global",
+    seriesPart: 3,
+    nextId: "n2-s4-4",
+    prevId: "n2-s4-2",
+    level: "N2",
+    title: "実験データの不整合と原因究明への粘り強い対話",
+    titleArti: "Ketidaksesuaian Data Eksperimen dan Dialog Gigih Mencari Penyebab",
+    paragraphs: [
+      "相互理解が深まり始めた矢先、決定的な技術的難題がチームを襲いました。低温海水下における酵素の活性化実験において、日本のラボで得られた再現性の高い数値が、ドイツの提携研究機関の追試では全く再現されないという異常事態が発生したのです。",
+      "一時は「データの捏造ではないか」という疑念さえ飛び交い、チーム解散の危機が現実味を帯びました。しかし篠崎は取り乱すことなく、双方の実験環境におけるあらゆるパラメーターを徹底的に洗い出すことを提案しました。水温、塩分濃度、容器の材質に至るまで、徹底した精査が昼夜を問わず続けられました。",
+      "その結果、原因は装置の欠陥ではなく、日本のラボで使用していた微小な水質フィルターのミネラル吸着率の差異にあったことが突き止められました。この粘り強い検証作業を通じて、疑念は連帯感へと昇華し、チームの結束は揺るぎないものとなりました。"
+    ],
+    translations: [
+      "Tepat di saat rasa saling percaya mulai bersemi, kendala teknis krusial menghadang tim di depan mata. Dalam pengujian reaktivasi enzim pada sampel air laut bersuhu rendah, angka presisi tinggi dengan tingkat replikasi konsisten yang diperoleh lab Jepang sama sekali gagal direplikasi dalam uji verifikasi di institusi mitra Jerman.",
+      "Kecurigaan mengenai potensi bias atau fabrikasi data sempat merebak, membuat ancaman pembubaran tim kian terasa nyata. Kendati demikian, Dr. Shinozaki tetap berkepala dingin dan mengusulkan audit menyeluruh atas seluruh parameter lingkungan eksperimen kedua belah pihak. Analisis forensik ilmiah terhadap temperatur air, konsentrasi salinitas, hingga komposisi polimer wadah reaksi digencarkan tanpa kenal lelah.",
+      "Pada akhirnya, terkuak bahwa anomali tersebut bukan disebabkan kelalaian instrumen, melainkan disparitas daya serap mineral pada filter air mikro spesifik yang digunakan lab Jepang. Melalui kegigihan verifikasi bersama ini, bibit kecurigaan bermutasi menjadi solidaritas mendalam yang mempererat ikatan intelektual tim."
+    ]
+  },
+  {
+    id: "n2-s4-4",
+    series: "Diplomasi Sains dan Riset Global",
+    seriesPart: 4,
+    nextId: "n2-s4-5",
+    prevId: "n2-s4-3",
+    level: "N2",
+    title: "画期的な発見と国際学会での発表準備",
+    titleArti: "Penemuan Terobosan dan Persiapan Presentasi di Konferensi Internasional",
+    paragraphs: [
+      "予期せぬ水質条件の差異を契機として、チームは偶然にも「特定微量ミネラルの存在下で酵素の分解速度が十倍以上に跳ね上がる」という驚異的なメカニズムを発見しました。自然界の摂理を巧みに模倣したこの新発見は、酵素の実用化を十年以上早める歴史的ブレイクスルーでした。",
+      "歓喜に沸くラボにおいて、チームは次なる大舞台であるジュネーブの国連気候科学シンポジウムでの基調講演に向けて発表資料の作成に突入しました。今度は誰が主導権を握るかという争いはなく、各研究員が自身の得意分野を活かしてグラフの視覚化やプレゼンの論理構成を洗練させていきました。",
+      "国籍も母語も異なる科学者たちが、人類共通の課題解決という大義のもとに一つの完璧なハーモニーを奏でていました。"
+    ],
+    translations: [
+      "Bermula dari disparitas kualitas air yang tak disengaja itu, tim secara kebetulan menemukan mekanisme luar biasa: laju penguraian polimer oleh enzim melonjak lebih dari sepuluh kali lipat dengan keberadaan mineral jejak tertentu. Temuan monumental yang mereplikasi hukum alam hayati ini merupakan terobosan bersejarah yang memangkas waktu komersialisasi enzim hingga lebih dari satu dekade.",
+      "Di tengah luapan sukacita laboratorium, tim bergegas merumuskan draf presentasi untuk panggung akbar berikutnya: pidato pleno di Simposium Ilmu Iklim PBB di Jenewa. Tak ada lagi perselisihan mengenai ego dominasi; setiap peneliti memaksimalkan keahlian spesifiknya untuk menyempurnakan visualisasi data statistik dan struktur logika pemaparan.",
+      "Para saintis dari berbagai bangsa dan bahasa ibu kini berpadu dalam harmoni yang sempurna di bawah naungan cita-cita luhur memecahkan problematika kelestarian peradaban manusia."
+    ]
+  },
+  {
+    id: "n2-s4-5",
+    series: "Diplomasi Sains dan Riset Global",
+    seriesPart: 5,
+    nextId: null,
+    prevId: "n2-s4-4",
+    level: "N2",
+    title: "国境を越えた知の融合と次世代への継承",
+    titleArti: "Konvergensi Pengetahuan Lintas Batas Negara dan Pewarisan ke Generasi Berikutnya",
+    paragraphs: [
+      "ジュネーブの大ホールを埋め尽くした千人を超える聴衆の前で、篠崎と多国籍チームは研究成果を堂々と発表しました。プレゼンテーションが終了した瞬間、会場からは地鳴りのようなスタンディングオベーションが沸き起こり、世界中のメディアが「人類の環境再生に向けた歴史的勝利」と報じました。",
+      "特許の独占による利益追求を退け、チームはこの酵素の遺伝子配列と製造ノウハウを世界中の研究機関にオープンソースとして無償公開する決定を下しました。真の科学とは人類全体の共有財産であるべきだという、篠崎たちの強い倫理観に基づいた決断でした。",
+      "帰国後、若手研究員たちを前に篠崎は微笑みながら語りかけました。「困難を克服できたのは、我々が違いを排除するのではなく、違いを力に変えたからです」。国際協力の種は、次代を担う若き科学者たちの心にしっかりと蒔かれました。"
+    ],
+    translations: [
+      "Di hadapan lebih dari seribu hadirin yang memadati aula akbar di Jenewa, Dr. Shinozaki dan tim multinasionalnya memaparkan temuan riset tersebut dengan penuh wibawa. Begitu pemaparan usai, riuh tepuk tangan penghormatan (standing ovation) bergemuruh di seantero ruangan, sementara media internasional memberitakannya sebagai 'kemenangan bersejarah demi restorasi biosfer bumi'.",
+      "Menolak godaan komersialisasi eksklusif hak paten demi laba finansial, tim sepakat melisensikan sekuens genetik dan metode sintesis enzim tersebut sebagai sumber terbuka (open-source) cuma-cuma bagi institusi riset global. Ini adalah keputusan berani yang berpijak pada integritas etis Dr. Shinozaki dan timnya bahwa sains sejati sejatinya merupakan milik bersama umat manusia.",
+      "Sepulangnya ke tanah air, Dr. Shinozaki berpesan hangat kepada para peneliti muda binaannya: 'Keberhasilan menaklukkan rintangan tercapai bukan karena kita meniadakan perbedaan, melainkan karena kita mengubah perbedaan menjadi kekuatan'. Benih kolaborasi lintas bangsa telah tertanam kukuh di sanubari generasi saintis penerus."
+    ]
+  },
+
+  // === THEMATIC READINGS N2 (8 Bab: n2-c9 sampai n2-c16) ===
+  {
+    id: "n2-c9",
+    series: "Etika Teknologi & Transformasi Modern",
+    seriesPart: 9,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "自動運転技術の実用化と法的・倫理的責任の所在",
+    titleArti: "Penerapan Mobil Otonom dan Tanggung Jawab Hukum serta Etika",
+    paragraphs: [
+      "人工知能（AI）による自動運転技術は、高齢化が進む過疎地域における移動手段の確保や、長距離トラック運転手の労働力不足の緩和など、社会課題を劇的に解決する切り札として期待を集めています。高速道路における部分的な実用化は既に現実のものとなりました。",
+      "しかしながら、完全自動運転（レベル５）の社会実装に向けては、法制度や倫理面における複雑な障壁が横たわっています。万が一、自動運転システムが誤作動を起こして人身事故に至った場合、その刑事責任や損害賠償責任は自動車メーカー、ソフトウェア開発者、あるいは車両所有者のいずれが負うべきなのか、明確な国際基準は未だ定まっていません。",
+      "さらに、「トロッコ問題」に代表されるように、不可避の衝突時にシステムが誰の命を優先して保護すべきかという究極の倫理的ジレンマに対し、社会全体がいかに合意を形成するかが問われています。"
+    ],
+    translations: [
+      "Teknologi kemudi otonom berbasis kecerdasan buatan digadang-gadang sebagai terobosan pamungkas dalam menjawab tantangan sosial kontemporer, seperti penyediaan sarana mobilitas bagi kaum lansia di pedesaan terpencil serta krisis kelangkaan pengemudi logistik antarkota. Implementasi parsial pada jalan tol bebas hambatan pun telah menjelma menjadi kenyataan.",
+      "Kendati demikian, menuju integrasi penuh kendaraan otonom tanpa pengemudi (Level 5) di ruang publik, terbentang rintangan yuridis dan etis yang pelik. Apabila sistem otonom mengalami malafungsi hingga memicu kecelakaan fatal, pihak mana yang wajib memikul pertanggungjawaban pidana maupun ganti rugi perdata—apakah produsen otomotif, pengembang perangkat lunak, atau pemilik armada—belum memiliki konsensus regulasi global yang baku.",
+      "Lebih jauh lagi, menghadapi dilema moral klasik seperti 'Trolley Problem'—yakni bagaimana algoritma harus memprioritaskan keselamatan nyawa saat tabrakan tak terhindarkan—masyarakat dituntut merumuskan kompromi etika yang adil dan dapat dipertanggungjawabkan."
+    ]
+  },
+  {
+    id: "n2-c10",
+    series: "Wacana Intelektual & Berkelanjutan",
+    seriesPart: 10,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "サーキュラーエコノミー（循環型経済）への転換と企業倫理",
+    titleArti: "Transisi Menuju Ekonomi Sirkular dan Etika Korporasi",
+    paragraphs: [
+      "大量生産・大量消費・大量廃棄を前提として発展してきた従来の「リニア（線形）エコノミー」は、資源の枯渇や気候変動の加速によって限界を露呈しています。これに代わる持続可能な成長モデルとして、製品の設計段階から再利用や再資源化を組み込む「サーキュラーエコノミー」への転換が世界的急務となっています。",
+      "企業活動においては、単なるCSR（企業の社会的責任）の枠組みを超え、自社のサプライチェーン全体における環境負荷を最小化することが投資家の評価指標（ESG投資）に直結する時代となりました。耐久性に優れた製品設計や、廃棄物の副産物としての再商品化がビジネスモデルの成否を左右します。",
+      "使い捨てを前提とする生活様式から脱却し、製品を「所有」するのではなく「機能を利用する」サービス型ビジネスへの移行が、次代の豊かな社会を築く鍵となります。"
+    ],
+    translations: [
+      "Model ekonomi linier tradisional yang bertumpu pada premis produksi massal, konsumsi boros, dan pembuangan instan telah memperlihatkan batas ketahanannya akibat kelangkaan sumber daya mineral serta percepatan krisis iklim. Sebagai alternatif regeneratif, transisi menuju 'ekonomi sirkular'—yang mengintegrasikan daur ulang dan restorasi material sejak fase purwarupa produk—telah menjadi urgensi global.",
+      "Dalam lanskap korporasi, inisiatif lingkungan kini melampaui retorika tanggung jawab sosial perusahaan biasa; reduksi jejak karbon di sepanjang rantai pasok secara langsung menentukan skor valuasi investasi berbasis Environmental, Social, and Governance (ESG). Inovasi rekayasa material berdaya tahan tinggi serta valorisasi limbah operasional menjadi penentu keunggulan kompetitif bisnis.",
+      "Pergeseran paradigma dari budaya barang sekali pakai menuju model layanan berbasis fungsi (product-as-a-service)—di mana konsumen memanfaatkan fungsi ketimbang kepemilikan mutlak—merupakan prasyarat fundamental dalam membangun peradaban berkelanjutan."
+    ]
+  },
+  {
+    id: "n2-c11",
+    series: "Wacana Intelektual & Berkelanjutan",
+    seriesPart: 11,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "言語の消滅危機と少数言語のデジタルアーカイブ保存",
+    titleArti: "Krisis Kepunahan Bahasa dan Pelestarian Arsip Digital Bahasa Minoritas",
+    paragraphs: [
+      "グローバル化の進展と公用語への同化政策に伴い、世界各地で固有の地域言語や先住民族の言語が急速に姿を消しつつあります。ユネスコの報告によれば、今世紀末までに現存する言語の半数以上が消滅の危機に瀕していると警鐘が鳴らされています。",
+      "一つの言語が失われることは、単なる伝達手段の喪失にとどまらず、その言語に宿る独自の自然認識、神話、動植物に関する生態学的知恵など、人類のかけがえのない知的無形文化遺産が永遠に失われることを意味します。日本国内でもアイヌ語や琉球諸語の継承が焦眉の課題です。",
+      "近年ではAI技術を活用した音声認識や自然言語処理を用い、高齢の話者の語りを高精度でデジタル録音・辞書化するアーカイブ化の取り組みが活発化しており、技術による文化保存の新たな地平を切り拓いています。"
+    ],
+    translations: [
+      "Seiring dengan penetrasi globalisasi dan hegemoni bahasa nasional dominan, aneka dialek lokal serta bahasa komunitas adat di seluruh penjuru dunia tergerus cepat menuju kepunahan. Laporan UNESCO memperingatkan bahwa lebih dari separuh bahasa yang eksis di muka bumi saat ini terancam punah total sebelum pengujung abad ke-21.",
+      "Matinya suatu bahasa bukan sekadar lenyapnya instrumen komunikasi linguistik, melainkan hilangnya warisan intelektual takbenda peradaban—mulai dari kosmologi, mitologi lisan, hingga kearifan ekologis mengenai flora-fauna yang terkodifikasi dalam bahasa tersebut. Di Jepang pun, preservasi bahasa Ainu dan rumpun bahasa Ryukyu menjadi prioritas mendesak.",
+      "Kini, berkat pemanfaatan teknologi pengenalan suara berbasis kecerdasan buatan dan pemrosesan bahasa alami (NLP), proyek digitalisasi arsip audio pelafalan para penutur asli lansia digiatkan untuk menyusun leksikon digital, membuka babak baru dalam proteksi warisan budaya lisan dunia."
+    ]
+  },
+  {
+    id: "n2-c12",
+    series: "Etika Teknologi & Transformasi Modern",
+    seriesPart: 12,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "遺伝子編集技術の進展と生命倫理の境界線",
+    titleArti: "Perkembangan Teknologi Penyuntingan Gen dan Batasan Etika Kehidupan",
+    paragraphs: [
+      "「CRISPR-Cas9」に代表されるゲノム編集技術の飛躍的な進歩は、難治性の遺伝病に対する画期的な治療法の開発や、気候変動に耐えうる高収量農作物の育種など、医療や農業の分野に計り知れない恩恵をもたらしつつあります。",
+      "しかし、この強大な技術が人間の受精卵や生殖細胞に応用されることに対しては、極めて厳格な倫理的議論が不可欠です。容姿や知能を親の望み通りに人為的に操作する「デザイナーベビー」の出現は、命の尊厳を冒涜し、富裕層と貧困層の間で不可逆的な生物学的格差を生み出しかねないためです。",
+      "科学の探求が暴走することのないよう、研究者の自律的な倫理観のみならず、市民社会を巻き込んだ透明性の高い法整備と国際的な規制協定の策定が急務とされています。"
+    ],
+    translations: [
+      "Kemajuan pesat teknologi penyuntingan genom seperti CRISPR-Cas9 membuka gerbang terapeutik revolusioner bagi penanganan penyakit genetik langka serta rekayasa bibit pertanian tahan anomali iklim, menjanjikan manfaat luar biasa bagi dunia kedokteran dan agrikultur.",
+      "Kendati demikian, tatkala teknologi mutakhir ini diujicobakan pada sel germinal atau embrio manusia, benteng pertimbangan bioetika yang ekstra ketat wajib ditegakkan. Prospek kemunculan 'designer baby'—di mana intelegensi dan karakteristik fisik dimanipulasi demi preferensi orang tua—berpotensi mencemari marwah kesakralan hidup serta melahirkan kasta ketimpangan biologis absolut antara kaum borjuis dan kaum papa.",
+      "Demi mencegah keliaran eksplorasi sains yang nir-kontrol, perumusan traktat pembatasan internasional serta kerangka legislasi transparan yang melibatkan masyarakat sipil menjadi tuntutan mendesak yang tak dapat ditunda lagi."
+    ]
+  },
+  {
+    id: "n2-c13",
+    series: "Wacana Intelektual & Berkelanjutan",
+    seriesPart: 13,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "観光公害（オーバーツーリズム）と持続可能な観光モデル",
+    titleArti: "Pariwisata Berlebih/Overtourism dan Model Pariwisata Berkelanjutan",
+    paragraphs: [
+      "世界的な旅行需要の回復と円安の影響を受け、京都や富士山周辺をはじめとする日本の主要観光地には国内外から空前の数の観光客が押し寄せています。観光産業の活性化は地域経済に潤いをもたらす一方で、「オーバーツーリズム（観光公害）」と呼ばれる深刻な歪みを生み出しています。",
+      "公共交通機関の混雑による住民の日常生活の麻痺、深夜の騒音、不法投棄されるゴミの山など、観光客の急増は受入地域のインフラや住民の生活環境の許容量（キャパシティ）を著しく圧迫しています。これにより、住民と観光客の間に摩擦が生じる事態も増加しています。",
+      "現在、入域料の徴収や時間帯別の予約制導入、さらには主要都市から地方の隠れた名所への誘客分散など、環境負荷を抑えつつ質の高い体験を提供する持続可能な観光モデルの構築が急ピッチで進められています。"
+    ],
+    translations: [
+      "Terdorong oleh pemulihan antusiasme pariwisata global serta depresiasi mata uang yen, destinasi unggulan Jepang seperti Kyoto dan lereng Gunung Fuji dibanjiri arus pelancong dalam skala historis. Kendati lonjakan pariwisata menyuntikkan likuiditas ke dalam perekonomian lokal, fenomena ini menimbulkan distorsi struktural yang dikenal sebagai 'overtourism' (polusi turisme).",
+      "Kelumpuhan mobilitas harian warga akibat kepadatan armada transportasi publik, polusi suara malam hari, hingga timbunan sampah liar mengikis daya dukung infrastruktur serta merusak kenyamanan pemukiman warga lokal. Hal ini memicu ketegangan horizontal antara warga setempat dan wisatawan.",
+      "Dewasa ini, langkah proaktif seperti penerapan retribusi daerah, reservasi kunjungan berbasis zonasi waktu, serta desentralisasi arus wisatawan ke permata tersembunyi di pedesaan tengah digencarkan demi mewujudkan ekosistem pariwisata berkelanjutan yang ramah lingkungan."
+    ]
+  },
+  {
+    id: "n2-c14",
+    series: "Wacana Intelektual & Berkelanjutan",
+    seriesPart: 14,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "リモートワーク時代の都市一極集中の是正と地方分散",
+    titleArti: "Koreksi Sentralisasi Megapolitan dan Desentralisasi Daerah di Era WFH",
+    paragraphs: [
+      "長年にわたり日本が抱えてきた最大構造問題の一つが、富や人口、教育機関が首都圏に集中する「東京一極集中」でした。大規模災害時のリスク集中や地方自治体の存続危機が危惧されていましたが、働き方改革と通信技術の高度化が情勢に変化をもたらしました。",
+      "テレワークの定着により、出社義務に縛られない柔軟な勤務が可能となったことで、自然豊かな地方へ拠点を移す「ワーケーション」や地方移住を選択する働き盛りの世代が急増しています。満員電車の通勤苦から解放され、ゆとりある住環境を求める動きです。",
+      "地方自治体もサテライトオフィスの整備や手厚い育児支援策を打ち出しており、中央集権的な都市構造から、地域の独自性を活かした自律分散型社会への構造転換が静かに加速しています。"
+    ],
+    translations: [
+      "Salah satu anomali struktural menahun di Jepang adalah hegemoni 'sentralisasi Tokyo', di mana perputaran modal, densitas kependudukan, dan konsentrasi institusi pendidikan menumpuk di area metropolitan ibu kota. Walaupun risiko kelumpuhan akibat bencana alam skala masif telah lama dikhawatirkan, akselerasi teknologi telekomunikasi dan reformasi pola kerja kini membawa angin perubahan.",
+      "Dengan terlembaganya kerja jarak jauh (work from home), para profesional usia produktif tak lagi terikat oleh kewajiban komut harian di kantor fisik, memicu lonjakan fenomena 'workation' serta migrasi permanen ke pelosok pedesaan yang asri. Pilihan ini lahir dari kerinduan akan hunian lapang tanpa harus menderita himpitan kereta komuter padat.",
+      "Pemerintah prefektur daerah pun sigap memfasilitasi kantor satelit terpadu dan insentif tunjangan anak yang melimpah, secara bertahap mengakselerasi peralihan struktur dari sentralisasi hierarkis menuju tatanan masyarakat desentralistik yang berdaya tahan mandiri."
+    ]
+  },
+  {
+    id: "n2-c15",
+    series: "Etika Teknologi & Transformasi Modern",
+    seriesPart: 15,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "宇宙開発の民間参入と宇宙空間の環境保全",
+    titleArti: "Keterlibatan Sektor Swasta dalam Eksplorasi Antariksa dan Konservasi Ruang Angkasa",
+    paragraphs: [
+      "かつて国家の威信をかけた競争であった宇宙開発は、ロケットの再利用技術や小型衛星コンステレーションの実用化によって劇的なコストダウンが達成され、民間ベンチャー企業が主導する巨大ビジネス市場へと変貌を遂げました。",
+      "宇宙旅行の商業化や月面資源の開発計画が進む一方で、運用を終えた人工衛星の破片やロケットの残骸が高速で軌道上を浮遊する「宇宙ゴミ（スペースデブリ）」の問題が深刻化しています。微小な破片であっても稼働中の人工衛星や有人宇宙ステーションに衝突すれば壊滅的な損害を与えかねません。",
+      "地球の海洋環境と同様に、地球近傍の軌道空間も人類共有の有限なフロンティアとして捉え、デブリ除去技術の国際協調や軌道利用に関する包括的な法規範の策定が不可欠となっています。"
+    ],
+    translations: [
+      "Eksplorasi antariksa yang dahulunya didominasi rivalitas prestise geopolitik antarnegara telah bertransformasi menjadi sektor komersial raksasa yang dimotori entitas swasta, berkat reduksi ongkos peluncuran roket yang dapat digunakan berulang kali serta pemanfaatan konstelasi satelit mikro.",
+      "Namun di balik euphoria komersialisasi pariwisata antariksa dan eksplorasi mineral di bulan, krisis 'sampah antariksa' (space debris)—berupa serpihan roket bekas dan bangkai satelit yang meluncur dengan kecepatan jelajah ekstrem di orbit bumi—kian berada di ambang bahaya kritis. Bahkan serpihan sekecil kerikil berdaya hancur katastropik jika menghantam stasiun luar angkasa berawak.",
+      "Laksana samudra bumi, orbit luar angkasa bumi sejatinya adalah tapal batas terbatas milik bersama seluruh umat manusia, yang mewajibkan kolaborasi teknologi pembersihan debris serta traktat yurisdiksi orbit yang komprehensif."
+    ]
+  },
+  {
+    id: "n2-c16",
+    series: "Wacana Intelektual & Berkelanjutan",
+    seriesPart: 16,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "メディアリテラシーとフェイクニュース時代における批判的思考",
+    titleArti: "Literasi Media dan Berpikir Kritis di Era Berita Palsu",
+    paragraphs: [
+      "ソーシャルメディアのアルゴリズムが個人の興味関心に応じた情報のみを選択的に提示する「フィルターバブル」や「エコーチェンバー現象」の深化に伴い、現代社会では世論の分極化が急速に進行しています。刺激的な見出しの偽情報（フェイクニュース）が真実よりも速く拡散する事態が常態化しました。",
+      "生成AIの普及により、極めて精巧なディープフェイク画像や虚偽のテキストが瞬時に大量生成できるようになり、真偽の境界線は一段と曖昧模糊としたものになっています。偏った情報を無批判に信じ込むことは、民主主義の根幹を揺るがす深刻な社会的リスクを孕んでいます。",
+      "情報の真偽を客観的な根拠に基づいて見極める「批判的思考（クリティカルシンキング）」と、発信者の意図や背景を多角的に分析する高度なメディアリテラシーの育成こそが、情報氾濫の荒波を生き抜く市民の不可欠な防壁となります。"
+    ],
+    translations: [
+      "Dengan menguatnya fenomena 'filter bubble' dan 'ruang gema' (echo chamber) di mana algoritma media sosial secara eksklusif menyuapi pengguna dengan konten yang sesuai preferensi pribadinya semata, polarisasi opini publik kian tereskalasi cepat di era modern. Informasi bohong (fake news) bersensasi liar kerap viral menyebar jauh melampaui fakta kebenaran obyektif.",
+      "Difusi kecerdasan buatan generatif kini memudahkan fabrikasi massal video rekayasa mendalam (deepfake) dan narasi disinformasi persuasif dalam hitungan detik, mengaburkan tapal batas antara kenyataan dan rekayasa fiktif. Menerima konsumsi data tanpa filter kritis membawa ancaman laten yang mampu merapuhkan sendi-sendi demokrasi beradab.",
+      "Penanaman nalar 'berpikir kritis' (critical thinking) guna memverifikasi validitas data berbasis bukti sahih, berpadu dengan kematangan literasi media multidimensi dalam membongkar motif produsen informasi, merupakan benteng pertahanan mutlak bagi setiap warga negara di tengah badai tsunami informasi."
+    ]
+  }
+];
+
+fs.writeFileSync('./scripts/new_n2.json', JSON.stringify(n2Readings, null, 2), 'utf-8');
+console.log('Successfully generated 18 N2 readings:', n2Readings.length);

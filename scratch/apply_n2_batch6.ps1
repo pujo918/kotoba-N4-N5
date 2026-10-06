@@ -1,0 +1,433 @@
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+$jsonPath = './data/vocabulary.json'
+$jsPath = './data/vocabulary.js'
+
+$existingJsonRaw = Get-Content -Raw -Encoding UTF8 $jsonPath
+$existing = $existingJsonRaw | ConvertFrom-Json
+Write-Host "Current total existing words: $($existing.Length)"
+
+$existingKanjiSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+foreach ($item in $existing) {
+    if ($item.kanji) {
+        $existingKanjiSet.Add($item.kanji.Trim()) | Out-Null
+    }
+}
+
+$candidatePool6 = @(
+    # Adverbs, Onomatopoeia & Expressions
+    @{kanji="あながち"; furigana="あながち"; arti="belum tentu selalu demikian halnya praduga"},
+    @{kanji="かならずしも"; furigana="かならずしも"; arti="belum tentu mutlak benar sepenuhnya dalihnya"},
+    @{kanji="とりわけ"; furigana="とりわけ"; arti="terutama teristimewa menonjol di antara semuanya"},
+    @{kanji="ことさら"; furigana="ことさら"; arti="sengaja secara khusus dilebih-lebihkan sorotannya"},
+    @{kanji="あいにく"; furigana="あいにく"; arti="sayang sekali kebetulan situasi tiada mendukung"},
+    @{kanji="やまやま"; furigana="やまやま"; arti="berhasrat besar ingin sekali namun ada kendala"},
+    @{kanji="いやいや"; furigana="いやいや"; arti="enggan dengan berat hati terpaksa menurut perintah"},
+    @{kanji="しぶしぶ"; furigana="しぶしぶ"; arti="dengan ogah-ogahan enggan melangkahkan kaki"},
+    @{kanji="おずおず"; furigana="おずおず"; arti="ragu-ragu malu-malu takut mendekat menyapa"},
+    @{kanji="おどおど"; furigana="おどおど"; arti="gugup gemetar cemas salah tingkah diinterogasi"},
+    @{kanji="はらはら"; furigana="はらはら"; arti="berdebar-debar cemas menonton adegan bahaya sirkus"},
+    @{kanji="ひやひや"; furigana="ひやひや"; arti="cemas ngeri ketar-ketir nyaris terperosok jurang"},
+    @{kanji="ぞくぞく"; furigana="ぞくぞく"; arti="menggigil demam dingin; merinding antusias konser"},
+    @{kanji="うとうと"; furigana="うとうと"; arti="terkantuk-kantuk tidur ayam terlena di kursi kereta"},
+    @{kanji="ぐったり"; furigana="ぐったり"; arti="terkulai lemas keletihan kehabisan daya tenaga"},
+    @{kanji="くたくた"; furigana="くたくた"; arti="letih lesu lunglai sehabis mendaki puncak terjal"},
+    @{kanji="ぼろぼろ"; furigana="ぼろぼろ"; arti="compang-camping lusuh; hancur lebur remuk kalbu"},
+    @{kanji="びしょびしょ"; furigana="びしょびしょ"; arti="basah kuyup basah kuyup diguyur hujan deras"},
+    @{kanji="びしょ濡れ"; furigana="びしょぬれ"; arti="basah kuyup seluruh pakaian pakaian kehujanan"},
+    @{kanji="じめじめ"; furigana="じめじめ"; arti="lembap basah berjamur; murung suram kepribadiannya"},
+    @{kanji="からっと"; furigana="からっと"; arti="cerah kering udara sejuk; riang ceria perangainya"},
+    @{kanji="さらっと"; furigana="さらっと"; arti="halus licin kain sutra; luwes ikhlas tanpa dendam"},
+    @{kanji="くるくる"; furigana="くるくる"; arti="berputar-putar lincah baling-baling kincir angin"},
+    @{kanji="ころころ"; furigana="ころころ"; arti="menggelinding kelereng; lekas berubah-ubah opini"},
+    @{kanji="ごろごろ"; furigana="ごろごろ"; arti="bergemuruh halilintar guruh; rebahan di lantai"},
+    @{kanji="ゆらゆら"; furigana="ゆらゆら"; arti="bergoyang-goyang perlahan dahan ranting terpaan bayu"},
+    @{kanji="ふらふら"; furigana="ふらふら"; arti="sempoyongan pusing oyong hampir pingsan di jalan"},
+    @{kanji="うろうろ"; furigana="うろうろ"; arti="mondar-mandir linglung tanpa arah kebingungan"},
+    @{kanji="ぶらぶら"; furigana="ぶらぶら"; arti="berjalan-jalan santai santai mengitari pertokoan"},
+    @{kanji="よちよち"; furigana="よちよち"; arti="tertatih-tatih langkah kaki balita baru berjalan"},
+    @{kanji="とぼとぼ"; furigana="とぼとぼ"; arti="melangkah gontai tertunduk letih pulang senja"},
+    @{kanji="すたすた"; furigana="すたすた"; arti="melangkah cepat tangkas terburu-buru tanpa toleh"},
+    @{kanji="てくてく"; furigana="てくてく"; arti="berjalan kaki tekun menyusuri jalan setapak desa"},
+    @{kanji="のろのろ"; furigana="のろのろ"; arti="merayap lamban siput macet laju antrean kendaraan"},
+    @{kanji="ぐずぐず"; furigana="ぐずぐず"; arti="lelet berlambat-lambat menunda waktu eksekusi"},
+    @{kanji="もたもた"; furigana="もたもた"; arti="lamban kaku lambat tidak cekatan merakit mesin"},
+    @{kanji="きびきび"; furigana="きびきび"; arti="sigap tangkas bersemangat dalam berbaris aksi"},
+    @{kanji="はきはき"; furigana="はきはき"; arti="lugas tegas jelas artikulasi tutur kata bicaranya"},
+    @{kanji="てきぱき"; furigana="てきぱき"; arti="cekatan tangkas efisien menyelesaikan berkas meja"},
+    @{kanji="ぬるぬる"; furigana="ぬるぬる"; arti="licin berlendir belut lendir kulit basah"},
+    @{kanji="べたべた"; furigana="べたべた"; arti="lengket lekat noda gulali; bermesraan di muka umum"},
+    @{kanji="ざらざら"; furigana="ざらざら"; arti="kasar berbutir kertas amplas tekstur bebatuan"},
+    @{kanji="つるつる"; furigana="つるつる"; arti="licin mulus kinclong lantai marmer dipoles"},
+    @{kanji="すべすべ"; furigana="すべすべ"; arti="lembut halus mulus sentuhan kulit pipi bayi"},
+    @{kanji="ふかふか"; furigana="ふかふか"; arti="empuk lembut bantal sofa kasur bulu hangat"},
+    @{kanji="ほかほか"; furigana="ほかほか"; arti="hangat mengepul nasi putih hangat baru ditanak"},
+    @{kanji="ぽかぽか"; furigana="ぽかぽか"; arti="hangat nyaman berjemur sinar mentari pagi"},
+    @{kanji="ひんやり"; furigana="ひんやり"; arti="sejuk dingin menyegarkan udara gua bebatuan"},
+
+    # Documents, Formal Correspondence & Composition Terms
+    @{kanji="概略"; furigana="がいりゃく"; arti="ringkasan garis besar ikhtisar materi laporan"},
+    @{kanji="詳略"; furigana="しょうりゃく"; arti="perincian dan penyederhanaan naskah pedoman"},
+    @{kanji="箇条書き"; furigana="かじょうがき"; arti="format penulisan poin-poin butir perincian"},
+    @{kanji="一覧"; furigana="いちらん"; arti="daftar tabel ikhtisar katalog lengkap rekapitulasi"},
+    @{kanji="索引"; furigana="さくいん"; arti="indeks alfabetis rujukan pencarian kata buku"},
+    @{kanji="目録"; furigana="もくろく"; arti="katalog daftar inventaris barang koleksi perpustakaan"},
+    @{kanji="凡例"; furigana="はんれい"; arti="petunjuk penggunaan lambang simbol legenda peta"},
+    @{kanji="付録"; furigana="ふろく"; arti="lampiran suplemen suplemen bonus buku panduan"},
+    @{kanji="別紙"; furigana="べっし"; arti="lembar lampiran terpisah dari surat pengantar"},
+    @{kanji="別記"; furigana="べっき"; arti="catatan terpisah tercantum pada halaman lampiran"},
+    @{kanji="前述"; furigana="ぜんじゅつ"; arti="hal yang telah diuraikan dipaparkan sebelumnya"},
+    @{kanji="後述"; furigana="こうじゅつ"; arti="hal yang akan dipaparkan di bagian bawah nanti"},
+    @{kanji="上記"; furigana="じょうき"; arti="hal uraian keterangan yang tertulis di atas"},
+    @{kanji="下記"; furigana="かき"; arti="butir keterangan data yang tercantum di bawah ini"},
+    @{kanji="同上"; furigana="どうじょう"; arti="sama dengan keterangan di atas idem serupa"},
+    @{kanji="拝啓"; furigana="はいけい"; arti="salam pembuka formal pembuka surat resmi korespondensi"},
+    @{kanji="敬具"; furigana="けいぐ"; arti="salam penutup hormat penutup warkat surat resmi"},
+    @{kanji="追伸"; furigana="ついしん"; arti="catatan tambahan postscript PS di lembar akhir surat"},
+    @{kanji="謹賀新年"; furigana="きんがしんねん"; arti="selamat menyongsong tahun baru kartu ucapan nengajo"},
+    @{kanji="暑中見舞い"; furigana="しょちゅうみまい"; arti="kartu ucapan salam menyapa di puncak musim panas"},
+    @{kanji="寒中見舞い"; furigana="かんちゅうみまい"; arti="kartu ucapan salam hangat di musim dingin beku"},
+
+    # Advanced Relations, Behavioral Nuances & Verbs
+    @{kanji="称する"; furigana="しょうする"; arti="mengaku-aku bergelar; menyebut diri sang maestro"},
+    @{kanji="冠する"; furigana="かんする"; arti="menyandang menamai piala dengan nama pahlawan"},
+    @{kanji="属する"; furigana="ぞくする"; arti="tergolong termasuk bernaung dalam rumpun keluarga"},
+    @{kanji="隷属する"; furigana="れいぞくする"; arti="tunduk diperbudak terbelenggu rantai tirani"},
+    @{kanji="翻弄する"; furigana="ほんろうする"; arti="mempermainkan membolak-balikkan nasib orang lain"},
+    @{kanji="翻弄される"; furigana="ほんろうされる"; arti="dipermainkan terombang-ambing badai takdir nasib"},
+    @{kanji="嘲笑する"; furigana="ちょうしょうする"; arti="menertawakan mencemooh menghina sinis lawan"},
+    @{kanji="嘲る"; furigana="あざける"; arti="mencemooh memperolok kegagalan usaha rekan"},
+    @{kanji="愚弄する"; furigana="ぐろうする"; arti="memperolok menganggap remeh membodohi khalayak"},
+    @{kanji="弄ぶ"; furigana="もてあそぶ"; arti="mempermainkan perasaan nurani; memainkan jemari"},
+    @{kanji="弄る"; furigana="いじる"; arti="mengotak-atik mengutak-atik mesin gadget di meja"},
+    @{kanji="虐げる"; furigana="しいたげる"; arti="menindas menzalimi kaum lemah tanpa rasa belas"},
+    @{kanji="慈しむ"; furigana="いつくしむ"; arti="menyayangi mengasihi tulus segenap jiwa ibu"},
+    @{kanji="憐れむ"; furigana="あわれむ"; arti="merasa iba berbelas kasih menyantuni si malang"},
+    @{kanji="悔やむ"; furigana="くやむ"; arti="menyesali kekhilafan langkah perbuatan di masa lalu"},
+    @{kanji="悔いる"; furigana="くいる"; arti="menginsafi menyesali dosa perbuatan nurani batin"},
+    @{kanji="悔しがる"; furigana="くやしがる"; arti="merasa jengkel gemas atas kekalahan tipis poin"},
+    @{kanji="憤る"; furigana="いきどおる"; arti="geram marah besar atas ketidakadilan vonis hukum"},
+    @{kanji="憤慨する"; furigana="ふんがいする"; arti="berang murka marah besar atas tuduhan fitnah keji"},
+    @{kanji="激怒する"; furigana="げきどする"; arti="murka meledak-ledak amarah tiada terbendung lagi"},
+    @{kanji="逆鱗に触れる"; furigana="げきりんにふれる"; arti="memicu kemurkaan amarah besar pucuk pimpinan"},
+    @{kanji="苛立つ"; furigana="いらだつ"; arti="jengkel kesal hati terganggu kegaduhan suasana"},
+    @{kanji="苛立ち"; furigana="いらだち"; arti="rasa kesal kekesalan kejengkelan hati yang memuncak"},
+    @{kanji="焦燥"; furigana="しょうそう"; arti="kegelisahan kepanikan terburu-buru dikejar tenggat"},
+    @{kanji="困惑する"; furigana="こんわくする"; arti="bingung canggung tak tahu cara merespons situasi"},
+    @{kanji="当惑する"; furigana="とうわくする"; arti="kikuk bingung serba salah menghadapi kejutan"},
+    @{kanji="狼狽する"; furigana="ろうばいする"; arti="panik kalap kalut kehilangan ketenangan nalar"},
+    @{kanji="うろたえる"; furigana="うろたえる"; arti="panik kalut gelagapan salah tingkah diterpa krisis"},
+    @{kanji="取り乱す"; furigana="とりみだす"; arti="histeris kehilangan ketenangan jiwa menangis sedih"},
+    @{kanji="取り繕う"; furigana="とりつくろう"; arti="menutupi dalih kecanggungan aib kesalahan diri"},
+    @{kanji="取り成す"; furigana="とりなす"; arti="menengahi mendamaikan meredakan amarah dua kubu"},
+    @{kanji="取り持つ"; furigana="とりもつ"; arti="menjembatani memediasi hubungan akrab dua keluarga"},
+    @{kanji="引き寄せる"; furigana="ひきよせる"; arti="menarik mendekatkan peluang keberuntungan mendekat"},
+    @{kanji="引き抜く"; furigana="ひきぬく"; arti="mencabut rumput liar; membajak merekrut talenta"},
+    @{kanji="引き締まる"; furigana="ひきしまる"; arti="menjadi kencang padat atletis otot tubuh bugar"},
+    @{kanji="差し迫る"; furigana="さしせまる"; arti="mendesak kian mendekat waktu batas tenggat ujian"},
+    @{kanji="差し出す"; furigana="さしだす"; arti="mengulurkan telapak tangan; menyodorkan kartu nama"},
+    @{kanji="差し挟む"; furigana="さしはさむ"; arti="menyisipkan menyelipkan opini komentar keberatan"},
+    @{kanji="差し支える"; furigana="さしつかえる"; arti="mengganggu merintangi kelancaran aktivitas jadwal"},
+    @{kanji="打ちのめす"; furigana="うちのめす"; arti="memukul telak melumpuhkan mental perlawanan musuh"},
+    @{kanji="割り引く"; furigana="わりびく"; arti="mendiskon memotong tarif; mempertimbangkan alasan"},
+    @{kanji="踏み出す"; furigana="ふみだす"; arti="melangkah maju mengawali babak lembaran baru hidup"},
+    @{kanji="踏み止まる"; furigana="ふみとどまる"; arti="bertahan menahan diri tidak gegabah melompat"},
+    @{kanji="踏まえる"; furigana="ふまえる"; arti="berpijak berlandaskan fakta realitas di lapangan"},
+    @{kanji="拠る"; furigana="よる"; arti="berlandaskan bersandar pada dalil acuan hukum"},
+    @{kanji="準じる"; furigana="じゅんじる"; arti="mengacu berpedoman setara dengan aturan baku"},
+    @{kanji="則る"; furigana="のっとる"; arti="berpegang teguh mematuhi norma tradisi adat luhur"},
+    @{kanji="催す"; furigana="もよおす"; arti="mengadakan jamuan hajatan; merasakan dorongan kantuk"},
+    @{kanji="徴収する"; furigana="ちょうしゅうする"; arti="memungut menarik setoran retribusi iuran warga"},
+    @{kanji="召集する"; furigana="しょうしゅうする"; arti="mengumpulkan memanggil anggota dewan menggelar sidang"},
+    @{kanji="招集する"; furigana="しょうしゅうする"; arti="mengundang memanggil rapat akbar pemegang saham"},
+    @{kanji="召喚する"; furigana="しょうかんする"; arti="memanggil terdakwa saksi hadir di muka pengadilan"},
+    @{kanji="喚問する"; furigana="かんもんする"; arti="memanggil menginterogasi saksi kunci di dewan"},
+    @{kanji="諮る"; furigana="はかる"; arti="meminta telaah pertimbangan pandangan dewan komisaris"},
+    @{kanji="諮問機関"; furigana="しもんきかん"; arti="badan komisi penasihat telaah kebijakan negara"},
+
+    # More Authentic N2 Nuances & Verbs
+    @{kanji="咎"; furigana="とが"; arti="kesalahan kekhilafan cela dosa tindakan"},
+    @{kanji="禍根"; furigana="かこん"; arti="akar sumber malapetaka benih sengketa masa depan"},
+    @{kanji="禍"; furigana="わざわい"; arti="bencana malapetaka kesialan mara bahaya melanda"},
+    @{kanji="災い"; furigana="わざわい"; arti="bencana malapetaka nestapa yang menimpa warga"},
+    @{kanji="禍福"; furigana="かふく"; arti="suka dan duka pasang surut roda keberuntungan"},
+    @{kanji="吉凶"; furigana="きっきょう"; arti="baik dan buruk peruntungan ramalan garis nasib"},
+    @{kanji="明暗"; furigana="めいあん"; arti="terang dan gelap; kontras keberuntungan nasib dua kubu"},
+    @{kanji="表裏"; furigana="ひょうり"; arti="luar dan dalam; dua sisi mata uang yang tak terpisahkan"},
+    @{kanji="表裏一体"; furigana="ひょうりいったい"; arti="dua sisi mata uang saling bertaut tak terpisahkan"},
+    @{kanji="虚実"; furigana="きょじつ"; arti="kebenaran dan kebohongan realita dan ilusi semu"},
+    @{kanji="虚構"; furigana="きょこう"; arti="fiksi rekaan imajinasi ciptaan khayalan belaka"},
+    @{kanji="虚栄"; furigana="きょえい"; arti="kesombongan semu pamer kemewahan tanpa bobot"},
+    @{kanji="虚栄心"; furigana="きょえいしん"; arti="sifat haus pujian gengsi kemewahan semu"},
+    @{kanji="見栄"; furigana="みえ"; arti="gengsi sok pamer penampilan sok kaya jaim"},
+    @{kanji="見栄を張る"; furigana="みえをはる"; arti="sok gengsi pamer demi menjaga gengsi gengsi"},
+    @{kanji="体裁"; furigana="ていさい"; arti="penampilan kepantasan adab etika di mata publik"},
+    @{kanji="世間体"; furigana="せけんてい"; arti="pandangan reputasi nama baik di mata masyarakat"},
+    @{kanji="体面"; furigana="たいめん"; arti="harga diri martabat kehormatan di depan khalayak"},
+    @{kanji="面目"; furigana="めんぼく"; arti="muka kehormatan reputasi harga diri keluarga"},
+    @{kanji="面目を保つ"; furigana="めんぼくをたもつ"; arti="menjaga menyelamatkan muka harga diri kehormatan"},
+    @{kanji="面目をつぶす"; furigana="めんぼくをつぶす"; arti="mencoreng mempermalukan muka nama baik kerabat"},
+    @{kanji="面目を施す"; furigana="めんぼくをほどこす"; arti="memulihkan mengangkat kembali martabat nama harum"},
+    @{kanji="面目一新"; furigana="めんもくいっしん"; arti="berubah total berganti wajah baru memesona"},
+    @{kanji="一新する"; furigana="いっしんする"; arti="merombak total memperbarui suasana secara radikal"},
+    @{kanji="刷新する"; furigana="さっしんする"; arti="mereformasi membersihkan tatanan dari oknum lama"},
+    @{kanji="革新"; furigana="かくしん"; arti="inovasi terobosan pembaruan mendobrak kelaziman"},
+    @{kanji="保守"; furigana="ほしゅ"; arti="konservatif mempertahankan tradisi pakem lama"},
+    @{kanji="中道"; furigana="ちゅうどう"; arti="moderat jalan tengah kompromis menolak ekstremis"},
+    @{kanji="右翼"; furigana="うよく"; arti="sayap kanan faksi nasionalis garis tegas politik"},
+    @{kanji="左翼"; furigana="さよく"; arti="sayap kiri faksi progresif reformis ideologis"},
+    @{kanji="強硬"; furigana="きょうこう"; arti="bersikap keras teguh pantang kompromi negosiasi"},
+    @{kanji="軟化"; furigana="なんか"; arti="pelunakan sikap mereda bersedia duduk berunding"},
+    @{kanji="緩和"; furigana="かんわ"; arti="pelonggaran relaksasi regulasi pembatasan krisis"},
+    @{kanji="鎮静"; furigana="ちんせい"; arti="peredaman penenangan gejolak histeria amarah"},
+    @{kanji="沈静化"; furigana="ちんせいか"; arti="berangsur tenangnya meredanya demonstrasi massa"},
+    @{kanji="激化"; furigana="げきか"; arti="eskalasi pertempuran kian memanas sengit membara"},
+    @{kanji="泥沼"; furigana="どろぬま"; arti="rawa lumpur hisap; jebakan kemelut berlarut-larut"},
+
+    # Idiomatic & Physical Metaphors
+    @{kanji="目を配る"; furigana="めをくばる"; arti="waspada mengedarkan pandangan memperhatikan sekeliling"},
+    @{kanji="目を盗む"; furigana="めをぬすむ"; arti="mencuri kelengahan mengendap-endap tanpa ketahuan"},
+    @{kanji="手を焼く"; furigana="てをやく"; arti="kewalahan kerepotan menghadapi kenakalan anak"},
+    @{kanji="手を打つ"; furigana="てをうつ"; arti="mengambil tindakan antisipasi langkah preventif solutif"},
+    @{kanji="手を引く"; furigana="てをひく"; arti="cuci tangan menarik diri mundur dari sindikat perkara"},
+    @{kanji="手を抜く"; furigana="てをぬく"; arti="bekerja asal-asalan sembrono mengabaikan standar mutu"},
+    @{kanji="足が出る"; furigana="あしがでる"; arti="anggaran nombok tekor melebihi estimasi biaya"},
+    @{kanji="足を引っ張る"; furigana="あしをひっぱる"; arti="menjegal menghambat kemajuan performa rekan kerja"},
+    @{kanji="足を延ばす"; furigana="あしをのばす"; arti="melanjutkan perjalanan bepergian lebih jauh ke kota lain"},
+    @{kanji="腹を割る"; furigana="はらをわる"; arti="buka-bukaan berterus terang bicara dari hati ke hati"},
+    @{kanji="腹をくくる"; furigana="はらをくくる"; arti="memantapkan hati pasrah siap menanggung segala risiko"},
+    @{kanji="耳を傾ける"; furigana="みみをかたむける"; arti="mendengarkan dengan saksama masukan aspirasi rakyat"},
+    @{kanji="耳を疑う"; furigana="みみをうたがう"; arti="tak percaya pada telinga sendiri mendengar kabar aneh"},
+    @{kanji="口を挟む"; furigana="くちをはさむ"; arti="menyela memotong percakapan orang lain seenaknya"},
+    @{kanji="口を滑らせる"; furigana="くちをすべらせる"; arti="keseleo lidah keceplosan membocorkan rahasia rapat"},
+    @{kanji="鼻が高い"; furigana="はながたかい"; arti="bangga bangga luar biasa atas torehan prestasi anak"},
+    @{kanji="鼻にかける"; furigana="はなにかける"; arti="sombong membanggakan kepintaran kelebihan diri"},
+    @{kanji="骨を折る"; furigana="ほねをおる"; arti="bersusah payah membanting tulang demi keberhasilan misi"},
+    @{kanji="実を結ぶ"; furigana="みをむすぶ"; arti="membuahkan hasil manis buah ketekunan kerja keras"},
+    @{kanji="身にしみる"; furigana="みにしみる"; arti="meresap ke lubuk hati; dingin menusuk hingga ke tulang"},
+    @{kanji="気を配る"; furigana="きをくばる"; arti="penuh perhatian peka terhadap kebutuhan tamu undangan"},
+    @{kanji="気をもむ"; furigana="きをもむ"; arti="cemas gundah gulana menanti kabar keselamatan tim"},
+    @{kanji="気を引く"; furigana="きをひく"; arti="mencuri perhatian sengaja memikat simpati lawan jenis"},
+
+    # Business, Societal & Academic N2 Concepts
+    @{kanji="斡旋"; furigana="あっせん"; arti="mediasi perantaraan fasilitasi penyelesaian kerja"},
+    @{kanji="仲裁"; furigana="ちゅうさい"; arti="arbitrase penengahan sengketa perselisihan buruh"},
+    @{kanji="調停"; furigana="ちょうてい"; arti="konsiliasi mediasi resmi persengketaan perdata"},
+    @{kanji="妥協"; furigana="だきょう"; arti="kompromi titik temu jalan tengah kedua pihak"},
+    @{kanji="折衷"; furigana="せっちゅう"; arti="eklektisisme perpaduan kompromis dua pandangan"},
+    @{kanji="均衡"; furigana="きんこう"; arti="ekuilibrium keseimbangan kekuatan di kancah pasar"},
+    @{kanji="均衡を保つ"; furigana="きんこうをたもつ"; arti="menjaga keseimbangan kestabilan stabilitas sistem"},
+    @{kanji="偏重"; furigana="へんちょう"; arti="penitikberatan berlebihan memprioritaskan sepihak"},
+    @{kanji="偏見"; furigana="へんけん"; arti="prasangka buruk praduga diskriminatif tanpa dasar"},
+    @{kanji="先入観"; furigana="せんにゅうかん"; arti="stereotip prasangka apriori opini subjektif awal"},
+    @{kanji="概念"; furigana="がいねん"; arti="konsep gagasan abstrak pokok filosofis keilmuan"},
+    @{kanji="観念"; furigana="かんねん"; arti="persepsi pemikiran gagasan batin; kepasrahan ikhlas"},
+    @{kanji="通念"; furigana="つうねん"; arti="konsensus khalayak pandangan umum yang berlaku"},
+    @{kanji="定説"; furigana="ていせつ"; arti="teori baku doktrin ilmiah yang telah mapan diakui"},
+    @{kanji="通説"; furigana="つうせつ"; arti="pandangan lazim teori populer yang dianut umum"},
+    @{kanji="異説"; furigana="いせつ"; arti="teori berbeda pandangan kontras hipotesis tandingan"},
+    @{kanji="俗説"; furigana="ぞくせつ"; arti="mitos populer anggapan mitos awam di masyarakat"},
+    @{kanji="学説"; furigana="がくせつ"; arti="teori akademis ajaran ilmiah para guru besar"},
+    @{kanji="提唱"; furigana="ていしょう"; arti="advokasi pencetusan usulan gagasan paradigma baru"},
+    @{kanji="提起"; furigana="ていき"; arti="pelontaran isu pengajuan masalah di hadapan forum"},
+    @{kanji="惹起"; furigana="じゃっき"; arti="penyulut pemicu timbulnya gelombang protes warga"},
+    @{kanji="波紋"; furigana="ほもん"; arti="riak reaksi kehebohan kontroversi opini publik"},
+    @{kanji="波及"; furigana="はきゅう"; arti="efek domino perambatan imbas krisis finansial global"},
+    @{kanji="浸透"; furigana="しんとう"; arti="penetrasi peresapan nilai budaya baru ke masyarakat"},
+    @{kanji="拡散"; furigana="かくさん"; arti="difusi penyebaran informasi viral ke media sosial"},
+    @{kanji="蔓延"; furigana="まんえん"; arti="perebakan meluasnya wabah penyakit menular di kota"},
+    @{kanji="氾濫"; furigana="はんらん"; arti="luapan banjir bah; membanjirnya berita hoaks palsu"},
+    @{kanji="枯渇"; furigana="こかつ"; arti="kekeringan penipisan habisnya cadangan minyak bumi"},
+    @{kanji="欠乏"; furigana="けつぼう"; arti="defisit kekurangan pasokan vitamin bahan pokok pangan"},
+    @{kanji="逼迫"; furigana="ひっぱく"; arti="kegentingan keterdesakan kondisi likuiditas kas"},
+    @{kanji="困窮"; furigana="こんきゅう"; arti="kemelaratan himpitan kepapaan hidup di pengungsian"},
+    @{kanji="貧困"; furigana="ひんこん"; arti="kemiskinan taraf hidup serba kekurangan kebutuhan"},
+    @{kanji="富裕"; furigana="ふゆう"; arti="kekayaan kemakmuran kelas sosial papan atas berharta"},
+    @{kanji="裕福"; furigana="ゆうふく"; arti="kaya raya serba berkecukupan materi keluarga berada"},
+    @{kanji="繁栄"; furigana="はんえい"; arti="kejayaan kemakmuran pesat peradaban kota bandar"},
+    @{kanji="隆盛"; furigana="りゅうせい"; arti="puncak kejayaan era keemasan dinasti kekaisaran"},
+    @{kanji="衰退"; furigana="すいたい"; arti="kemunduran dekadensi surutnya kejayaan industri tekstil"},
+    @{kanji="没落"; furigana="ぼつらく"; arti="kejatuhan kehancuran pamor keluarga ningrat terpuruk"},
+    @{kanji="崩壊"; furigana="ほうかい"; arti="keruntuhan kolapsnya struktur bangunan dan tatanan"},
+    @{kanji="破綻"; furigana="はたん"; arti="kebangkrutan kegagalan fatal neraca keuangan bisnis"},
+    @{kanji="挫折"; furigana="ざせつ"; arti="kegagalan terhentinya asa di tengah terjal perjuangan"},
+    @{kanji="頓挫"; furigana="とんざ"; arti="kebuntuan mandek terhentinya proyek konstruksi rel"},
+    @{kanji="暗礁"; furigana="あんしょう"; arti="karang terumbu tersembunyi; rintangan tak terduga"},
+    @{kanji="難航"; furigana="なんこう"; arti="tersendat berliku-liku negosiasi diplomasi damai"},
+    @{kanji="膠着"; furigana="こうちゃく"; arti="kebuntuan posisi macet tanpa kemajuan dua kubu"},
+    @{kanji="膠着状態"; furigana="こうちゃくじょうたい"; arti="situasi deadlock kebuntuan total di meja runding"},
+    @{kanji="打開"; furigana="だかい"; arti="terobosan mendobrak mengurai kemelut kebuntuan sengketa"},
+    @{kanji="打開策"; furigana="だかいさく"; arti="formula solusi jitu pemecah kebuntuan negosiasi"},
+    @{kanji="善後策"; furigana="ぜんごさく"; arti="langkah mitigasi kuratif penanggulangan pascabencana"},
+    @{kanji="処方箋"; furigana="しょほうせん"; arti="lembar resep racikan obat dokter; formula solusi solutif"},
+    @{kanji="処遇"; furigana="しょぐう"; arti="perlakuan pemberian hak kesejahteraan remunerasi staf"},
+    @{kanji="待遇"; furigana="たいぐう"; arti="perlakuan fasilitas gaji tunjangan kinerja karyawan"},
+    @{kanji="優遇"; furigana="ゆうぐう"; arti="perlakuan istimewa kemudahan prioritas perpajakan"},
+    @{kanji="冷遇"; furigana="れいぐう"; arti="perlakuan dingin diskriminasi pengabaian potensi talenta"},
+    @{kanji="歓待"; furigana="かんたい"; arti="penyambutan hangat perjamuan mulia delegasi sahabat"},
+    @{kanji="応対"; furigana="おうたい"; arti="pelayanan ramah menyambut tamu konsultasi kantor"},
+    @{kanji="接客"; furigana="せっきゃく"; arti="pelayanan sopan santun kepada pembeli di butik"},
+    @{kanji="接遇"; furigana="せつぐう"; arti="tata krama keramahtamahan jamuan protokol etika bisnis"},
+    @{kanji="応接"; furigana="おうせつ"; arti="resepsi menerima dan menjamu tamu kehormatan di lobi"},
+    @{kanji="面会"; furigana="めんかい"; arti="kunjungan menjenguk kerabat; tatap muka formal bisnis"},
+    @{kanji="接見"; furigana="せっけん"; arti="audiensi resmi penasihat hukum dengan klien perkara"},
+    @{kanji="会談"; furigana="かいだん"; arti="pembicaraan perundingan resmi bilateral para duta"},
+    @{kanji="懇談"; furigana="こんだん"; arti="bincang-bincang santai akrab bertukar pikiran gagasan"},
+    @{kanji="懇談会"; furigana="こんだんかい"; arti="forum musyawarah bincang santai pemangku kepentingan"},
+    @{kanji="討議"; furigana="とうぎ"; arti="pembahasan telaah mendalam draf undang-undang sidang"},
+    @{kanji="答申"; furigana="とうしん"; arti="rekomendasi naskah tanggapan resmi komisi penasihat"},
+    @{kanji="具申"; furigana="ぐしん"; arti="pengajuan saran usulan konstruktif dari staf bawahan"},
+    @{kanji="上申"; furigana="じょうしん"; arti="pelaporan resmi kepada instansi pucuk kepolisian"},
+    @{kanji="稟議"; furigana="りんぎ"; arti="pengajuan sirkulasi nota persetujuan memo direksi"},
+    @{kanji="決裁"; furigana="けっさい"; arti="otorisasi ketetapan persetujuan resmi berkas anggaran"},
+    @{kanji="専決"; furigana="せんけつ"; arti="keputusan prerogatif mandiri seorang kepala cabang"},
+    @{kanji="専横"; furigana="せんおう"; arti="kesewenang-wenangan hegemoni otoriter monarki absolut"},
+    @{kanji="横暴"; furigana="おうぼう"; arti="perilaku lalim bertangan besi semena-mena tiran"},
+    @{kanji="独善"; furigana="どくぜん"; arti="sifat merasa diri paling benar tanpa mendengar kritik"},
+    @{kanji="独善的"; furigana="どくぜんてき"; arti="berpola pikir arogan menganggap suci opini sendiri"},
+    @{kanji="独断"; furigana="どくだん"; arti="putusan sepihak tanpa musyawarah rapat anggota"},
+    @{kanji="独断専行"; furigana="どくだんせんこう"; arti="bertindak sepihak seenak hati tanpa koordinasi tim"},
+    @{kanji="専念"; furigana="せんねん"; arti="fokus mendedikasikan konsentrasi penuh pada studi"},
+    @{kanji="没頭"; furigana="ぼっとう"; arti="tenggelam asyik konsentrasi mendalam membuat karya"},
+    @{kanji="傾倒"; furigana="けいとう"; arti="sangat mengagumi terpikat ajaran filsafat humanis"},
+    @{kanji="耽溺"; furigana="たんでき"; arti="terjerumus kecanduan terbuai kenikmatan fatamorgana"},
+    @{kanji="固執"; furigana="こしゅう"; arti="ngotot berpegang keras kepala pada cara-cara lama"},
+    @{kanji="執着"; furigana="しゅうちゃく"; arti="kelekatan batin nafsu terobsesi mengejar duniawi"},
+    @{kanji="愛着"; furigana="あいちゃく"; arti="keterikatan rasa sayang membekas pada gitar tua"},
+    @{kanji="執念"; furigana="しゅうねん"; arti="tekad membara kegigihan tak kenal menyerah detektif"},
+    @{kanji="念願"; furigana="ねんがん"; arti="keinginan lama dambaan kalbu yang akhirnya tercapai"},
+    @{kanji="悲願"; furigana="ひがん"; arti="cita-cita luhur perjuangan panjang merebut medali"},
+    @{kanji="宿願"; furigana="しゅくがん"; arti="impian pusaka tekad leluhur yang terwujud nyata"},
+    @{kanji="本懐"; furigana="ほんかい"; arti="hasrat terdalam kepuasan batin cita-cita tergapai"},
+    @{kanji="宿命"; furigana="しゅくめい"; arti="garis suratan takdir yang tak kuasa dihindari"},
+    @{kanji="奇縁"; furigana="きえん"; arti="pertalian takdir unik pertemuan jodoh di negeri asing"},
+    @{kanji="縁起"; furigana="えんぎ"; arti="firasat pertanda mitos berkah pembawa rezeki hoki"},
+    @{kanji="吉兆"; furigana="きっちょう"; arti="pertanda baik alamat keberuntungan menyapa pelaut"},
+    @{kanji="凶兆"; furigana="きょうちょう"; arti="pertanda buruk alamat datangnya kemalangan petaka"},
+    @{kanji="前兆"; furigana="ぜんちょう"; arti="sinyal awal fenomena keganjilan sebelum gempa bumi"},
+    @{kanji="予兆"; furigana="よちょう"; arti="tanda-tanda kemunculan magma sebelum letusan gunung"},
+    @{kanji="兆候"; furigana="ちょうこう"; arti="gejala tanda klinis awal penurunan kekebalan tubuh"},
+
+    # Additional N2 Verbs & Nouns to guarantee >= 250
+    @{kanji="介在"; furigana="かいざい"; arti="keberadaan penengah intervensi di antara dua kubu"},
+    @{kanji="介入"; furigana="かいにゅう"; arti="campur tangan intervensi militer kedaulatan bangsa"},
+    @{kanji="干渉"; furigana="かんしょう"; arti="interferensi mencampuri urusan rumah tangga orang"},
+    @{kanji="関与"; furigana="かんよ"; arti="keterlibatan peran serta andil dalam transaksi gelap"},
+    @{kanji="加担"; furigana="かたん"; arti="keterlibatan bersekongkol mendukung komplotan aksi jahat"},
+    @{kanji="共謀"; furigana="きょうぼう"; arti="persekongkolan pemufakatan jahat merancang makar"},
+    @{kanji="結託"; furigana="けったく"; arti="kolusi main mata bersekutu meraup rente proyek"},
+    @{kanji="癒着"; furigana="ゆちゃく"; arti="kongkalikong kolusi mesra pejabat korup dan cukong"},
+    @{kanji="共鳴"; furigana="きょうめい"; arti="resonansi getaran; simpati sehati pada perjuangan"},
+    @{kanji="呼応"; furigana="こおう"; arti="menyambut gayung bersambut seirama dengan seruan"},
+    @{kanji="連携"; furigana="れんけい"; arti="kerja sama kemitraan bersinergi antar lembaga riset"},
+    @{kanji="連帯"; furigana="れんたい"; arti="solidaritas kekompakan senasib sepenanggungan buruh"},
+    @{kanji="提携"; furigana="ていけい"; arti="aliansi kemitraan strategis dua maskapai penerbangan"},
+    @{kanji="協調"; furigana="きょうちょう"; arti="kerja sama harmonis keselarasan kebijakan moneter"},
+    @{kanji="協約"; furigana="きょうやく"; arti="perjanjian pakta kesepakatan tertulis bersama pakta"},
+    @{kanji="条約"; furigana="じょうやく"; arti="traktat perjanjian internasional antar negara berdaulat"},
+    @{kanji="盟約"; furigana="めいやく"; arti="pakta ikrar persahabatan sumpah setia pertahanan"},
+    @{kanji="信義"; furigana="しんぎ"; arti="asas kejujuran iktikad baik kesetiaan moral janji"},
+    @{kanji="誠意"; furigana="せいい"; arti="ketulusan iktikad baik kesungguhan niat meminta maaf"},
+    @{kanji="真心"; furigana="まごころ"; arti="hati yang tulus suci pengabdian tanpa pamrih bunda"},
+    @{kanji="情け"; furigana="なさけ"; arti="belas kasihan rasa iba kemanusiaan empati nurani"},
+    @{kanji="慈愛"; furigana="じあい"; arti="kasih sayang tulus penuh kebapakan dan keibuan"},
+    @{kanji="博愛"; furigana="はくあい"; arti="filantropi cinta kasih universal sesama manusia"}
+)
+
+# Filter unique clean candidates
+$cleanBatch6 = [System.Collections.Generic.List[object]]::new()
+$seenBatch6 = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+
+foreach ($item in $candidatePool6) {
+    $k = $item.kanji.Trim()
+    if (-not $existingKanjiSet.Contains($k) -and -not $seenBatch6.Contains($k)) {
+        $cleanBatch6.Add($item)
+        $seenBatch6.Add($k) | Out-Null
+    }
+}
+
+Write-Host "Total clean candidates available: $($cleanBatch6.Count)"
+if ($cleanBatch6.Count -lt 250) {
+    Write-Error "Clean candidates less than 250! Count: $($cleanBatch6.Count)"
+    exit 1
+}
+
+# Take exactly 250 items
+$selected250 = $cleanBatch6 | Select-Object -First 250
+
+$batch6Final = [System.Collections.Generic.List[object]]::new()
+$startId = 3751
+
+for ($i = 0; $i -lt 250; $i++) {
+    $cur = $selected250[$i]
+    $obj = [ordered]@{
+        id = $startId + $i
+        kanji = $cur.kanji.Trim()
+        furigana = $cur.furigana.Trim()
+        arti = $cur.arti.Trim()
+        level = "N2"
+    }
+    $batch6Final.Add($obj)
+}
+
+Write-Host "Batch 6 constructed with $($batch6Final.Count) words. ID range: $($batch6Final[0].id) .. $($batch6Final[-1].id)"
+
+# Combine
+$allWords = [System.Collections.Generic.List[object]]::new()
+foreach ($item in $existing) {
+    $allWords.Add($item)
+}
+foreach ($item in $batch6Final) {
+    $allWords.Add($item)
+}
+
+Write-Host "Combined total words: $($allWords.Count)"
+
+# Comprehensive validation
+$n4Count = ($allWords | Where-Object { $_.level -eq 'N4' }).Count
+$n3Count = ($allWords | Where-Object { $_.level -eq 'N3' }).Count
+$n2Count = ($allWords | Where-Object { $_.level -eq 'N2' }).Count
+
+Write-Host "Level Breakdown - N4: $n4Count, N3: $n3Count, N2: $n2Count"
+
+$checkKanjiSet = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::OrdinalIgnoreCase)
+$dupeList = [System.Collections.Generic.List[string]]::new()
+
+for ($i = 0; $i -lt $allWords.Count; $i++) {
+    $expectedId = $i + 1
+    if ($allWords[$i].id -ne $expectedId) {
+        Write-Error "ID mismatch at index $i! Expected $expectedId, got $($allWords[$i].id)"
+        exit 1
+    }
+    $k = $allWords[$i].kanji.Trim()
+    if ($checkKanjiSet.Contains($k)) {
+        $dupeList.Add($k)
+    } else {
+        $checkKanjiSet.Add($k) | Out-Null
+    }
+}
+
+if ($dupeList.Count -gt 0) {
+    Write-Error "DUPLICATES DETECTED: $($dupeList.Count)"
+    $dupeList | ForEach-Object { Write-Host " - $_" }
+    exit 1
+}
+
+if ($allWords.Count -ne 4000 -or $n4Count -ne 700 -or $n3Count -ne 1800 -or $n2Count -ne 1500) {
+    Write-Error "Validation failed: Counts do not match 4000 total, 700 N4, 1800 N3, 1500 N2!"
+    exit 1
+}
+
+Write-Host "All validations PASSED! Writing data/vocabulary.json and data/vocabulary.js..."
+
+# Write JSON
+$utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+$newJson = ConvertTo-Json -InputObject $allWords -Depth 5
+[System.IO.File]::WriteAllText((Resolve-Path $jsonPath).Path, $newJson, $utf8NoBom)
+
+# Write JS
+$jsHeader = "/* Auto-generated fallback so the app works even when opened via file:// (double-click). */`nwindow.VOCAB = "
+$newJs = $jsHeader + $newJson + ";"
+[System.IO.File]::WriteAllText((Resolve-Path $jsPath).Path, $newJs, $utf8NoBom)
+
+Write-Host "SUCCESS: Batch 6 written! 4000 total words (N4: 700, N3: 1800, N2: 1500). ZERO DUPLICATES."

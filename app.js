@@ -1,5 +1,5 @@
 /* ============================================================
-   Kotoba — PWA Hafal Kosakata JLPT N4 & N3
+   Kotoba — PWA Hafal Kosakata JLPT N4, N3 & N2
    Active Recall + Spaced Repetition (Leitner). No backend.
    ============================================================ */
 'use strict';
@@ -10,6 +10,7 @@ const K = {
   progress: 'kotoba.progress',
   streak: 'kotoba.streak',
   wrongSolved: 'kotoba.wrongSolved',
+  customReadings: 'kotoba.customReadings',
 };
 const load = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch { return def; } };
 const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -20,11 +21,15 @@ const DAY = 86400000;
 /* ---------- Global state ---------- */
 const State = {
   vocab: [],
+  readings: [],
   settings: load(K.settings, { furigana: true, theme: 'dark' }),
   progress: load(K.progress, {}),   // id -> {correct,wrong,last,box,due,seen}
   streak: load(K.streak, { current: 0, last: null, best: 0 }),
   route: 'home',
   wrongSolved: load(K.wrongSolved, {}),
+  customReadings: load(K.customReadings, []),
+  materiTab: 'vocab',               // 'vocab' | 'reading'
+  activeReading: null,
 };
 let listObserver = null;
 
@@ -175,6 +180,177 @@ function ruby(v) { return `<ruby>${esc(v.kanji)}<rt>${esc(v.furigana)}</rt></rub
 function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[a[i], a[j]] = [a[j], a[i]]; } return a; }
 function sample(arr, n, exclude) { const pool = arr.filter(x => x !== exclude); return shuffle(pool).slice(0, n); }
 
+function speakJapanese(text) {
+  if (!('speechSynthesis' in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'ja-JP';
+    u.rate = 0.88;
+    window.speechSynthesis.speak(u);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+let vocabMatcher = null;
+function buildVocabMatcher() {
+  if (vocabMatcher) return vocabMatcher;
+  const isKanji = (str) => /[\u4e00-\u9faf]/.test(str);
+  const isKatakana = (str) => /^[\u30a0-\u30ff]+$/.test(str);
+
+  const map = new Map();
+  for (let i = 0; i < State.vocab.length; i++) {
+    const item = State.vocab[i];
+    if (isKanji(item.kanji)) {
+      if (!map.has(item.kanji)) map.set(item.kanji, item);
+      const k = item.kanji;
+      const last = k[k.length - 1];
+      const stem = k.slice(0, -1);
+      if (last === 'る') {
+        const sufs = ['ます', 'ました', 'ません', 'て', 'た', 'ない', 'たい', 'ている', 'ています', 'られる', 'られた'];
+        for (let s of sufs) if (!map.has(stem + s)) map.set(stem + s, item);
+      } else if (last === 'く') {
+        const sufs = ['きます', 'きました', 'いて', 'いた', 'かない', 'ける'];
+        for (let s of sufs) if (!map.has(stem + s)) map.set(stem + s, item);
+      } else if (last === 'す') {
+        const sufs = ['します', 'しました', 'して', 'した', 'さない', 'せる'];
+        for (let s of sufs) if (!map.has(stem + s)) map.set(stem + s, item);
+      } else if (last === 'つ') {
+        const sufs = ['ちます', 'ちました', 'って', 'った', 'たない'];
+        for (let s of sufs) if (!map.has(stem + s)) map.set(stem + s, item);
+      } else if (last === 'う') {
+        const sufs = ['います', 'いました', 'って', 'った', 'わない'];
+        for (let s of sufs) if (!map.has(stem + s)) map.set(stem + s, item);
+      } else if (last === 'む') {
+        const sufs = ['みます', 'みました', 'んで', 'んだ', 'まない'];
+        for (let s of sufs) if (!map.has(stem + s)) map.set(stem + s, item);
+      } else if (last === 'ぶ') {
+        const sufs = ['びます', 'びました', 'んで', 'んだ', 'ばない'];
+        for (let s of sufs) if (!map.has(stem + s)) map.set(stem + s, item);
+      } else if (last === 'い') {
+        const sufs = ['かった', 'くない', 'く'];
+        for (let s of sufs) if (!map.has(stem + s)) map.set(stem + s, item);
+      }
+    } else if (isKatakana(item.kanji) && item.kanji.length >= 2) {
+      if (!map.has(item.kanji)) map.set(item.kanji, item);
+    } else if (item.kanji.length >= 3) {
+      if (!map.has(item.kanji)) map.set(item.kanji, item);
+    }
+  }
+
+  const keys = Array.from(map.keys()).sort((a, b) => b.length - a.length);
+  vocabMatcher = { map, keys };
+  return vocabMatcher;
+}
+
+function countWordsInText(text) {
+  const { map, keys } = buildVocabMatcher();
+  let i = 0;
+  const uniqueVocab = new Map();
+  while (i < text.length) {
+    let matched = null;
+    for (let k = 0; k < keys.length; k++) {
+      if (text.startsWith(keys[k], i)) {
+        matched = keys[k];
+        break;
+      }
+    }
+    if (matched) {
+      const v = map.get(matched);
+      if (!uniqueVocab.has(v.id)) {
+        uniqueVocab.set(v.id, v);
+      }
+      i += matched.length;
+    } else {
+      i += 1;
+    }
+  }
+  const words = Array.from(uniqueVocab.values());
+  return {
+    count: words.length,
+    words: words
+  };
+}
+
+function renderParagraphWithHighlights(paragraph) {
+  const { map, keys } = buildVocabMatcher();
+  let i = 0;
+  let out = '';
+  while (i < paragraph.length) {
+    let matched = null;
+    for (let k = 0; k < keys.length; k++) {
+      if (paragraph.startsWith(keys[k], i)) {
+        matched = keys[k];
+        break;
+      }
+    }
+    if (matched) {
+      const v = map.get(matched);
+      let innerHTML = '';
+      if (matched === v.kanji && v.kanji !== v.furigana) {
+        innerHTML = `<ruby>${esc(matched)}<rt>${esc(v.furigana)}</rt></ruby>`;
+      } else {
+        innerHTML = esc(matched);
+      }
+      out += `<span class="dokkai-word" data-vid="${v.id}" title="${esc(v.kanji)}: ${esc(v.arti)}">${innerHTML}</span>`;
+      i += matched.length;
+    } else {
+      out += esc(paragraph[i]);
+      i += 1;
+    }
+  }
+  return out;
+}
+
+function openKotobaModal(vocabId) {
+  const v = State.vocab.find(x => x.id === Number(vocabId));
+  if (!v) return;
+
+  const s = State.progress[v.id];
+  const box = s ? s.box || 0 : 0;
+  let statusHTML = '';
+  if (box >= MASTER_BOX) {
+    statusHTML = `<span class="kb-status-chip" style="color:var(--green)"><span class="ico">🏆</span> Dikuasai (Box ${box})</span>`;
+  } else if (isLearned(v.id)) {
+    statusHTML = `<span class="kb-status-chip" style="color:var(--orange)"><span class="ico">📖</span> Sedang Dipelajari (Box ${box})</span>`;
+  } else {
+    statusHTML = `<span class="kb-status-chip" style="color:var(--text-dim)"><span class="ico">✨</span> Belum Dipelajari</span>`;
+  }
+
+  const modalBackdrop = document.getElementById('kotobaModalBackdrop');
+  const modalContent = document.getElementById('kotobaModalContent');
+  if (!modalBackdrop || !modalContent) return;
+
+  modalContent.innerHTML = `
+    <div class="kb-header">
+      <div class="kb-kanji-wrap">
+        <span class="kb-furigana">${esc(v.furigana)}</span>
+        <div class="kb-kanji">${esc(v.kanji)}</div>
+      </div>
+      <div class="kb-actions">
+        <button class="kb-icon-btn" id="kbSpeakBtn" title="Dengarkan pengucapan">🔊</button>
+        <button class="kb-icon-btn" id="kbCloseBtn" title="Tutup">✕</button>
+      </div>
+    </div>
+    <div class="kb-meaning">${esc(v.arti)}</div>
+    <div class="kb-footer">
+      <span class="kb-level-badge lv ${v.level}">${v.level}</span>
+      ${statusHTML}
+    </div>
+  `;
+
+  modalContent.querySelector('#kbSpeakBtn').onclick = () => speakJapanese(v.kanji);
+  modalContent.querySelector('#kbCloseBtn').onclick = closeKotobaModal;
+
+  modalBackdrop.classList.add('show');
+}
+
+function closeKotobaModal() {
+  const modalBackdrop = document.getElementById('kotobaModalBackdrop');
+  if (modalBackdrop) modalBackdrop.classList.remove('show');
+}
+
 let toastTimer;
 function toast(msg) { const el = document.getElementById('toast'); el.textContent = msg; el.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 1800); }
 
@@ -204,6 +380,8 @@ function navigate(route) {
   let activeNav = route;
   if (route === 'statsDetail' || route === 'statsDetailQuiz') {
     activeNav = 'stats';
+  } else if (route === 'reading' || route === 'readingDetail') {
+    activeNav = 'list';
   }
   document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.nav === activeNav));
   const app = document.getElementById('app');
@@ -220,6 +398,7 @@ Views.home = (app) => {
   const total = State.vocab.length;
   const n4 = State.vocab.filter(v => v.level === 'N4').length;
   const n3 = State.vocab.filter(v => v.level === 'N3').length;
+  const n2 = State.vocab.filter(v => v.level === 'N2').length;
   const learned = State.vocab.filter(v => isLearned(v.id)).length;
   const mastered = State.vocab.filter(v => isMastered(v.id)).length;
   const pct = total ? Math.round(learned / total * 100) : 0;
@@ -241,9 +420,12 @@ Views.home = (app) => {
       </section>
 
       <section>
-        <div class="grid stat-grid">
+        <div class="grid stat-grid-levels">
           <div class="stat clickable" data-stat="N4"><span class="ico">🔵</span><div class="val">${n4}</div><div class="lbl">Kosakata N4</div></div>
           <div class="stat clickable" data-stat="N3"><span class="ico">🟢</span><div class="val">${n3}</div><div class="lbl">Kosakata N3</div></div>
+          <div class="stat clickable" data-stat="N2"><span class="ico">🟠</span><div class="val">${n2}</div><div class="lbl">Kosakata N2</div></div>
+        </div>
+        <div class="grid stat-grid-summary" style="margin-top:12px">
           <div class="stat clickable" data-stat="learned"><span class="ico">📖</span><div class="val">${learned}</div><div class="lbl">Sudah dipelajari</div></div>
           <div class="stat clickable" data-stat="mastered"><span class="ico">🏆</span><div class="val">${mastered}</div><div class="lbl">Sudah dikuasai</div></div>
         </div>
@@ -260,11 +442,32 @@ Views.home = (app) => {
         </div>
       </section>
 
+      <section style="margin-top:14px">
+        <div class="card reading-banner-card" id="homeReadingBanner" style="cursor:pointer; display:flex; align-items:center; justify-content:space-between; padding:18px 20px; background:linear-gradient(135deg, rgba(99,102,241,0.12), rgba(168,85,247,0.1)); border:1px solid rgba(99,102,241,0.25);">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <span style="font-size:30px;">📖</span>
+            <div>
+              <div style="font-weight:700; font-size:16px; color:var(--text);">Sistem Bacaan (読解)</div>
+              <div style="font-size:13px; color:var(--text-soft); margin-top:2px;">Baca artikel kontekstual dengan deteksi kotoba otomatis</div>
+            </div>
+          </div>
+          <span style="font-size:18px; color:var(--primary); font-weight:700; margin-left:8px;">→</span>
+        </div>
+      </section>
+
     </div>`;
+
+  const banner = app.querySelector('#homeReadingBanner');
+  if (banner) {
+    banner.onclick = () => {
+      State.materiTab = 'reading';
+      navigate('list');
+    };
+  }
 
   app.querySelectorAll('[data-stat]').forEach(b => b.onclick = () => {
     const s = b.dataset.stat;
-    if (s === 'N4' || s === 'N3') {
+    if (s === 'N4' || s === 'N3' || s === 'N2') {
       ListState.level = s;
       ListState.filter = 'all';
     } else if (s === 'learned') {
@@ -287,6 +490,10 @@ function greet() { const h = new Date().getHours(); if (h < 11) return 'Selamat 
 const ListState = { q: '', level: 'all', filter: 'all', limit: 60 };
 
 Views.list = (app) => {
+  if (State.materiTab === 'reading') {
+    Views.reading(app);
+    return;
+  }
   const stats = getMasteryStats(ListState.level);
   let triggerText = `Dikuasai : ${stats.dikuasai}`;
   if (ListState.filter === 'hampir') triggerText = `Hampir : ${stats.hampir}`;
@@ -296,7 +503,12 @@ Views.list = (app) => {
 
   app.innerHTML = `
     <div class="view">
-      <h1 class="page-title">Daftar Kosakata<span class="sub">${State.vocab.length} kata · JLPT N4 &amp; N3</span></h1>
+      <div class="materi-tabs">
+        <button class="materi-tab active" data-mtab="vocab"><span class="tab-ico">📚</span> Daftar Kosakata</button>
+        <button class="materi-tab" data-mtab="reading"><span class="tab-ico">📖</span> Sistem Bacaan (読解)</button>
+      </div>
+
+      <h1 class="page-title">Daftar Kosakata<span class="sub">${State.vocab.length} kata · JLPT N4, N3 &amp; N2</span></h1>
 
       <div class="toolbar">
         <div class="search">
@@ -308,6 +520,7 @@ Views.list = (app) => {
             <button data-lv="all" class="${ListState.level === 'all' ? 'active' : ''}">Semua</button>
             <button data-lv="N4" class="${ListState.level === 'N4' ? 'active' : ''}">N4</button>
             <button data-lv="N3" class="${ListState.level === 'N3' ? 'active' : ''}">N3</button>
+            <button data-lv="N2" class="${ListState.level === 'N2' ? 'active' : ''}">N2</button>
           </div>
 
           <!-- DROPDOWN COUNTER TEPAT DI SAMPING SEMUA/N4/N3 -->
@@ -359,6 +572,15 @@ Views.list = (app) => {
       <div class="vocab-grid" id="vgrid"></div>
       <div id="more" style="text-align:center;margin-top:18px"></div>
     </div>`;
+
+  app.querySelectorAll('[data-mtab]').forEach(b => b.onclick = () => {
+    State.materiTab = b.dataset.mtab;
+    if (State.materiTab === 'reading') {
+      Views.reading(app);
+    } else {
+      Views.list(app);
+    }
+  });
 
   const q = app.querySelector('#q');
   q.oninput = () => { ListState.q = q.value; ListState.limit = 60; renderList(); };
@@ -473,6 +695,331 @@ function cardHTML(v) {
 }
 
 /* ============================================================
+   VIEW: SISTEM BACAAN (Dokkai / Reading)
+   ============================================================ */
+const ReadingState = {
+  level: 'all', // 'all', 'N4', 'N3', 'N2', 'custom'
+};
+
+Views.reading = (app) => {
+  State.materiTab = 'reading';
+  const customList = State.customReadings || [];
+  const allReadings = [...State.readings, ...customList];
+
+  let pool = allReadings;
+  if (ReadingState.level === 'custom') {
+    pool = customList;
+  } else if (ReadingState.level !== 'all') {
+    pool = allReadings.filter(r => r.level === ReadingState.level);
+  }
+
+  app.innerHTML = `
+    <div class="view">
+      <div class="materi-tabs">
+        <button class="materi-tab" data-mtab="vocab"><span class="tab-ico">📚</span> Daftar Kosakata</button>
+        <button class="materi-tab active" data-mtab="reading"><span class="tab-ico">📖</span> Sistem Bacaan (読解)</button>
+      </div>
+
+      <h1 class="page-title">Sistem Bacaan (読解)<span class="sub">Latih pemahaman kotoba dalam konteks cerita bersambung &amp; artikel</span></h1>
+
+      <div class="toolbar" style="margin-bottom:12px;">
+        <div class="segmented" id="readingLvFilter">
+          <button data-rlv="all" class="${ReadingState.level === 'all' ? 'active' : ''}">Semua</button>
+          <button data-rlv="N4" class="${ReadingState.level === 'N4' ? 'active' : ''}">N4</button>
+          <button data-rlv="N3" class="${ReadingState.level === 'N3' ? 'active' : ''}">N3</button>
+          <button data-rlv="N2" class="${ReadingState.level === 'N2' ? 'active' : ''}">N2</button>
+          <button data-rlv="custom" class="${ReadingState.level === 'custom' ? 'active' : ''}">➕ Teks Mandiri</button>
+        </div>
+      </div>
+
+      ${ReadingState.level === 'custom' ? `
+        <div class="custom-reading-box">
+          <div style="font-weight:700; font-size:16px; color:var(--text); display:flex; align-items:center; gap:8px;">
+            <span>✍️</span> Tempel / Masukkan Teks Jepang Sendiri
+          </div>
+          <p style="font-size:13.5px; color:var(--text-soft); margin:0;">
+            Salin artikel berita (seperti NHK Easy), dialog anime, atau bacaan apa saja. Sistem akan mendeteksi kosakata yang cocok dengan database Kotoba dan mengelompokkannya sesuai level pilihanmu.
+          </p>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <label style="font-size:13px; font-weight:600; color:var(--text-soft);">Tentukan Level Target Teks Ini:</label>
+            <div class="segmented" id="customLevelSelect" style="max-width:320px;">
+              <button type="button" data-clv="N4" class="clv-btn">N4</button>
+              <button type="button" data-clv="N3" class="clv-btn active">N3</button>
+              <button type="button" data-clv="N2" class="clv-btn">N2</button>
+              <button type="button" data-clv="Mandiri" class="clv-btn">Umum</button>
+            </div>
+          </div>
+          <input type="text" class="input-title" id="customTitle" placeholder="Judul Teks (opsional, contoh: Berita NHK Hari Ini)" />
+          <textarea id="customContent" placeholder="Tempel teks bahasa Jepang di sini..."></textarea>
+          <button class="submit-btn" id="customSubmitBtn">
+            <span>🚀</span> Analisis &amp; Mulai Membaca
+          </button>
+        </div>
+      ` : ''}
+
+      <div class="reading-grid" id="readingGrid">
+        ${pool.length > 0 ? pool.map(renderReadingCard).join('') : (
+          ReadingState.level === 'custom'
+            ? '<div style="margin-top:20px; color:var(--text-dim); text-align:center; font-size:14px; grid-column:1/-1;">Belum ada teks mandiri yang disimpan. Masukkan teks di atas untuk mulai membaca!</div>'
+            : '<div class="empty" style="grid-column:1/-1"><div class="big">📖</div>Belum ada bacaan untuk level ini.</div>'
+        )}
+      </div>
+    </div>
+  `;
+
+  // Attach tabs
+  app.querySelectorAll('[data-mtab]').forEach(b => b.onclick = () => {
+    State.materiTab = b.dataset.mtab;
+    if (State.materiTab === 'vocab') {
+      Views.list(app);
+    } else {
+      Views.reading(app);
+    }
+  });
+
+  // Attach level filters
+  app.querySelectorAll('#readingLvFilter button').forEach(b => b.onclick = () => {
+    ReadingState.level = b.dataset.rlv;
+    Views.reading(app);
+  });
+
+  // Level selector for custom reading
+  let chosenLevel = 'N3';
+  app.querySelectorAll('.clv-btn').forEach(btn => {
+    btn.onclick = () => {
+      app.querySelectorAll('.clv-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      chosenLevel = btn.dataset.clv;
+    };
+  });
+
+  // Custom text submit
+  const submitBtn = app.querySelector('#customSubmitBtn');
+  if (submitBtn) {
+    submitBtn.onclick = () => {
+      const content = (app.querySelector('#customContent').value || '').trim();
+      if (!content) {
+        toast('Silakan masukkan teks Jepang terlebih dahulu');
+        return;
+      }
+      let title = (app.querySelector('#customTitle').value || '').trim();
+      if (!title) title = 'Teks Mandiri #' + (customList.length + 1);
+
+      const paragraphs = content.split(/\n+/).map(p => p.trim()).filter(Boolean);
+      const customItem = {
+        id: 'c-' + Date.now(),
+        level: chosenLevel,
+        title: title,
+        titleArti: 'Teks Mandiri Pengguna (' + chosenLevel + ')',
+        paragraphs: paragraphs,
+        translations: [],
+        isCustom: true
+      };
+
+      State.customReadings = [customItem, ...State.customReadings];
+      save(K.customReadings, State.customReadings);
+      toast(`Teks berhasil disimpan sebagai level ${chosenLevel}!`);
+      openReadingDetail(customItem);
+    };
+  }
+
+  // Delete custom reading
+  app.querySelectorAll('.custom-del-btn').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation();
+      const delId = btn.dataset.delid;
+      if (confirm('Hapus teks mandiri ini dari daftar simpanan?')) {
+        State.customReadings = (State.customReadings || []).filter(x => x.id !== delId);
+        save(K.customReadings, State.customReadings);
+        toast('Teks mandiri berhasil dihapus');
+        Views.reading(app);
+      }
+    };
+  });
+
+  // Card clicks
+  app.querySelectorAll('.reading-card').forEach(card => {
+    card.onclick = () => {
+      const rid = card.dataset.rid;
+      const r = allReadings.find(x => x.id === rid);
+      if (r) openReadingDetail(r);
+    };
+  });
+};
+
+function renderReadingCard(r) {
+  const fullText = (r.paragraphs || []).join('');
+  const detected = countWordsInText(fullText);
+  const preview = r.paragraphs && r.paragraphs[0] ? r.paragraphs[0] : '';
+  const levelBadgeClass = r.level === 'Mandiri' ? 'N4' : r.level;
+
+  return `
+    <div class="reading-card" data-rid="${esc(r.id)}">
+      ${r.series ? `
+        <div class="reading-card-series">
+          <span>📖</span> ${esc(r.series)}${r.seriesPart ? ` · Bab ${r.seriesPart}` : ''}
+        </div>
+      ` : ''}
+      <div class="reading-card-header">
+        <div>
+          <div class="reading-card-title">${esc(r.title)}</div>
+          ${r.titleArti ? `<div class="reading-card-subtitle">${esc(r.titleArti)}</div>` : ''}
+        </div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="lv ${levelBadgeClass}">${esc(r.level)}</span>
+          ${r.isCustom ? `<button class="custom-del-btn" data-delid="${esc(r.id)}" title="Hapus teks ini">🗑️</button>` : ''}
+        </div>
+      </div>
+      <div class="reading-card-preview">${esc(preview)}</div>
+      <div class="reading-card-meta">
+        <span class="reading-card-chip">✨ ${detected.count} Kotoba Terdeteksi</span>
+        <span style="font-weight:600; color:var(--primary); display:flex; align-items:center; gap:4px;">
+          Mulai Baca →
+        </span>
+      </div>
+    </div>
+  `;
+}
+
+function openReadingDetail(readingItem) {
+  State.activeReading = readingItem;
+  navigate('readingDetail');
+}
+
+Views.readingDetail = (app) => {
+  const r = State.activeReading;
+  if (!r) {
+    Views.reading(app);
+    return;
+  }
+
+  const allReadings = [...State.readings, ...(State.customReadings || [])];
+  const prevChapter = r.prevId ? allReadings.find(x => x.id === r.prevId) : null;
+  const nextChapter = r.nextId ? allReadings.find(x => x.id === r.nextId) : null;
+
+  const fullText = (r.paragraphs || []).join('');
+  const detected = countWordsInText(fullText);
+  const levelBadgeClass = r.level === 'Mandiri' ? 'N4' : r.level;
+  const hasTranslations = Array.isArray(r.translations) && r.translations.length > 0;
+
+  app.innerHTML = `
+    <div class="view reader-wrap">
+      <button class="reader-back" id="readerBackBtn">
+        ← Kembali ke Daftar Bacaan
+      </button>
+
+      <div class="reader-title-box">
+        ${r.series ? `
+          <div class="reading-card-series" style="font-size:13px; margin-bottom:6px;">
+            <span>📖</span> Seri: ${esc(r.series)}${r.seriesPart ? ` (Bab ${r.seriesPart})` : ''}
+          </div>
+        ` : ''}
+        <div class="reader-title">${esc(r.title)}</div>
+        ${r.titleArti ? `<div class="reader-subtitle">${esc(r.titleArti)}</div>` : ''}
+        <div class="reader-badge-row">
+          <span class="lv ${levelBadgeClass}">${esc(r.level)}</span>
+          <span class="reading-card-chip">✨ ${detected.count} Kotoba Cocok di Database</span>
+          <span style="font-size:12.5px; color:var(--text-dim); margin-left:auto;">Ketuk kata bergaris untuk melihat arti</span>
+        </div>
+      </div>
+
+      <div class="reader-article">
+        ${r.paragraphs.map(p => `<p class="reader-paragraph">${renderParagraphWithHighlights(p)}</p>`).join('')}
+      </div>
+
+      ${hasTranslations ? `
+        <button class="reader-trans-toggle" id="transToggleBtn">
+          <span>👁️</span> Tampilkan Terjemahan Bahasa Indonesia
+        </button>
+        <div class="reader-trans-box" id="transBox">
+          <div style="font-weight:700; font-size:15px; margin-bottom:12px; color:var(--text);">🇮🇩 Terjemahan Cerita / Artikel:</div>
+          ${r.translations.map(t => `<p class="reader-trans-p">${esc(t)}</p>`).join('')}
+        </div>
+      ` : ''}
+
+      ${(prevChapter || nextChapter) ? `
+        <div class="reader-nav-row">
+          ${prevChapter ? `
+            <button class="reader-nav-btn" id="prevChapterBtn">
+              <span>←</span> Bab Sebelumnya
+            </button>
+          ` : '<div></div>'}
+          ${nextChapter ? `
+            <button class="reader-nav-btn" id="nextChapterBtn" style="background:var(--primary); color:#ffffff; border-color:var(--primary);">
+              Bab Berikutnya: ${esc(nextChapter.title.slice(0, 15))}... <span>→</span>
+            </button>
+          ` : ''}
+        </div>
+      ` : ''}
+
+      ${detected.words.length > 0 ? `
+        <div class="reader-vocab-summary">
+          <h3>
+            <span>📚</span> Kosakata dalam Bacaan Ini (${detected.words.length})
+          </h3>
+          <div class="reader-vocab-grid">
+            ${detected.words.map(w => `
+              <div class="reader-mini-chip" data-vid="${w.id}">
+                <div class="top">
+                  <span class="kj">${esc(w.kanji)}</span>
+                  <span class="lv ${w.level}" style="font-size:10px; padding:1px 6px;">${w.level}</span>
+                </div>
+                <div class="ar">${esc(w.arti)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+
+  // Back button
+  app.querySelector('#readerBackBtn').onclick = () => {
+    Views.reading(app);
+  };
+
+  // Chapter navigation buttons
+  const prevBtn = app.querySelector('#prevChapterBtn');
+  if (prevBtn && prevChapter) {
+    prevBtn.onclick = () => openReadingDetail(prevChapter);
+  }
+  const nextBtn = app.querySelector('#nextChapterBtn');
+  if (nextBtn && nextChapter) {
+    nextBtn.onclick = () => openReadingDetail(nextChapter);
+  }
+
+  // Translation toggle
+  const transBtn = app.querySelector('#transToggleBtn');
+  const transBox = app.querySelector('#transBox');
+  if (transBtn && transBox) {
+    let showTrans = false;
+    transBtn.onclick = () => {
+      showTrans = !showTrans;
+      transBox.classList.toggle('show', showTrans);
+      transBtn.innerHTML = showTrans
+        ? '<span>🙈</span> Sembunyikan Terjemahan Bahasa Indonesia'
+        : '<span>👁️</span> Tampilkan Terjemahan Bahasa Indonesia';
+    };
+  }
+
+  // Click on any dokkai-word
+  app.querySelectorAll('.dokkai-word').forEach(el => {
+    el.onclick = (e) => {
+      e.stopPropagation();
+      openKotobaModal(el.dataset.vid);
+    };
+  });
+
+  // Click on mini chip
+  app.querySelectorAll('.reader-mini-chip').forEach(el => {
+    el.onclick = (e) => {
+      e.stopPropagation();
+      openKotobaModal(el.dataset.vid);
+    };
+  });
+};
+
+/* ============================================================
    VIEW: FLASHCARD
    ============================================================ */
 const FC = { queue: [], idx: 0, flipped: false, level: 'all', done: 0 };
@@ -493,13 +1040,14 @@ function renderFlashcard(app) {
           <button data-lv="all" class="${FC.level === 'all' ? 'active' : ''}">Semua</button>
           <button data-lv="N4" class="${FC.level === 'N4' ? 'active' : ''}">N4</button>
           <button data-lv="N3" class="${FC.level === 'N3' ? 'active' : ''}">N3</button>
+          <button data-lv="N2" class="${FC.level === 'N2' ? 'active' : ''}">N2</button>
         </div>
       </div>
       <div class="fc-top"><span>Kartu ${FC.idx + 1} / ${FC.queue.length}</span><span>${v.level}</span></div>
       <div class="flashcard ${FC.flipped ? 'flipped' : ''}" id="card">
         <div class="inner">
           <div class="face front">
-            <span class="lv ${v.level === 'N4' ? 'lv' : ''}" style="background:var(--bg-soft);color:var(--text-soft)">${v.level}</span>
+            <span class="lv ${v.level}">${v.level}</span>
             <div class="kanji">${esc(v.kanji)}</div>
             <div class="furi">${esc(v.furigana)}</div>
             <div class="hint">Ketuk untuk lihat arti</div>
@@ -575,6 +1123,7 @@ function renderQuizMenu(app) {
             <button data-lv="all" class="${QZ.level === 'all' ? 'active' : ''}">Semua</button>
             <button data-lv="N4" class="${QZ.level === 'N4' ? 'active' : ''}">N4</button>
             <button data-lv="N3" class="${QZ.level === 'N3' ? 'active' : ''}">N3</button>
+            <button data-lv="N2" class="${QZ.level === 'N2' ? 'active' : ''}">N2</button>
           </div>
         </div>
         <div class="setup-group" style="margin-top:14px">
@@ -1064,7 +1613,7 @@ Views.stats = (app) => {
   const segMaster = total ? mastered / total * 100 : 0;
   const segLearned = total ? learned / total * 100 : 0;
 
-  const levels = ['N4', 'N3'].map(lv => {
+  const levels = ['N4', 'N3', 'N2'].map(lv => {
     const arr = State.vocab.filter(v => v.level === lv);
     const l = arr.filter(v => isLearned(v.id)).length;
     const m = arr.filter(v => isMastered(v.id)).length;
@@ -1428,6 +1977,18 @@ async function boot() {
   applySettings();
   document.getElementById('furiToggle').onclick = toggleFurigana;
   document.getElementById('themeToggle').onclick = toggleTheme;
+
+  // Global dismiss for kotoba modal
+  const modalBackdrop = document.getElementById('kotobaModalBackdrop');
+  if (modalBackdrop) {
+    modalBackdrop.onclick = (e) => {
+      if (e.target === modalBackdrop) closeKotobaModal();
+    };
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeKotobaModal();
+  });
+
   document.querySelectorAll('.nav-item').forEach(b => b.onclick = () => {
     if (b.dataset.nav === 'list') {
       ListState.level = 'all';
@@ -1450,6 +2011,20 @@ async function boot() {
       return;
     }
   }
+
+  // Load readings (curated passages)
+  try {
+    const rRes = await fetch('data/readings.json');
+    if (!rRes.ok) throw new Error('http ' + rRes.status);
+    State.readings = await rRes.json();
+  } catch (e) {
+    if (Array.isArray(window.READINGS) && window.READINGS.length) {
+      State.readings = window.READINGS;
+    } else {
+      State.readings = [];
+    }
+  }
+
   navigate('home');
 
   if ('serviceWorker' in navigator) {

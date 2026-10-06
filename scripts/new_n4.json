@@ -1,0 +1,362 @@
+[
+  {
+    "id": "n4-s3-1",
+    "series": "Perjalanan Kuliner Yuki di Kansai",
+    "seriesPart": 1,
+    "nextId": "n4-s3-2",
+    "prevId": null,
+    "level": "N4",
+    "title": "新幹線で京都へ：古い寺とおいしいお茶",
+    "titleArti": "Menuju Kyoto dengan Shinkansen: Kuil Kuno dan Teh Lezat",
+    "paragraphs": [
+      "ユキはずっと前から関西への旅行を計画していました。東京駅から朝早い新幹線に乗り、窓の外の景色を眺めながら出発しました。遠くに富士山が綺麗に見えて、旅の始まりに胸がワクワクしました。新幹線の中は静かで、座席もとても広くて快適でした。",
+      "約二時間で京都駅に到着しました。古い歴史を持つ京都は、駅を出ると近代的な建物と古い寺院が美しく調和していました。ユキはまず市バスの一日乗車券を買い、有名な清水寺へ向かいました。坂道を登ると、多くの観光客が着物を着て楽しそうに写真を撮っていました。",
+      "お寺を参拝した後、門の前にある小さなお茶屋で休憩しました。そこで注文した濃い緑の抹茶と甘い団子は、歩いて疲れた体にとても優しく染み渡りました。店員のおばあさんが「ゆっくり休んでいってね」と笑顔で声をかけてくれて、京都の人の温かい心を感じました。"
+    ],
+    "translations": [
+      "Yuki sudah sejak lama merencanakan perjalanan ke wilayah Kansai. Ia naik Shinkansen pagi-pagi dari Stasiun Tokyo, lalu berangkat sambil memandangi pemandangan di luar jendela. Gunung Fuji terlihat indah di kejauhan, membuat hatinya berdebar gembira di awal perjalanan. Di dalam Shinkansen sangat tenang, kursinya pun sangat luas dan nyaman.",
+      "Sekitar dua jam kemudian, ia tiba di Stasiun Kyoto. Kyoto yang memiliki sejarah panjang, begitu keluar stasiun memperlihatkan keselarasan indah antara bangunan modern dan kuil-kuil kuno. Pertama-tama Yuki membeli tiket terusan bus harian dan menuju ke Kuil Kiyomizu yang terkenal. Saat menaiki lereng jalan, banyak turis yang mengenakan kimono berfoto dengan riang gembira.",
+      "Setelah bersembahyang di kuil, ia beristirahat di kedai teh kecil di depan gerbang. Matcha hijau pekat dan dango manis yang ia pesan di sana meresap lembut ke dalam tubuh yang lelah sehabis berjalan. Nenek penjaga toko menyapa sambil tersenyum ramah, 'Istirahatlah dengan santai ya,' membuatnya merasakan kehangatan hati warga Kyoto."
+    ]
+  },
+  {
+    "id": "n4-s3-2",
+    "series": "Perjalanan Kuliner Yuki di Kansai",
+    "seriesPart": 2,
+    "nextId": "n4-s3-3",
+    "prevId": "n4-s3-1",
+    "level": "N4",
+    "title": "祇園の古い町並みと和菓子屋さん",
+    "titleArti": "Jalanan Kuno Gion dan Toko Kue Tradisional Wagashi",
+    "paragraphs": [
+      "午後になると、ユキは石畳の道が続く祇園の町を散策しました。古い木造の町家が並び、まるで昔の時代にタイムスリップしたような不思議な気持ちになりました。細い路地に入ると、打ち水が撒かれていて、涼しい風が通り抜けていました。",
+      "路地の奥に、創業百年の伝統ある和菓子屋を見つけました。店のガラスケースの中には、季節の草花をかたどった色とりどりの和菓子が並んでいました。どれも職人さんの丁寧な手仕事で作られた芸術品のようでした。",
+      "ユキは桜の形をした美しいお菓子を選びました。口に入れると、上品な小豆の甘さがふわっと広がり、感動しました。店主から和菓子の由来について説明を聞き、日本の伝統文化の深さに改めて感銘を受けました。"
+    ],
+    "translations": [
+      "Menjelang siang, Yuki berjalan santai menyusuri kawasan Gion dengan jalanan berbatu yang panjang. Deretan rumah tradisional Machiya dari kayu berjajar rapi, menghadirkan perasaan ajaib seolah-olah terlempar ke masa lalu. Saat melangkah masuk ke gang sempit, air siraman jalanan telah ditebar, dan semilir angin sejuk berhembus lewat.",
+      "Di ujung gang, ia menemukan sebuah toko wagashi tradisional berusia seratus tahun. Di dalam etalase kaca toko, berjajar aneka kue tradisional beraneka warna yang dibentuk menyerupai bunga dan tanaman musiman. Semuanya tampak seperti karya seni yang dibuat dengan keterampilan tangan pengrajin yang telaten.",
+      "Yuki memilih manisan berbentuk bunga sakura yang indah. Begitu masuk ke mulut, rasa manis kacang merah yang elegan menyebar lembut, membuatnya terharu. Mendengar penjelasan dari pemilik toko tentang asal-usul wagashi, ia kembali terkesan dengan kedalaman budaya tradisional Jepang."
+    ]
+  },
+  {
+    "id": "n4-s3-3",
+    "series": "Perjalanan Kuliner Yuki di Kansai",
+    "seriesPart": 3,
+    "nextId": "n4-s3-4",
+    "prevId": "n4-s3-2",
+    "level": "N4",
+    "title": "大阪の賑やかな夜：道頓堀とたこ焼きの味",
+    "titleArti": "Malam yang Ramai di Osaka: Dotonbori dan Rasa Takoyaki",
+    "paragraphs": [
+      "京都から電車に乗り、わずか三十分で大阪の中心街に到着しました。京都の静けさとは打って変わって、大阪の街はネオンが輝き、人々が行き交う活気で満ち溢れていました。巨大なカニや看板が並ぶ道頓堀川の周辺は、多くの観光客で大賑わいでした。",
+      "大阪といえば「食い倒れ」の街として知られています。ユキは有名な屋台の行列に並び、焼きたての熱いたこ焼きを買いました。大きなタコが入った丸いたこ焼きの上に、ソースと青のりと鰹節がたっぷりかけられ、食欲をそそる良い香りが漂いました。",
+      "一口食べると、外側は香ばしく、中はトロリと柔らかくて、思わず「おいしい！」と声が出ました。熱さで口の中をハフハフさせながら食べるのが、本場大阪の醍醐味でした。"
+    ],
+    "translations": [
+      "Naik kereta dari Kyoto, hanya dalam tiga puluh menit Yuki tiba di pusat kota Osaka. Sangat berbeda dengan ketenangan Kyoto, kota Osaka dipenuhi papan neon berkilauan dan dipadati langkah orang-orang yang penuh semangat. Di sekitar Sungai Dotonbori tempat kepiting raksasa dan reklame berjajar, suasana sangat meriah oleh banyak turis.",
+      "Berbicara tentang Osaka, kota ini terkenal dengan julukan kota 'Kuidaore' (makan sepuasnya sampai kenyang). Yuki mengantre di sebuah kios pinggir jalan yang terkenal dan membeli takoyaki panas yang baru matang. Di atas takoyaki bulat berisi potongan gurita besar, dituangkan saus melimpah, rumput laut nori, dan serpihan katsuobushi yang menebarkan aroma lezat penggugah selera.",
+      "Begitu menggigit satu suapan, bagian luarnya renyah harum sedangkan bagian dalamnya lumer lembut, membuatnya spontan berseru 'Enak!'. Menikmati takoyaki sambil meniup-niup karena panasnya adalah kenikmatan sejati khas Osaka."
+    ]
+  },
+  {
+    "id": "n4-s3-4",
+    "series": "Perjalanan Kuliner Yuki di Kansai",
+    "seriesPart": 4,
+    "nextId": "n4-s3-5",
+    "prevId": "n4-s3-3",
+    "level": "N4",
+    "title": "市場の元気なおばあさんと関西弁",
+    "titleArti": "Nenek yang Bersemangat di Pasar dan Dialek Kansai",
+    "paragraphs": [
+      "翌朝、ユキは「大阪の台所」と呼ばれる黒門市場を訪れました。市場のアーケードには新鮮な魚や果物、漬物などを売る店がずらりと並んでいました。あちこちから商人たちの元気な掛け声が響き渡り、歩いているだけで元気をもらえました。",
+      "果物屋の前を通ると、看板娘のおばあさんが「お姉ちゃん、甘いイチゴ食べていきいや！」と親しみやすい関西弁で声をかけてくれました。東京の言葉とはリズムやイントネーションが違い、温かくて親近感が湧きました。",
+      "試食させてもらったイチゴはとても甘く、ユキは一パック買うことにしました。おばあさんは「おまけしとくで！」と笑顔で余分に入れてくれました。人との触れ合いの温かさが、この街の最大の魅力だと実感しました。"
+    ],
+    "translations": [
+      "Keesokan paginya, Yuki mengunjungi Pasar Kuromon yang dijuluki 'Dapurnya Osaka'. Di lorong pasar berbumbung, berjejer rapi toko-toko yang menjual ikan segar, buah-buahan, hingga asinan sayur tsukemono. Suara riuh para pedagang yang bersemangat menggema dari berbagai sudut, sekadar berjalan saja sudah memberikan energi positif.",
+      "Saat melintas di depan toko buah, seorang nenek ramah berseru dalam dialek Kansai yang bersahabat: 'Neng cantik, cobain stroberi manis ini dulu dong!'. Ritme dan intonasinya berbeda dengan bahasa Tokyo, terasa sangat hangat dan akrab di telinga.",
+      "Stroberi yang dicicipinya sangat manis, sehingga Yuki memutuskan untuk membeli satu bungkus. Nenek itu tersenyum riang sambil berkata, 'Kukasih bonus lebihan ya!', lalu menambahkan beberapa buah ekstra. Yuki menyadari sungguh-sungguh bahwa kehangatan interaksi antarsesama adalah pesona terbesar kota ini."
+    ]
+  },
+  {
+    "id": "n4-s3-5",
+    "series": "Perjalanan Kuliner Yuki di Kansai",
+    "seriesPart": 5,
+    "nextId": null,
+    "prevId": "n4-s3-4",
+    "level": "N4",
+    "title": "旅の終わり：お土産と思い出のノート",
+    "titleArti": "Akhir Perjalanan: Oleh-oleh dan Catatan Kenangan",
+    "paragraphs": [
+      "関西旅行の最終日、新大阪駅のお土産売り場でユキは家族や友達への贈り物を探しました。京都の八ツ橋、大阪の豚まん、そして美味しい抹茶クッキーなど、たくさんの名物が並んでいて迷ってしまいました。",
+      "新幹線に乗り込み、指定席に座ると、旅の疲労感とともに心地よい充実感が広がりました。車内で手帳を開き、訪れた場所のスタンプやチケットの半券を貼りながら、旅の思い出を日記にまとめました。",
+      "窓から夕暮れの景色を眺めながら、ユキは「またいつか、今度はもっと長い休みを取って関西を訪れたい」と心の中で誓いました。異文化に触れ、新しい味と人々の優しさに出会えたこの旅は、かけがえのない宝物になりました。"
+    ],
+    "translations": [
+      "Pada hari terakhir perjalanan ke Kansai, di area toko cinderamata Stasiun Shin-Osaka Yuki mencari oleh-oleh untuk keluarga dan teman-temannya. Ada banyak hidangan khas seperti Yatsuhashi dari Kyoto, bakpao Butaman khas Osaka, hingga biskuit matcha lezat yang membuatnya bingung memilih.",
+      "Begitu naik ke Shinkansen dan duduk di kursi reservasi, rasa lelah perjalanan berbaur dengan kepuasan batin yang mendalam. Di dalam kereta ia membuka buku catatannya, menempelkan cap stempel tempat yang dikunjungi serta potongan tiket, lalu merangkum kenangan perjalanannya ke dalam buku harian.",
+      "Sambil memandang pemandangan senja dari jendela kereta, Yuki berjanji dalam hati: 'Suatu saat nanti, aku ingin mengambil libur lebih panjang dan berkunjung ke Kansai lagi'. Pengalaman merasakan budaya baru, menjumpai cita rasa segar dan keramahan warga menjadikan perjalanan ini kenangan berharga yang tak tergantikan."
+    ]
+  },
+  {
+    "id": "n4-s4-1",
+    "series": "Klub Kebudayaan Tradisional di Kampus",
+    "seriesPart": 1,
+    "nextId": "n4-s4-2",
+    "prevId": null,
+    "level": "N4",
+    "title": "放課後の部活動：茶道部への入部",
+    "titleArti": "Aktivitas Klub Sepulang Sekolah: Bergabung dengan Klub Upacara Minum Teh",
+    "paragraphs": [
+      "四月になり、大学のキャンパスは新入生を迎えるクラブ活動の勧誘で賑わっていました。留学生のレオは、日本の伝統文化を深く学びたいと考え、多くのクラブのブースを見て回っていました。体育館や教室から楽しそうな声が聞こえてきます。",
+      "古い和室の建物の前を通りかかったとき、着物を着た先輩から「お茶を一服いかがですか」と優しく声をかけられました。障子を開けて中に入ると、畳の爽やかな香りと静寂な空気が漂い、キャンパスの喧騒が嘘のように消えました。",
+      "正座をして出されたお茶をいただいたとき、その所作の美しさに心を奪われました。レオはその場で茶道部への入部を決め、伝統の扉を叩くことになりました。"
+    ],
+    "translations": [
+      "Memasuki bulan April, kampus universitas dipadati keramaian promosi klub mahasiswa yang menyambut mahasiswa baru. Leo, seorang mahasiswa asing, berkeliling melihat berbagai stan klub karena berkeinginan mendalami budaya tradisional Jepang. Suara tawa dan obrolan ceria terdengar dari gedung olahraga dan ruang-ruang kelas.",
+      "Saat melintas di depan bangunan bergaya Jepang kuno, seorang senior yang mengenakan kimono menyapanya dengan lembut, 'Maukah Anda mencicipi secangkir teh?'. Ketika pintu geser shoji dibuka dan ia melangkah masuk, aroma segar tatami serta keheningan yang tenang langsung menyelimuti, kebisingan kampus seketika lenyap.",
+      "Sambil duduk bersimpuh seiza dan menerima teh yang disajikan, keindahan gerak-gerik tata krama tersebut memikat hatinya. Seketika itu juga Leo memutuskan untuk bergabung dengan klub upacara minum teh (Sado) dan membuka gerbang menuju tradisi luhur."
+    ]
+  },
+  {
+    "id": "n4-s4-2",
+    "series": "Klub Kebudayaan Tradisional di Kampus",
+    "seriesPart": 2,
+    "nextId": "n4-s4-3",
+    "prevId": "n4-s4-1",
+    "level": "N4",
+    "title": "畳の上での礼儀と静かな心",
+    "titleArti": "Tata Krama di Atas Tatami dan Ketenangan Hati",
+    "paragraphs": [
+      "部活動が本格的に始まり、レオは畳の部屋での歩き方や座り方の基本を習いました。畳の縁を踏んではいけないというルールや、部屋に入るときの一礼など、日常では意識しない細かな作法がたくさんありました。",
+      "最初のうちは、二十分の正座でも足が痺れて立ち上がれなくなり、先輩たちに助けてもらうこともありました。しかし、背筋を伸ばして静かに息を整えていると、日々の忙しさや勉強のストレスが消えていくのを感じました。",
+      "「お茶を点てることは、自分の心と向き合うことだよ」と部長が教えてくれました。一つ一つの動きに理由があり、相手への配慮が込められていることを学びました。"
+    ],
+    "translations": [
+      "Setelah kegiatan klub dimulai secara resmi, Leo mempelajari tata krama dasar cara melangkah dan duduk di ruang tatami. Ada banyak aturan rinci yang jarang diperhatikan sehari-hari, seperti larangan menginjak tepi garis tatami dan keharusan membungkuk memberi salam saat memasuki ruangan.",
+      "Pada awal mula, duduk seiza selama dua puluh menit saja sudah membuat kakinya mati rasa hingga tak sanggup berdiri, sampai-sampai harus dibantu oleh para senior. Namun, ketika punggung ditegakkan dan napas diatur dengan tenang, ia merasakan beban kesibukan dan stres kuliah perlahan menghilang.",
+      "'Menyeduh teh adalah proses berdialog dengan hatimu sendiri,' ujar sang ketua klub mengajari. Leo menyadari bahwa setiap gerakan memiliki arti mendalam dan penuh dengan perhatian terhadap orang lain."
+    ]
+  },
+  {
+    "id": "n4-s4-3",
+    "series": "Klub Kebudayaan Tradisional di Kampus",
+    "seriesPart": 3,
+    "nextId": "n4-s4-4",
+    "prevId": "n4-s4-2",
+    "level": "N4",
+    "title": "初めて点てたお茶と苦味の奥の甘さ",
+    "titleArti": "Teh Pertama yang Diseduh Sendiri dan Manis di Balik Rasa Pahit",
+    "paragraphs": [
+      "入部から二ヶ月が過ぎ、レオはいよいよ自分で茶筅を使って抹茶を点てる練習に入りました。手首の力を抜いて、素早く小刻みに茶筅を動かすのは思った以上に難しく、なかなか綺麗な泡が立ちませんでした。",
+      "何度も練習を繰り返し、ようやく表面にきめ細かなクリーミーな緑の泡を作ることができました。緊張しながら自分で点てたお茶を口に運ぶと、豊かな香りと心地よい苦味が広がり、その後にほんのりとした自然な甘みが残りました。",
+      "指導してくれた先輩が「とても上手に点てられたね」と褒めてくれ、レオは大きな達成感に包まれました。努力が形になる喜びを噛み締めました。"
+    ],
+    "translations": [
+      "Dua bulan berlalu sejak bergabung, Leo akhirnya berlatih menyeduh matcha menggunakan chasen (kocokan bambu) sendiri. Mengayunkan pergelangan tangan secara rileks namun cepat dan teratur ternyata jauh lebih sulit dari bayangan, buih lembut kehijauan tak kunjung terbentuk rapi.",
+      "Setelah berlatih berulang kali, akhirnya ia berhasil menghasilkan lapisan buih hijau yang halus merata di permukaannya. Dengan penuh rasa gugup ia mencicipi teh seduhannya sendiri; aroma kaya rasa dan rasa pahit yang pas menyebar, disusul rasa manis alami yang lembut di akhir lidah.",
+      "Senior yang membimbingnya memuji, 'Seduhanmu sangat bagus dan terampil!', membuat Leo diliputi rasa bangga dan puas. Ia menikmati manisnya hasil kerja keras yang terbayar."
+    ]
+  },
+  {
+    "id": "n4-s4-4",
+    "series": "Klub Kebudayaan Tradisional di Kampus",
+    "seriesPart": 4,
+    "nextId": "n4-s4-5",
+    "prevId": "n4-s4-3",
+    "level": "N4",
+    "title": "文化祭の準備：着物を着てお客様を迎える",
+    "titleArti": "Persiapan Festival Budaya: Memakai Kimono dan Menyambut Tamu",
+    "paragraphs": [
+      "秋の大学祭（学園祭）が近づき、茶道部もお茶会を開催することになりました。一般のお客様や家族、友達に日頃の練習の成果を披露する晴れの舞台です。部員全員で和室の掃除をし、掛け軸やお花を選びました。",
+      "当日の朝、レオは初めて本格的な男性用の着物を着付けてもらいました。帯をきつく締めると、自然と身が引き締まり、武士のような凛とした気持ちになりました。鏡に映る自分の姿を見て、緊張と誇らしさを覚えました。",
+      "開場と同時に、多くのお客さんが和室を訪れました。レオは受付を担当し、「いらっしゃいませ、どうぞお入りください」と笑顔で挨拶しました。"
+    ],
+    "translations": [
+      "Festival budaya musim gugur di kampus semakin dekat, dan klub upacara minum teh memutuskan untuk menggelar jamuan minum teh terbuka. Ini adalah momen pembuktian unjuk kemampuan hasil latihan sehari-hari kepada para pengunjung umum, keluarga, dan teman-teman. Seluruh anggota bergotong royong membersihkan ruangan, memilih lukisan gantung kakejiku, dan menata bunga.",
+      "Pada pagi hari perayaan, Leo untuk pertama kalinya dipakaikan kimono pria sungguhan secara lengkap. Saat ikat pinggang obi dikencangkan rapi, tubuhnya otomatis tegak sigap, menghadirkan perasaan gagah seperti kesatria kuno. Melihat bayangannya di cermin, campur aduk rasa gugup dan bangga membuncah.",
+      "Begitu pintu dibuka, banyak tamu berdatangan menuju ruang tatami. Leo bertugas di bagian penerimaan tamu, menyapa dengan ramah sambil tersenyum: 'Selamat datang, silakan masuk ke dalam'."
+    ]
+  },
+  {
+    "id": "n4-s4-5",
+    "series": "Klub Kebudayaan Tradisional di Kampus",
+    "seriesPart": 5,
+    "nextId": null,
+    "prevId": "n4-s4-4",
+    "level": "N4",
+    "title": "笑顔のおもてなしと仲間との達成感",
+    "titleArti": "Keramahan dengan Senyuman dan Rasa Pencapaian Bersama Teman",
+    "paragraphs": [
+      "お茶会は大盛況のうちに終わりました。訪れたお客さんたちは、丁寧に点てられたお茶とお菓子を楽しみ、「とても美味しかった」「心が落ち着いた」と温かい感想を述べて帰っていきました。",
+      "片付けが終わった後、部員全員で輪になって座り、部長から一人一人に感謝の言葉が贈られました。レオも「最初は不安でしたが、みんなのおかげで日本の素晴らしい文化を伝えることができました」とお礼を言いました。",
+      "言葉や国籍の壁を越えて、伝統文化を通じて結ばれた友情は、レオにとって大学生活の中で最も大切な財産となりました。"
+    ],
+    "translations": [
+      "Jamuan minum teh berakhir dengan sukses besar. Para tamu menikmati teh yang diseduh dengan ketulusan dan kue tradisional yang manis, lalu pamit pulang sembari menyampaikan kesan hangat: 'Sangat nikmat', 'Hati saya menjadi sangat tenang'.",
+      "Setelah semua perlengkapan dibereskan, seluruh anggota klub duduk melingkar, dan sang ketua klub menyampaikan apresiasi kepada setiap individu. Leo pun mengucapkan terima kasih: 'Awalnya saya merasa cemas, tapi berkat bantuan teman-teman semua saya bisa ikut menyampaikan indahnya budaya Jepang'.",
+      "Melampaui batasan bahasa dan kewarganegaraan, persahabatan yang terjalin melalui budaya tradisional menjadi aset paling berharga dalam kehidupan kuliah Leo."
+    ]
+  },
+  {
+    "id": "n4-c9",
+    "series": "Budaya & Tradisi Sehari-hari",
+    "seriesPart": 9,
+    "nextId": null,
+    "prevId": null,
+    "level": "N4",
+    "title": "日本のお祭り：屋台と花火の夜",
+    "titleArti": "Festival Jepang: Kios Pasar Malam dan Malam Kembang Api",
+    "paragraphs": [
+      "日本の夏といえば、各地で開催される夏祭りと花火大会が欠かせません。夕方になると、浴衣を着た家族連れや若者たちが神社や川沿いの広場に集まってきます。太鼓の音と笛のメロディーが響き、街中がお祭り気分に包まれます。",
+      "広場にはたくさんの屋台が並び、焼きそば、かき氷、金魚すくいなどの店が客で賑わいます。甘いりんご飴を片手に友達とおしゃべりしながら歩くのは、夏祭りの一番の楽しみです。",
+      "夜八時になると、夜空に大きな花火が次々と打ち上げられます。色鮮やかな光が暗闇を照らし、集まった人々から歓声が上がります。日本の夏祭りは、地域の絆を深める大切な伝統です。"
+    ],
+    "translations": [
+      "Berbicara tentang musim panas di Jepang, festival musim panas (matsuri) dan pesta kembang api di berbagai daerah adalah hal yang tak boleh terlewatkan. Menjelang senja, para keluarga dan kaum muda berbusana yukata berkumpul di kuil atau lapangan tepi sungai. Tabuhan genderang taiko dan lantunan seruling bergema, menyelimuti kota dalam sukacita festival.",
+      "Di lapangan berjejer banyak kedai yatai; stan yakisoba, es serut kakigori, hingga stan permainan menangkap ikan mas ramai oleh pembeli. Berjalan-jalan santai membawa permen apel manis sembari mengobrol bersama teman adalah kenikmatan utama di festival musim panas.",
+      "Pukul delapan malam, kembang api raksasa mulai diluncurkan bertubi-tubi ke langit gelap. Kilauan cahaya warna-warni menerangi malam, diiringi sorak kagum dari kerumunan penonton. Festival musim panas Jepang adalah tradisi penting yang mempererat ikatan masyarakat."
+    ]
+  },
+  {
+    "id": "n4-c10",
+    "series": "Gaya Hidup & Kepraktisan",
+    "seriesPart": 10,
+    "nextId": null,
+    "prevId": null,
+    "level": "N4",
+    "title": "百円ショップの驚き：便利で安い生活グッズ",
+    "titleArti": "Kejutan Toko 100 Yen: Perlengkapan Hidup yang Praktis dan Murah",
+    "paragraphs": [
+      "日本に住み始めて誰もが驚くことの一つが、百円ショップ（百均）の品揃えと質の高さです。食器、文房具、台所用品、清掃用具、お菓子まで、生活に必要なほぼ全てのアイテムが百円前後で揃います。",
+      "特に台所グッズには面白いアイデア商品がたくさんあります。レンジで簡単にパスタが茹でられる容器や、ニンニクの皮を素早く剥くシリコン器具など、家事を手軽にする工夫が満載です。",
+      "安価でありながら品質もしっかりしており、留学生や一人暮らしの強い味方となっています。日本に来た観光客もお土産探しのスポットとしてよく利用しています。"
+    ],
+    "translations": [
+      "Salah satu hal yang membuat setiap orang kagum saat mulai tinggal di Jepang adalah kelengkapan barang dan tingginya mutu di toko 100 Yen (Hyakkin). Dari peralatan makan, alat tulis, perkakas dapur, pembersih rumah, hingga camilan, hampir semua kebutuhan hidup tersedia dengan harga sekitar seratus yen.",
+      "Khususnya pada perkakas dapur, banyak inovasi unik yang memudahkan hidup. Misalnya wadah praktis merebus pasta dengan microwave, atau tabung silikon pengupas kulit bawang putih, semuanya sarat akan ide kreatif yang meringankan pekerjaan rumah tangga.",
+      "Meski harganya terjangkau, kualitas barangnya terbukti awet dan handal, menjadi sahabat setia para mahasiswa perantau maupun orang yang tinggal sendiri. Turis mancanegara pun gemar menjadikannya tempat berburu oleh-oleh."
+    ]
+  },
+  {
+    "id": "n4-c11",
+    "series": "Budaya Kuliner Jepang",
+    "seriesPart": 11,
+    "nextId": null,
+    "prevId": null,
+    "level": "N4",
+    "title": "初めての日本酒蔵見学：米と水が作る味",
+    "titleArti": "Kunjungan ke Pabrik Sake Tradisional: Cita Rasa Beras dan Air",
+    "paragraphs": [
+      "日本酒は古くから日本人の生活や神事と深く結びついてきた伝統的なお酒です。美味しい酒を造るためには、良質な米と清らかな伏流水、そして寒冷な気候が欠かせません。",
+      "酒蔵を見学すると、職人たちが丹精込めて米を洗い、蒸し、麹菌を育てている工程を間近で見ることができます。巨大な木樽が並ぶ蔵の中は、フルーティーで芳醇な香りが漂っています。",
+      "見学の最後には利き酒（テイスティング）があり、辛口や甘口など、仕込みの製法によって味や香りが全く異なることに驚かされます。自然の恵みと職人の技が織りなす芸術です。"
+    ],
+    "translations": [
+      "Sake Jepang (Nihonshu) adalah minuman beralkohol tradisional yang sejak zaman kuno terkait erat dengan kehidupan dan upacara sakral masyarakat Jepang. Untuk memproduksi sake yang lezat, beras berkualitas tinggi, air tanah pegunungan yang murni, serta hawa dingin sangatlah dibutuhkan.",
+      "Dalam tur mengunjungi tempat pembuatan sake (sakagura), pengunjung dapat melihat langsung proses para pengrajin mencuci beras dengan teliti, mengukusnya, dan membiakkan ragi koji. Di dalam gudang tempat tong-tong kayu raksasa berjajar, menguar aroma buah yang harum semerbak.",
+      "Di akhir kunjungan tersedia sesi mencicipi sake (kikizake); pengunjung dibuat takjub melihat betapa aroma dan rasa kering (karakuchi) maupun manis (amakuchi) bisa berbeda drastis sesuai teknik fermentasinya. Ini adalah perpaduan seni antara berkah alam dan ketelitian pengrajin."
+    ]
+  },
+  {
+    "id": "n4-c12",
+    "series": "Gaya Hidup & Kepraktisan",
+    "seriesPart": 12,
+    "nextId": null,
+    "prevId": null,
+    "level": "N4",
+    "title": "日本の住宅：靴を脱ぐ習慣と畳の心地よさ",
+    "titleArti": "Rumah Jepang: Kebiasaan Melepas Sepatu dan Kenyamanan Tatami",
+    "paragraphs": [
+      "日本の家に入るとき、玄関で靴を脱いでスリッパに履き替えるのは最も基本的な習慣です。外の汚れを家の中に持ち込まないことで、室内を清潔に保つ知恵から生まれました。",
+      "部屋の中にはフローリングだけでなく、伝統的な和室が設けられている家も多くあります。畳はい草（いぐさ）という天然の植物で作られており、湿度を調節し、部屋に心地よい草の香りをもたらします。",
+      "座布団に座ってくつろいだり、布団を敷いて寝転んだりすることで、床との距離が近く、心身ともに深くリラックスできるのが日本家屋の魅力です。"
+    ],
+    "translations": [
+      "Saat melangkah masuk ke rumah di Jepang, melepas sepatu di pintu masuk (genkan) dan menggantinya dengan sandal rumah adalah kebiasaan yang paling mendasar. Ini bermula dari kearifan menjaga kebersihan ruangan agar kotoran dari luar tidak terbawa ke dalam rumah.",
+      "Di dalam rumah, selain lantai kayu modern, banyak pula hunian yang tetap mempertahankan ruangan tradisional washitsu. Alas tatami dibuat dari rumput alami igusa, yang mampu mengatur kelembapan udara dan menghadirkan aroma padang rumput yang menenangkan.",
+      "Duduk santai di atas bantal zabuton atau menggelar kasur futon untuk berbaring membuat jarak dengan lantai terasa akrab, menghadirkan relaksasi mendalam bagi tubuh dan pikiran."
+    ]
+  },
+  {
+    "id": "n4-c13",
+    "series": "Gaya Hidup & Kepraktisan",
+    "seriesPart": 13,
+    "nextId": null,
+    "prevId": null,
+    "level": "N4",
+    "title": "雨の日の工夫：日本の傘立てとビニール傘",
+    "titleArti": "Siasat Hari Hujan: Tempat Payung Jepang dan Payung Transparan",
+    "paragraphs": [
+      "日本は梅雨の季節や秋雨の前線など、雨が降る日が多い国です。そのため、雨の日を快適に過ごすための様々な工夫が街中に見られます。",
+      "デパートや駅、スーパーの入り口には、濡れた傘を入れる細長いビニール袋の機械や、鍵付きの傘立てが必ず設置されています。これにより、店内の床が濡れて滑るのを防ぎ、傘の取り違えも防いでいます。",
+      "また、コンビニで手軽に買える透明なビニール傘は、視界を遮らず歩きやすいことで世界中から高く評価されています。"
+    ],
+    "translations": [
+      "Jepang memiliki banyak hari hujan, terutama selama musim hujan tsuyu dan front cuaca musim gugur. Karena itulah, berbagai inovasi dirancang di penjuru kota agar aktivitas di hari hujan tetap nyaman.",
+      "Di depan pintu masuk toserba, stasiun, maupun supermarket, selalu disediakan mesin kantong plastik payung basah atau rak payung berpengunci. Ini mencegah lantai ruangan basah dan licin serta mencegah payung tertukar dengan milik orang lain.",
+      "Selain itu, payung plastik transparan yang mudah dibeli di toserba konbini sangat diapresiasi di seluruh dunia karena tidak menghalangi pandangan saat berjalan melintasi jalanan yang ramai."
+    ]
+  },
+  {
+    "id": "n4-c14",
+    "series": "Gaya Hidup & Kepraktisan",
+    "seriesPart": 14,
+    "nextId": null,
+    "prevId": null,
+    "level": "N4",
+    "title": "コインランドリーの使い方：忙しい学生の味方",
+    "titleArti": "Cara Menggunakan Coin Laundry: Sahabat Mahasiswa yang Sibuk",
+    "paragraphs": [
+      "街のあちこちに見かける無人のコインランドリーは、一人暮らしの学生や忙しい社会人にとって欠かせない便利な施設です。大型の洗濯機とパワフルな乾燥機がずらりと並んでいます。",
+      "使い方はとても簡単です。洗濯物を入れ、小銭を投入してボタンを押すだけです。洗剤や柔軟剤は自動で投入される機種が多いため、手ぶらで行っても問題ありません。",
+      "特に梅雨の時期や冬場、部屋干しで洗濯物が乾きにくい時に乾燥機を使えば、三十分ほどでふかふかに乾きます。靴専用の洗濯機が置かれている店舗もあり、重宝されています。"
+    ],
+    "translations": [
+      "Coin laundry (laundromat otomatis) tanpa pelayan yang mudah ditemui di sudut-sudut kota merupakan fasilitas praktis yang sangat krusial bagi mahasiswa mandiri dan pekerja sibuk. Di dalamnya berjejer mesin cuci berkapasitas besar dan mesin pengering berdaya tinggi.",
+      "Cara penggunaannya sangat simpel: masukkan pakaian, masukkan uang koin, lalu tekan tombol mulai. Kebanyakan mesin modern menambahkan detergen dan pelembut secara otomatis, sehingga Anda bisa datang tanpa membawa apa pun.",
+      "Khususnya pada musim hujan atau musim dingin saat jemuran sulit kering di dalam kamar, mengeringkan pakaian dengan mesin pengering membuatnya kering hangat dan empuk hanya dalam tiga puluh menit. Beberapa tempat bahkan menyediakan mesin cuci khusus sepatu."
+    ]
+  },
+  {
+    "id": "n4-c15",
+    "series": "Layanan Masyarakat & Sosial",
+    "seriesPart": 15,
+    "nextId": null,
+    "prevId": null,
+    "level": "N4",
+    "title": "日本の郵便局：手紙を送る温もりと便利なサービス",
+    "titleArti": "Kantor Pos Jepang: Kehangatan Mengirim Surat dan Layanan Praktis",
+    "paragraphs": [
+      "赤いマークが目印の日本の郵便局は、手紙や荷物を送るだけでなく、貯金や保険など地域の生活を支える多面的な役割を果たしています。街のポストも赤く塗られており、すぐに見つけることができます。",
+      "お正月には「年賀状」という新年の挨拶ハガキを送り合う文化があり、十二月になると郵便局は年賀状を買い求める人々で賑わいます。デジタル時代でも手書きの温もりは大切にされています。",
+      "小包を送る「ゆうパック」は、指定した日時に確実に配達してくれる正確さで、国内外の多くの利用者に信頼されています。"
+    ],
+    "translations": [
+      "Kantor pos Jepang yang ditandai lambang pos merah khas tidak hanya melayani pengiriman surat dan paket, namun juga tabungan perbankan dan asuransi yang menyokong kehidupan warga setempat. Kotak pos di pinggir jalan juga dicat merah mencolok sehingga mudah ditemukan.",
+      "Menjelang Tahun Baru terdapat tradisi berkirim kartu ucapan nengajo; pada bulan Desember kantor pos selalu ramai dikunjungi warga yang membeli kartu pos tersebut. Di era serba digital pun, kehangatan tulisan tangan tetap dijaga kelestariannya.",
+      "Layanan pengiriman paket pos 'Yu-Pack' sangat dipercaya oleh masyarakat luas berkat ketepatan waktu pengantaran sesuai jadwal yang diinginkan pengguna."
+    ]
+  },
+  {
+    "id": "n4-c16",
+    "series": "Budaya & Tradisi Sehari-hari",
+    "seriesPart": 16,
+    "nextId": null,
+    "prevId": null,
+    "level": "N4",
+    "title": "公園の朝：ラジオ体操と健康な朝の散歩",
+    "titleArti": "Pagi di Taman: Senam Radio dan Jalan Pagi yang Menyehatkan",
+    "paragraphs": [
+      "朝の六時半になると、日本の多くの公園で爽やかなピアノの音楽が響き渡ります。これはNHKラジオで放送される「ラジオ体操」で、子供からお年寄りまでが集まって体を動かします。",
+      "約三分間の短い体操ですが、全身の筋肉をバランスよく伸ばし、血行を良くする効果があります。体操が終わると、参加者同士で「おはようございます」と笑顔で挨拶を交わします。",
+      "澄んだ朝の空気の中で体を動かすことで、一日を清々しい気持ちでスタートできます。地域の人々の健康づくりと交流の場として、長年愛され続けています。"
+    ],
+    "translations": [
+      "Pada pukul setengah tujuh pagi, dentingan musik piano yang bersemangat bergema di banyak taman kota di Jepang. Ini adalah siaran 'Radio Taiso' dari radio NHK, di mana anak-anak hingga kaum lansia berkumpul bersama untuk berolahraga senam pagi.",
+      "Meski gerakannya hanya berlangsung sekitar tiga menit, latihan ini meregangkan seluruh otot tubuh secara berimbang dan memperlancar aliran darah. Begitu senam usai, para peserta saling bertukar senyum dan sapaan hangat, 'Ohayou gozaimasu'.",
+      "Menggerakkan tubuh di bawah sejuknya udara pagi memberikan semangat segar untuk mengawali hari. Tradisi ini terus dicintai sepanjang masa sebagai wadah silaturahmi dan menjaga kesehatan bersama."
+    ]
+  }
+]

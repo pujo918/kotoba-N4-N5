@@ -1,7 +1,7 @@
 {
-  "name": "Kotoba - Hafal Kosakata JLPT N4 & N3",
+  "name": "Kotoba - Hafal Kosakata JLPT N4, N3 & N2",
   "short_name": "Kotoba",
-  "description": "Aplikasi menghafal kosakata Bahasa Jepang JLPT N4 & N3 dengan Active Recall dan Spaced Repetition.",
+  "description": "Aplikasi menghafal kosakata Bahasa Jepang JLPT N4, N3 & N2 dengan Active Recall dan Spaced Repetition.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
