@@ -1,5 +1,5 @@
 // Kotoba PWA Service Worker
-const CACHE_NAME = 'kotoba-v37';
+const CACHE_NAME = 'kotoba-v41';
 const ASSETS = [
   './',
   './index.html',

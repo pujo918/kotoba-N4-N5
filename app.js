@@ -11,6 +11,7 @@ const K = {
   streak: 'kotoba.streak',
   wrongSolved: 'kotoba.wrongSolved',
   customReadings: 'kotoba.customReadings',
+  readCompleted: 'kotoba.readCompleted',
 };
 const load = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch { return def; } };
 const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
@@ -28,10 +29,27 @@ const State = {
   route: 'home',
   wrongSolved: load(K.wrongSolved, {}),
   customReadings: load(K.customReadings, []),
+  readCompleted: load(K.readCompleted, {}),
   materiTab: 'vocab',               // 'vocab' | 'reading'
   activeReading: null,
 };
 let listObserver = null;
+
+function isReadingCompleted(id) {
+  return !!(State.readCompleted && State.readCompleted[id]);
+}
+
+function toggleReadingCompleted(id) {
+  if (!State.readCompleted) State.readCompleted = {};
+  const isDone = !State.readCompleted[id];
+  if (isDone) {
+    State.readCompleted[id] = Date.now();
+  } else {
+    delete State.readCompleted[id];
+  }
+  save(K.readCompleted, State.readCompleted);
+  return isDone;
+}
 
 function effectiveWrong(id) {
   const s = State.progress[id];
@@ -273,34 +291,151 @@ function countWordsInText(text) {
   };
 }
 
-function renderParagraphWithHighlights(paragraph) {
+/* ---------- Furigana for ALL kanji ----------
+   Built-in readings carry precomputed data (scripts/generate_furigana.js):
+   "start,end,reading;start,end,reading;..." per paragraph.
+   Custom texts are analysed on demand with kuromoji (loaded from CDN once). */
+function decodeFuri(str) {
+  if (!str) return [];
+  return str.split(';').map(u => {
+    const parts = u.split(',');
+    return [Number(parts[0]), Number(parts[1]), parts.slice(2).join(',')];
+  });
+}
+
+function matchVocabAt(text, i) {
   const { map, keys } = buildVocabMatcher();
+  for (let k = 0; k < keys.length; k++) {
+    if (text.startsWith(keys[k], i)) return { key: keys[k], v: map.get(keys[k]) };
+  }
+  return null;
+}
+
+function renderParagraphWithHighlights(paragraph, furiStr, highlight = true) {
+  // Fallback (no analysis available yet): only vocab-list words get furigana
+  if (furiStr == null) return renderParagraphVocabOnly(paragraph);
+
+  const units = decodeFuri(furiStr);
+  const unitAt = new Map();
+  const covered = new Uint8Array(paragraph.length + 1);
+  for (const u of units) {
+    unitAt.set(u[0], u);
+    for (let k = u[0] + 1; k < u[1]; k++) covered[k] = 1;
+  }
+
+  let out = '';
+  let i = 0;
+  let spanEnd = -1;
+  while (i < paragraph.length) {
+    if (highlight && spanEnd < 0 && !covered[i]) {
+      const m = matchVocabAt(paragraph, i);
+      if (m) {
+        out += `<span class="dokkai-word" data-vid="${m.v.id}" title="${esc(m.v.kanji)}: ${esc(m.v.arti)}">`;
+        spanEnd = i + m.key.length;
+      }
+    }
+    const u = unitAt.get(i);
+    if (u) {
+      out += `<ruby>${esc(paragraph.slice(u[0], u[1]))}<rt>${esc(u[2])}</rt></ruby>`;
+      i = u[1];
+    } else {
+      out += esc(paragraph[i]);
+      i += 1;
+    }
+    if (spanEnd >= 0 && i >= spanEnd) {
+      out += '</span>';
+      spanEnd = -1;
+    }
+  }
+  if (spanEnd >= 0) out += '</span>';
+  return out;
+}
+
+function renderParagraphVocabOnly(paragraph) {
   let i = 0;
   let out = '';
   while (i < paragraph.length) {
-    let matched = null;
-    for (let k = 0; k < keys.length; k++) {
-      if (paragraph.startsWith(keys[k], i)) {
-        matched = keys[k];
-        break;
-      }
-    }
-    if (matched) {
-      const v = map.get(matched);
-      let innerHTML = '';
-      if (matched === v.kanji && v.kanji !== v.furigana) {
-        innerHTML = `<ruby>${esc(matched)}<rt>${esc(v.furigana)}</rt></ruby>`;
-      } else {
-        innerHTML = esc(matched);
-      }
-      out += `<span class="dokkai-word" data-vid="${v.id}" title="${esc(v.kanji)}: ${esc(v.arti)}">${innerHTML}</span>`;
-      i += matched.length;
+    const m = matchVocabAt(paragraph, i);
+    if (m) {
+      const v = m.v;
+      const inner = (m.key === v.kanji && v.kanji !== v.furigana)
+        ? `<ruby>${esc(m.key)}<rt>${esc(v.furigana)}</rt></ruby>`
+        : esc(m.key);
+      out += `<span class="dokkai-word" data-vid="${v.id}" title="${esc(v.kanji)}: ${esc(v.arti)}">${inner}</span>`;
+      i += m.key.length;
     } else {
       out += esc(paragraph[i]);
       i += 1;
     }
   }
   return out;
+}
+
+/* Runtime analyser (same algorithm as scripts/generate_furigana.js) */
+const KUROMOJI_CDN = 'https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/build/kuromoji.js';
+const KUROMOJI_DICT = 'https://cdn.jsdelivr.net/npm/kuromoji@0.1.2/dict/';
+let kuromojiTokenizerPromise = null;
+
+function getKuromojiTokenizer() {
+  if (kuromojiTokenizerPromise) return kuromojiTokenizerPromise;
+  kuromojiTokenizerPromise = new Promise((resolve, reject) => {
+    const build = () => window.kuromoji.builder({ dicPath: KUROMOJI_DICT })
+      .build((err, tk) => err ? reject(err) : resolve(tk));
+    if (window.kuromoji) return build();
+    const s = document.createElement('script');
+    s.src = KUROMOJI_CDN;
+    s.onload = build;
+    s.onerror = () => reject(new Error('Gagal memuat kuromoji'));
+    document.head.appendChild(s);
+  }).catch(e => { kuromojiTokenizerPromise = null; throw e; });
+  return kuromojiTokenizerPromise;
+}
+
+const FURI_KANJI_RUN = /[\u3005\u3400-\u4dbf\u4e00-\u9fff\u30f6]+|[^\u3005\u3400-\u4dbf\u4e00-\u9fff\u30f6]+/g;
+const FURI_HAS_KANJI = /[\u3005\u3400-\u4dbf\u4e00-\u9fff]/;
+const toHiragana = (s) => s.replace(/[\u30a1-\u30f6]/g, c => String.fromCharCode(c.charCodeAt(0) - 0x60));
+
+function furiTokenUnits(surface, reading, offset) {
+  if (!reading || reading === '*' || !FURI_HAS_KANJI.test(surface)) return [];
+  const hira = toHiragana(reading);
+  const runs = surface.match(FURI_KANJI_RUN);
+  const pattern = runs.map(r => FURI_HAS_KANJI.test(r) ? '(.+?)' : toHiragana(r).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('');
+  const m = new RegExp('^' + pattern + '$').exec(hira);
+  if (!m) return [[offset, offset + surface.length, hira]];
+  const out = [];
+  let pos = offset, g = 1;
+  for (const r of runs) {
+    if (FURI_HAS_KANJI.test(r)) out.push([pos, pos + r.length, m[g++]]);
+    pos += r.length;
+  }
+  return out;
+}
+
+function encodeFurigana(tokenizer, text) {
+  const units = [];
+  let pos = 0;
+  for (const t of tokenizer.tokenize(text)) {
+    const start = text.indexOf(t.surface_form, pos);
+    if (start < 0) continue;
+    units.push(...furiTokenUnits(t.surface_form, t.reading, start));
+    pos = start + t.surface_form.length;
+  }
+  return units.map(u => u.join(',')).join(';');
+}
+
+async function ensureFuriganaFor(item) {
+  if (Array.isArray(item.furi)) return false;
+  const tk = await getKuromojiTokenizer();
+  item.furi = (item.paragraphs || []).map(p => encodeFurigana(tk, p));
+  item.titleFuri = encodeFurigana(tk, item.title || '');
+  if (item.isCustom) {
+    const idx = (State.customReadings || []).findIndex(x => x.id === item.id);
+    if (idx >= 0) {
+      State.customReadings[idx] = item;
+      save(K.customReadings, State.customReadings);
+    }
+  }
+  return true;
 }
 
 function openKotobaModal(vocabId) {
@@ -699,6 +834,8 @@ function cardHTML(v) {
    ============================================================ */
 const ReadingState = {
   level: 'all', // 'all', 'N4', 'N3', 'N2', 'custom'
+  searchQuery: '',
+  expandedSeries: {}, // seriesKey -> boolean
 };
 
 Views.reading = (app) => {
@@ -712,6 +849,49 @@ Views.reading = (app) => {
   } else if (ReadingState.level !== 'all') {
     pool = allReadings.filter(r => r.level === ReadingState.level);
   }
+
+  // Filter by search query if any
+  const q = (ReadingState.searchQuery || '').trim().toLowerCase();
+  let filteredPool = pool;
+  if (q) {
+    filteredPool = pool.filter(r => {
+      const matchTitle = (r.title || '').toLowerCase().includes(q);
+      const matchArti = (r.titleArti || '').toLowerCase().includes(q);
+      const matchSeries = (r.series || '').toLowerCase().includes(q);
+      return matchTitle || matchArti || matchSeries;
+    });
+  }
+
+  // Group readings by series / bab utama
+  const seriesMap = new Map();
+  filteredPool.forEach(r => {
+    const sName = r.series || (r.isCustom ? 'Teks Mandiri Saya' : 'Bacaan Tambahan');
+    const sKey = (r.level || 'all') + '::' + sName;
+    if (!seriesMap.has(sKey)) {
+      seriesMap.set(sKey, {
+        key: sKey,
+        name: sName,
+        level: r.level || 'N4',
+        items: [],
+        isCustom: !!r.isCustom
+      });
+    }
+    seriesMap.get(sKey).items.push(r);
+  });
+
+  // Sort items in each series by seriesPart ascending (Bab 1, Bab 2, etc.)
+  for (const s of seriesMap.values()) {
+    s.items.sort((a, b) => {
+      const pA = a.seriesPart != null ? Number(a.seriesPart) : 999;
+      const pB = b.seriesPart != null ? Number(b.seriesPart) : 999;
+      if (pA !== pB) return pA - pB;
+      return (a.id || '').localeCompare(b.id || '');
+    });
+  }
+
+  const seriesList = Array.from(seriesMap.values());
+  const totalChapters = filteredPool.length;
+  const totalCompleted = filteredPool.filter(r => isReadingCompleted(r.id)).length;
 
   app.innerHTML = `
     <div class="view">
@@ -729,6 +909,26 @@ Views.reading = (app) => {
           <button data-rlv="N3" class="${ReadingState.level === 'N3' ? 'active' : ''}">N3</button>
           <button data-rlv="N2" class="${ReadingState.level === 'N2' ? 'active' : ''}">N2</button>
           <button data-rlv="custom" class="${ReadingState.level === 'custom' ? 'active' : ''}">➕ Teks Mandiri</button>
+        </div>
+      </div>
+
+      <!-- Controls & Search Bar -->
+      <div class="reading-controls-bar">
+        <div class="reading-search-box">
+          <span class="reading-search-ico">🔍</span>
+          <input type="text" id="readingSearchInput" placeholder="Cari judul cerita, topik, atau kata..." value="${esc(ReadingState.searchQuery || '')}" />
+          ${ReadingState.searchQuery ? '<button type="button" class="reading-search-clear" id="readingSearchClear">✕</button>' : ''}
+        </div>
+        <div class="reading-overview-row">
+          <div class="reading-overview-stat">
+            <span>📖 <strong>${seriesList.length}</strong> Seri (${totalChapters} Bab)</span>
+            <span class="overview-sep">•</span>
+            <span style="color:var(--green-text,#34d399);">✅ <strong id="globalDoneCount">${totalCompleted}</strong> dipelajari</span>
+          </div>
+          <div class="reading-expand-btns">
+            <button type="button" class="reading-ctrl-btn" id="expandAllSeriesBtn">Buka Semua</button>
+            <button type="button" class="reading-ctrl-btn" id="collapseAllSeriesBtn">Tutup Semua</button>
+          </div>
         </div>
       </div>
 
@@ -757,11 +957,11 @@ Views.reading = (app) => {
         </div>
       ` : ''}
 
-      <div class="reading-grid" id="readingGrid">
-        ${pool.length > 0 ? pool.map(renderReadingCard).join('') : (
+      <div class="reading-series-container" id="readingSeriesContainer">
+        ${seriesList.length > 0 ? seriesList.map(s => renderSeriesCard(s, !!q)).join('') : (
           ReadingState.level === 'custom'
-            ? '<div style="margin-top:20px; color:var(--text-dim); text-align:center; font-size:14px; grid-column:1/-1;">Belum ada teks mandiri yang disimpan. Masukkan teks di atas untuk mulai membaca!</div>'
-            : '<div class="empty" style="grid-column:1/-1"><div class="big">📖</div>Belum ada bacaan untuk level ini.</div>'
+            ? '<div style="margin-top:20px; color:var(--text-dim); text-align:center; font-size:14px; padding:30px 10px;">Belum ada teks mandiri yang disimpan. Masukkan teks di atas untuk mulai membaca!</div>'
+            : '<div class="empty"><div class="big">📖</div>Tidak ada bacaan yang cocok dengan filter atau pencarian.</div>'
         )}
       </div>
     </div>
@@ -823,6 +1023,116 @@ Views.reading = (app) => {
     };
   }
 
+  // Search input with debounce
+  const searchInp = app.querySelector('#readingSearchInput');
+  if (searchInp) {
+    let timer = null;
+    searchInp.oninput = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        ReadingState.searchQuery = searchInp.value;
+        Views.reading(app);
+        const refocused = app.querySelector('#readingSearchInput');
+        if (refocused) {
+          refocused.focus();
+          refocused.setSelectionRange(refocused.value.length, refocused.value.length);
+        }
+      }, 250);
+    };
+  }
+
+  const searchClear = app.querySelector('#readingSearchClear');
+  if (searchClear) {
+    searchClear.onclick = () => {
+      ReadingState.searchQuery = '';
+      Views.reading(app);
+    };
+  }
+
+  // Expand / Collapse all
+  const expAllBtn = app.querySelector('#expandAllSeriesBtn');
+  if (expAllBtn) {
+    expAllBtn.onclick = () => {
+      seriesList.forEach(s => ReadingState.expandedSeries[s.key] = true);
+      app.querySelectorAll('.reading-series-card').forEach(card => {
+        card.classList.add('expanded');
+        card.classList.remove('collapsed');
+        const ch = card.querySelector('.series-chevron');
+        if (ch) ch.classList.add('open');
+        const b = card.querySelector('.reading-series-body');
+        if (b) b.style.display = '';
+      });
+    };
+  }
+
+  const colAllBtn = app.querySelector('#collapseAllSeriesBtn');
+  if (colAllBtn) {
+    colAllBtn.onclick = () => {
+      seriesList.forEach(s => ReadingState.expandedSeries[s.key] = false);
+      app.querySelectorAll('.reading-series-card').forEach(card => {
+        card.classList.remove('expanded');
+        card.classList.add('collapsed');
+        const ch = card.querySelector('.series-chevron');
+        if (ch) ch.classList.remove('open');
+        const b = card.querySelector('.reading-series-body');
+        if (b) b.style.display = 'none';
+      });
+    };
+  }
+
+  // Toggle series accordion collapse/expand
+  app.querySelectorAll('.reading-series-header').forEach(hdr => {
+    hdr.onclick = () => {
+      const skey = hdr.dataset.toggleSeries;
+      const card = hdr.closest('.reading-series-card');
+      const body = card.querySelector('.reading-series-body');
+      const chevron = hdr.querySelector('.series-chevron');
+
+      const isNowExpanded = !card.classList.contains('expanded');
+      ReadingState.expandedSeries[skey] = isNowExpanded;
+
+      card.classList.toggle('expanded', isNowExpanded);
+      card.classList.toggle('collapsed', !isNowExpanded);
+      if (chevron) chevron.classList.toggle('open', isNowExpanded);
+      if (body) body.style.display = isNowExpanded ? '' : 'none';
+    };
+  });
+
+  // Status check circle button click (toggle complete)
+  app.querySelectorAll('.subbab-check-circle').forEach(btn => {
+    btn.onclick = (e) => {
+      e.stopPropagation(); // Don't navigate to reading detail
+      const rid = btn.dataset.circleRid;
+      const isDone = toggleReadingCompleted(rid);
+
+      btn.classList.toggle('completed', isDone);
+      btn.innerHTML = isDone ? '✓' : '';
+      btn.title = isDone ? 'Tandai belum dipelajari' : 'Tandai sudah dipelajari';
+
+      const row = btn.closest('.subbab-item');
+      if (row) row.classList.toggle('is-completed', isDone);
+
+      // Update series header progress count
+      const card = btn.closest('.reading-series-card');
+      if (card) {
+        const skey = card.dataset.skey;
+        const s = seriesMap.get(skey);
+        if (s) {
+          const completedInSeries = s.items.filter(x => isReadingCompleted(x.id)).length;
+          const numEl = card.querySelector('.progress-num');
+          if (numEl) numEl.textContent = `${completedInSeries}/${s.items.length} dipelajari`;
+        }
+      }
+
+      // Update global count
+      const doneTotal = filteredPool.filter(x => isReadingCompleted(x.id)).length;
+      const globDone = app.querySelector('#globalDoneCount');
+      if (globDone) globDone.textContent = doneTotal;
+
+      toast(isDone ? 'Bab ditandai selesai dipelajari! ✓' : 'Status bab diubah ke belum selesai');
+    };
+  });
+
   // Delete custom reading
   app.querySelectorAll('.custom-del-btn').forEach(btn => {
     btn.onclick = (e) => {
@@ -837,45 +1147,97 @@ Views.reading = (app) => {
     };
   });
 
-  // Card clicks
-  app.querySelectorAll('.reading-card').forEach(card => {
-    card.onclick = () => {
-      const rid = card.dataset.rid;
+  // Sub-bab row click -> open reading detail
+  app.querySelectorAll('.subbab-item').forEach(row => {
+    row.onclick = (e) => {
+      if (e.target.closest('.subbab-check-circle') || e.target.closest('.custom-del-btn')) return;
+      const rid = row.dataset.rid;
       const r = allReadings.find(x => x.id === rid);
-      if (r) openReadingDetail(r);
+      if (r) {
+        // Keep this series open when navigating back
+        const sName = r.series || (r.isCustom ? 'Teks Mandiri Saya' : 'Bacaan Tambahan');
+        const sKey = (r.level || 'all') + '::' + sName;
+        ReadingState.expandedSeries[sKey] = true;
+        openReadingDetail(r);
+      }
     };
   });
 };
 
-function renderReadingCard(r) {
-  const fullText = (r.paragraphs || []).join('');
-  const detected = countWordsInText(fullText);
-  const preview = r.paragraphs && r.paragraphs[0] ? r.paragraphs[0] : '';
-  const levelBadgeClass = r.level === 'Mandiri' ? 'N4' : r.level;
+function renderSeriesCard(s, isSearching) {
+  // If user searched, auto-expand; otherwise check state (default to true if undefined)
+  const isExpanded = isSearching
+    ? true
+    : (ReadingState.expandedSeries[s.key] !== false);
+
+  const completedCount = s.items.filter(item => isReadingCompleted(item.id)).length;
+  const totalCount = s.items.length;
+  const levelBadgeClass = s.level === 'Mandiri' ? 'N4' : s.level;
 
   return `
-    <div class="reading-card" data-rid="${esc(r.id)}">
-      ${r.series ? `
-        <div class="reading-card-series">
-          <span>📖</span> ${esc(r.series)}${r.seriesPart ? ` · Bab ${r.seriesPart}` : ''}
+    <div class="reading-series-card ${isExpanded ? 'expanded' : 'collapsed'}" data-skey="${esc(s.key)}">
+      <div class="reading-series-header" data-toggle-series="${esc(s.key)}">
+        <div class="series-header-left">
+          <span class="series-chevron ${isExpanded ? 'open' : ''}">▼</span>
+          <div class="series-title-wrap">
+            <span class="series-name">${esc(s.name)}</span>
+            <span class="lv ${levelBadgeClass}">${esc(s.level)}</span>
+          </div>
         </div>
-      ` : ''}
-      <div class="reading-card-header">
-        <div>
-          <div class="reading-card-title">${esc(r.title)}</div>
-          ${r.titleArti ? `<div class="reading-card-subtitle">${esc(r.titleArti)}</div>` : ''}
-        </div>
-        <div style="display:flex; align-items:center; gap:6px;">
-          <span class="lv ${levelBadgeClass}">${esc(r.level)}</span>
-          ${r.isCustom ? `<button class="custom-del-btn" data-delid="${esc(r.id)}" title="Hapus teks ini">🗑️</button>` : ''}
+        <div class="series-header-right">
+          <span class="series-progress-badge">
+            <span class="progress-dot"></span>
+            <span class="progress-num">${completedCount}/${totalCount} dipelajari</span>
+          </span>
         </div>
       </div>
-      <div class="reading-card-preview">${esc(preview)}</div>
-      <div class="reading-card-meta">
-        <span class="reading-card-chip">✨ ${detected.count} Kotoba Terdeteksi</span>
-        <span style="font-weight:600; color:var(--primary); display:flex; align-items:center; gap:4px;">
-          Mulai Baca →
+
+      <div class="reading-series-body" style="${isExpanded ? '' : 'display:none;'}">
+        <div class="subbab-list">
+          ${s.items.map(r => renderSubbabItem(r)).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+const wordCountCache = new Map();
+function getReadingWordCount(r) {
+  if (r.wordCount != null) return r.wordCount;
+  if (r._wordCount != null) return r._wordCount;
+  if (wordCountCache.has(r.id)) return wordCountCache.get(r.id);
+  const fullText = (r.paragraphs || []).join('');
+  const c = countWordsInText(fullText).count;
+  wordCountCache.set(r.id, c);
+  r._wordCount = c;
+  return c;
+}
+
+function renderSubbabItem(r) {
+  const isDone = isReadingCompleted(r.id);
+  const count = getReadingWordCount(r);
+  const babNum = r.seriesPart ? `Bab ${r.seriesPart}` : '';
+
+  return `
+    <div class="subbab-item ${isDone ? 'is-completed' : ''}" data-rid="${esc(r.id)}">
+      <div class="subbab-info">
+        <div class="subbab-title">
+          ${babNum ? `<span class="subbab-badge">${babNum}</span>` : ''}
+          <span class="subbab-jp-text">${esc(r.title)}</span>
+        </div>
+        ${r.titleArti ? `<div class="subbab-subtitle" title="${esc(r.titleArti)}">${esc(r.titleArti)}</div>` : ''}
+      </div>
+
+      <div class="subbab-actions">
+        <span class="subbab-pill" title="Kosakata terdeteksi dalam bacaan">
+          ${count} Kotoba
         </span>
+        <button type="button" class="subbab-check-circle ${isDone ? 'completed' : ''}" data-circle-rid="${esc(r.id)}" title="${isDone ? 'Tandai belum dipelajari' : 'Tandai sudah dipelajari'}">
+          ${isDone ? '✓' : ''}
+        </button>
+        ${r.isCustom ? `
+          <button type="button" class="custom-del-btn" data-delid="${esc(r.id)}" title="Hapus teks ini">🗑️</button>
+        ` : ''}
       </div>
     </div>
   `;
@@ -893,19 +1255,32 @@ Views.readingDetail = (app) => {
     return;
   }
 
+  // Ensure furigana exists for custom reading or any uncomputed reading
+  if (!Array.isArray(r.furi)) {
+    ensureFuriganaFor(r).then(changed => {
+      if (changed && State.activeReading && State.activeReading.id === r.id) {
+        Views.readingDetail(app);
+      }
+    }).catch(err => console.warn('Kuromoji furigana fallback error:', err));
+  }
+
   const allReadings = [...State.readings, ...(State.customReadings || [])];
   const prevChapter = r.prevId ? allReadings.find(x => x.id === r.prevId) : null;
   const nextChapter = r.nextId ? allReadings.find(x => x.id === r.nextId) : null;
 
-  const fullText = (r.paragraphs || []).join('');
-  const detected = countWordsInText(fullText);
+  if (!r._detectedWords) {
+    const fullText = (r.paragraphs || []).join('');
+    r._detectedWords = countWordsInText(fullText);
+  }
+  const detected = r._detectedWords;
   const levelBadgeClass = r.level === 'Mandiri' ? 'N4' : r.level;
   const hasTranslations = Array.isArray(r.translations) && r.translations.length > 0;
+  const isDone = isReadingCompleted(r.id);
 
   app.innerHTML = `
     <div class="view reader-wrap">
       <button class="reader-back" id="readerBackBtn">
-        ← Kembali ke Daftar Bacaan
+        ← Kembali ke Daftar Seri Bacaan
       </button>
 
       <div class="reader-title-box">
@@ -914,17 +1289,19 @@ Views.readingDetail = (app) => {
             <span>📖</span> Seri: ${esc(r.series)}${r.seriesPart ? ` (Bab ${r.seriesPart})` : ''}
           </div>
         ` : ''}
-        <div class="reader-title">${esc(r.title)}</div>
+        <div class="reader-title">${renderParagraphWithHighlights(r.title, r.titleFuri, false)}</div>
         ${r.titleArti ? `<div class="reader-subtitle">${esc(r.titleArti)}</div>` : ''}
         <div class="reader-badge-row">
           <span class="lv ${levelBadgeClass}">${esc(r.level)}</span>
           <span class="reading-card-chip">✨ ${detected.count} Kotoba Cocok di Database</span>
-          <span style="font-size:12.5px; color:var(--text-dim); margin-left:auto;">Ketuk kata bergaris untuk melihat arti</span>
+          <button type="button" class="reader-complete-toggle-btn ${isDone ? 'completed' : ''}" id="detailCompleteToggleBtn">
+            <span>${isDone ? '✓ Sudah Dipelajari' : '◯ Tandai Selesai'}</span>
+          </button>
         </div>
       </div>
 
       <div class="reader-article">
-        ${r.paragraphs.map(p => `<p class="reader-paragraph">${renderParagraphWithHighlights(p)}</p>`).join('')}
+        ${r.paragraphs.map((p, idx) => `<p class="reader-paragraph">${renderParagraphWithHighlights(p, r.furi ? r.furi[idx] : null, true)}</p>`).join('')}
       </div>
 
       ${hasTranslations ? `
@@ -936,6 +1313,16 @@ Views.readingDetail = (app) => {
           ${r.translations.map(t => `<p class="reader-trans-p">${esc(t)}</p>`).join('')}
         </div>
       ` : ''}
+
+      <div class="reader-finish-banner">
+        <div class="finish-info">
+          <div class="finish-title">🎉 Selesai Membaca Bab Ini?</div>
+          <div class="finish-desc">Tandai progresmu agar tercatat rapi di daftar seri dan bab materi.</div>
+        </div>
+        <button type="button" class="finish-action-btn ${isDone ? 'completed' : ''}" id="readerFinishBtn">
+          ${isDone ? '✓ Bab Selesai Dipelajari' : 'Tandai Selesai Dibaca ✓'}
+        </button>
+      </div>
 
       ${(prevChapter || nextChapter) ? `
         <div class="reader-nav-row">
@@ -977,6 +1364,29 @@ Views.readingDetail = (app) => {
   app.querySelector('#readerBackBtn').onclick = () => {
     Views.reading(app);
   };
+
+  // Completion toggle buttons
+  const detailToggleBtn = app.querySelector('#detailCompleteToggleBtn');
+  const finishBtn = app.querySelector('#readerFinishBtn');
+  const updateDetailCompleteUI = (done) => {
+    if (detailToggleBtn) {
+      detailToggleBtn.classList.toggle('completed', done);
+      detailToggleBtn.innerHTML = `<span>${done ? '✓ Sudah Dipelajari' : '◯ Tandai Selesai'}</span>`;
+    }
+    if (finishBtn) {
+      finishBtn.classList.toggle('completed', done);
+      finishBtn.innerHTML = done ? '✓ Bab Selesai Dipelajari' : 'Tandai Selesai Dibaca ✓';
+    }
+  };
+
+  const handleToggle = () => {
+    const done = toggleReadingCompleted(r.id);
+    updateDetailCompleteUI(done);
+    toast(done ? 'Bab ditandai selesai dipelajari! ✓' : 'Status bab diubah ke belum selesai');
+  };
+
+  if (detailToggleBtn) detailToggleBtn.onclick = handleToggle;
+  if (finishBtn) finishBtn.onclick = handleToggle;
 
   // Chapter navigation buttons
   const prevBtn = app.querySelector('#prevChapterBtn');

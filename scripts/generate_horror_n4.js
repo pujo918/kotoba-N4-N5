@@ -1,0 +1,251 @@
+// Generator for 12 new N4 Horror & Urban Legend passages
+const fs = require('fs');
+
+const horrorN4 = [
+  // === SERIES HOROR N4: Stasiun Kereta Terpencil Kisaragi (5 Bab) ===
+  {
+    id: "n4-hor-s1-1",
+    series: "Misteri Stasiun Kisaragi",
+    seriesPart: 1,
+    nextId: "n4-hor-s1-2",
+    prevId: null,
+    level: "N4",
+    title: "深夜の最終電車：止まらない列車",
+    titleArti: "Kereta Terakhir Tengah Malam: Kereta yang Tak Mau Berhenti",
+    paragraphs: [
+      "夜の十一時半、タカシは塾の勉強を終えて、いつも乗る私鉄の最終電車に乗り込みました。車内には疲れたサラリーマンが二人ほど座っているだけで、とても静かでした。タカシは席に座り、スマートフォンを見ながら電車が動き出すのを待ちました。",
+      "電車はいつも通りに駅を出発しましたが、二十分が過ぎても次の駅に止まりません。いつもなら五分で次の駅に着くはずなのに、窓の外は真っ暗な森の景色が続くだけでした。タカシは不安になり、運転席の近くへ見に行こうと立ち上がりました。",
+      "しかし、他の乗客たちは深く眠っており、声をかけても誰も起きませんでした。電車は暗い長いトンネルに入り、聞いたこともない不気味な音を立てて走り続けました。"
+    ],
+    translations: [
+      "Pukul setengah dua belas malam, Takashi selesai belajar di tempat les dan naik ke kereta terakhir jalur swasta yang biasa ia tumpangi. Di dalam gerbong hanya ada sekitar dua orang pegawai kantor yang tampak lelah, suasananya sangat sunyi. Takashi duduk di kursinya sambil menatap layar ponsel, menunggu kereta mulai melaju.",
+      "Kereta berangkat dari stasiun seperti biasa, tetapi bahkan setelah dua puluh menit berlalu kereta tidak kunjung berhenti di stasiun berikutnya. Padahal biasanya hanya butuh lima menit untuk tiba di stasiun berikut, namun di luar jendela yang tampak hanyalah kegelapan hutan yang pekat. Takashi merasa cemas dan berdiri untuk memeriksa ke dekat ruang masinis.",
+      "Namun, penumpang lainnya tertidur sangat lelap, dan ketika Takashi memanggil, tak seorang pun yang bangun. Kereta kemudian melaju masuk ke dalam terowongan gelap yang panjang sambil mengeluarkan derit suara aneh dan menyeramkan yang belum pernah ia dengar sebelumnya."
+    ]
+  },
+  {
+    id: "n4-hor-s1-2",
+    series: "Misteri Stasiun Kisaragi",
+    seriesPart: 2,
+    nextId: "n4-hor-s1-3",
+    prevId: "n4-hor-s1-1",
+    level: "N4",
+    title: "闇の中の無人駅：「きさらぎ駅」に降りて",
+    titleArti: "Stasiun Tak Berpenghuni di Tengah Kegelapan: Turun di 'Stasiun Kisaragi'",
+    paragraphs: [
+      "トンネルを抜けると、電車のスピードがゆっくりになり、小さな駅のホームに停車しました。プシューという音とともにドアが開きました。タカシが恐る恐るホームを見回すと、駅員もおらず、周囲には街灯もありませんでした。",
+      "古びた駅の看板を見上げると、そこには平仮名で「きさらぎ」と書かれていました。タカシはそんな名前の駅を路線図で一度も見たことがありませんでした。電車を降りると、すぐに後ろのドアが閉まり、電車は闇の中へ走り去ってしまいました。",
+      "一人取り残されたタカシは、スマートフォンで現在地を調べようとしましたが、「圏外」の文字が表示され、地図アプリも開きませんでした。静寂の中で、冷たい風が頬をかすめました。"
+    ],
+    translations: [
+      "Begitu keluar dari terowongan, laju kereta melambat dan akhirnya berhenti di peron stasiun kecil. Dengan suara desisan angin pintu kereta pun terbuka. Saat Takashi melihat ke sekeliling peron dengan penuh rasa takut, tidak ada petugas stasiun dan tidak ada lampu jalan di sekitarnya.",
+      "Saat ia mendongak menatap plang nama stasiun yang usang, di sana tertulis huruf hiragana 'きさらぎ' (Kisaragi). Takashi belum pernah sekalipun melihat stasiun dengan nama seperti itu di peta rute kereta. Begitu ia melangkah turun, pintu gerbong langsung tertutup rapat dan kereta melaju pergi lenyap ke dalam kegelapan.",
+      "Ditinggal sendirian, Takashi mencoba mencari tahu lokasi keberadaannya melalui ponsel, namun tulisan 'Di Luar Jangkauan Sinyal' muncul di layar dan aplikasi peta tidak bisa dibuka. Di tengah keheningan mencekam, angin dingin membelai pipinya."
+    ]
+  },
+  {
+    id: "n4-hor-s1-3",
+    series: "Misteri Stasiun Kisaragi",
+    seriesPart: 3,
+    nextId: "n4-hor-s1-4",
+    prevId: "n4-hor-s1-2",
+    level: "N4",
+    title: "線路の上の足音と遠くの太鼓の音",
+    titleArti: "Suara Langkah di Atas Rel dan Ketukan Genderang dari Kejauhan",
+    paragraphs: [
+      "改札口を出ようとしましたが、駅舎の外は一面の草むらと山で、道路すら見当たりませんでした。途方に暮れたタカシは、電車が来た方向の線路を歩いて戻ることにしました。砂利を踏む自分の足音だけが夜の山に響きました。",
+      "しばらく歩いていると、遠くの森の奥から「ドンドン、ドンドン」と奇妙な太鼓の音が聞こえてきました。それと同時に、鈴を鳴らすような高い金属音が風に乗って近づいてきました。誰かの祭りでしょうか、それとも……。",
+      "振り返ると、五十メートルほど後ろの線路の上に、片足だけで跳ねるように近づいてくる黒い影が見えました。タカシの背筋に冷たい汗が流れ、息を切らして前へ走り出しました。"
+    ],
+    translations: [
+      "Takashi berniat keluar melewati gerbang karcis, namun di luar gedung stasiun hanyalah padang ilalang dan pegunungan, bahkan jalan raya pun tidak terlihat sama sekali. Merasa putus asa, Takashi memutuskan berjalan kaki menyusuri rel kereta ke arah datangnya kereta tadi. Hanya suara derap langkah kakinya sendiri di atas bebatuan rel yang menggema di malam perbukitan.",
+      "Setelah berjalan beberapa saat, dari kedalaman hutan di kejauhan terdengar suara tabuhan genderang yang ganjil: 'Dung dung, dung dung'. Pada saat bersamaan, suara dering loncing logam bernada tinggi terbawa angin semakin mendekat. Apakah ada festival warga, ataukah...",
+      "Saat menoleh ke belakang, sekitar lima puluh meter di atas rel di belakangnya, tampak bayangan hitam yang melompat mendekat hanya dengan satu kaki. Keringat dingin mengalir di punggung Takashi, dan ia pun langsung berlari kencang ke depan kehabisan napas."
+    ]
+  },
+  {
+    id: "n4-hor-s1-4",
+    series: "Misteri Stasiun Kisaragi",
+    seriesPart: 4,
+    nextId: "n4-hor-s1-5",
+    prevId: "n4-hor-s1-3",
+    level: "N4",
+    title: "暗いトンネルと親切な運転手",
+    titleArti: "Terowongan Gelap dan Pengemudi Mobil yang 'Ramah'",
+    paragraphs: [
+      "必死で走ったタカシは、再び暗いトンネルの入り口にたどり着きました。看板には「伊佐貫（いさぬき）トンネル」と書いてありました。中に入ると、冷たい水滴が首筋に落ちてきて、寒さで体が震えました。",
+      "トンネルを抜けた先に、一台の古い車がヘッドライトをつけて止まっていました。車のそばに立つ男性が「こんな夜中に危ないよ。近くの駅まで送ってあげよう」と親切に声をかけてくれました。タカシは安心し、助手席に乗せてもらいました。",
+      "しかし、車が走り出して十分が経った頃、タカシは異変に気づきました。車は町へ向かうどころか、ますます深い山奥へ登っていたのです。運転手に「どこへ行くんですか」と尋ねても、男は無言のまま口元を不気味に歪めて笑うだけでした。"
+    ],
+    translations: [
+      "Berlari sekuat tenaga, Takashi akhirnya tiba kembali di mulut terowongan gelap. Pada plang tertera tulisan 'Terowongan Isanuki'. Saat melangkah masuk ke dalamnya, tetesan air dingin jatuh menetes di tengkuknya, membuat tubuhnya menggigil kedinginan.",
+      "Tepat di ujung keluar terowongan, terparkir sebuah mobil tua dengan lampu depan menyala. Seorang pria yang berdiri di samping mobil menyapa dengan ramah: 'Bahaya sekali berkeliaran di tengah malam begini. Ayo kuantar sampai ke stasiun terdekat'. Takashi merasa lega luar biasa dan masuk ke kursi penumpang.",
+      "Namun, sepuluh menit setelah mobil melaju, Takashi menyadari keanehan besar. Mobil tersebut bukannya menuju perkotaan, melainkan mendaki semakin jauh ke dalam pegunungan yang terisolasi. Ketika ia bertanya kepada sang pengemudi, 'Kita mau ke mana, Pak?', pria itu tetap diam membisu dan hanya tersenyum dengan bibir menyeringai menyeramkan."
+    ]
+  },
+  {
+    id: "n4-hor-s1-5",
+    series: "Misteri Stasiun Kisaragi",
+    seriesPart: 5,
+    nextId: null,
+    prevId: "n4-hor-s1-4",
+    level: "N4",
+    title: "最後のメッセージ：現実への脱出",
+    titleArti: "Pesan Terakhir: Berlari Menuju Dunia Nyata",
+    paragraphs: [
+      "スマートフォンの画面が突然ピカッと光り、奇跡的にインターネットが一瞬だけ繋がりました。タカシは掲示板に「車に乗ってしまった。運転手の様子がおかしい、助けて」と書き込みました。見知らぬ人たちから「今すぐ車から飛び降りろ！」という返信が届きました。",
+      "車が急カーブで速度を落とした瞬間、タカシは思い切ってドアを開け、草むらの中へ飛び降りました。膝を強く打ちましたが、痛みを我慢して林の中をがむしゃらに駆け抜けました。後ろから車のブレーキ音と叫び声が響きました。",
+      "遠くに街の明かりが見えたとき、タカシはいつもの駅の改札口の前に倒れ込んでいました。時計の針は午前一時を指していました。あのきさらぎ駅は夢だったのか、それとも異世界への入り口だったのでしょうか。"
+    ],
+    translations: [
+      "Layar ponsel mendadak menyala terang, dan secara ajaib koneksi internet terhubung selama sesaat. Takashi mengetik pesan panik di forum: 'Aku terlanjur naik mobil. Sikap sopirnya sangat aneh, tolong aku!'. Balasan dari orang-orang tak dikenal bermunculan: 'Segera lompat keluar dari mobil itu sekarang juga!'.",
+      "Saat mobil memperlambat lajunya di tikungan tajam, Takashi memberanikan diri membuka pintu lalu melompat ke semak-semak. Lututnya terbentur keras, namun menahan rasa sakit ia berlari membabi buta menembus hutan kecil. Dari belakang terdengar derit rem mobil dan suara jeritan mengerikan.",
+      "Ketika cahaya kota mulai terlihat di kejauhan, Takashi tersungkur pingsan tepat di depan pintu tiket stasiunnya yang biasa. Jarum jam menunjukkan pukul satu dini hari. Apakah Stasiun Kisaragi itu hanyalah mimpi belaka, ataukah gerbang menuju dunia lain?"
+    ]
+  },
+
+  // === CERITA HOROR TEMATIK N4 (7 Bab) ===
+  {
+    id: "n4-hor-c1",
+    series: "Legenda Misteri & Horor Jepang",
+    seriesPart: 6,
+    nextId: null,
+    prevId: null,
+    level: "N4",
+    title: "青木ヶ原樹海の迷い道：コンパスが狂う森",
+    titleArti: "Jalan Tersesat di Hutan Aokigahara: Hutan Tempat Kompas Berputar Kacau",
+    paragraphs: [
+      "富士山の麓に広がる「青木ヶ原樹海」は、見渡す限りの深い緑に包まれた広大な森です。千年以上前の火山の噴火によってできた溶岩の上に木々が生い茂っており、地面には無数の穴が開いています。",
+      "樹海に入ると、鳥の声や風の音が全く聞こえない不思議な静寂に包まれます。地下の溶岩には磁石を狂わせる鉄分が多く含まれているため、持ってきた方位磁針（コンパス）の針がぐるぐると不規則に回り始めます。",
+      "観光道から一歩でも外れると、どの方向を見ても同じ木に見えて元の道に戻れなくなります。木に巻かれた色褪せたビニールテープは、かつて森に迷い込んだ人々が残した命の目印と言われています。"
+    ],
+    translations: [
+      "Hutan Aokigahara (Jukai) yang terbentang di kaki Gunung Fuji adalah hutan belantara maha luas yang diselimuti kehijauan pekat sejauh mata memandang. Pepohonan tumbuh rimbun di atas bebatuan lava hasil letusan gunung berapi lebih dari seribu tahun silam, dan permukaannya dipenuhi rongga gua alami.",
+      "Begitu melangkah masuk ke dalam hutan Jukai, suasana diselimuti keheningan ajaib di mana kicau burung dan desir angin sama sekali tidak terdengar. Batuan lahar di dalam tanah mengandung kadar besi tinggi yang mengacaukan medan magnet, membuat jarum kompas berputar liar tanpa arah.",
+      "Jika melangkah keluar satu langkah saja dari jalur setapak wisata, ke arah mana pun memandang semua pohon terlihat persis sama sehingga mustahil kembali ke jalan semula. Pita plastik pudar yang terlilit di batang pohon konon merupakan penanda jejak yang ditinggalkan oleh orang-orang yang tersesat di sana."
+    ]
+  },
+  {
+    id: "n4-hor-c2",
+    series: "Legenda Misteri & Horor Jepang",
+    seriesPart: 7,
+    nextId: null,
+    prevId: null,
+    level: "N4",
+    title: "学校の七不思議：三階のトイレの花子さん",
+    titleArti: "Tujuh Misteri Sekolah: Hanako-san di Toilet Lantai Tiga",
+    paragraphs: [
+      "日本の小学校には、古くから語り継がれている「学校の七不思議」という怖い噂があります。その中で最も有名なのが、校舎の三階にある女子トイレに現れる「花子さん」の伝説です。",
+      "夕方、誰もいなくなった古いトイレの奥から三番目のドアを三回ノックして、「花子さん、いらっしゃいますか」と尋ねると、小さな声で「はい、います」と返事が聞こえると言われています。",
+      "ドアをゆっくり開けると、赤いスカートを履いたおかっぱ頭の少女が立っていて、鏡の中に引きずり込まれるという噂です。放課後の薄暗い廊下を通るとき、生徒たちは今でも少し足早になります。"
+    ],
+    translations: [
+      "Di sekolah dasar Jepang, terdapat rumor menyeramkan yang diwariskan turun-temurun bertajuk 'Tujuh Misteri Sekolah'. Di antara misteri itu, yang paling populer adalah legenda 'Hanako-san' yang muncul di toilet perempuan lantai tiga gedung sekolah.",
+      "Saat senja ketika sekolah mulai sepi, konon jika Anda mengetuk tiga kali pintu bilik ketiga dari toilet terdalam lalu bertanya 'Hanako-san, apakah kamu ada di sana?', akan terdengar sahutan lirih berbisik: 'Ya, aku di sini'.",
+      "Rumor menyebutkan bahwa bila pintu dibuka perlahan, seorang anak perempuan berambut bob mengenakan rok merah akan berdiri di sana dan menarik Anda ke dalam cermin. Hingga kini, saat melintasi lorong remang sekolah sepulang belajar, para siswa selalu mempercepat langkahnya."
+    ]
+  },
+  {
+    id: "n4-hor-c3",
+    series: "Legenda Misteri & Horor Jepang",
+    seriesPart: 8,
+    nextId: null,
+    prevId: null,
+    level: "N4",
+    title: "メリーさんの電話：「今あなたの後ろにいるの」",
+    titleArti: "Telepon Mary-san: 'Sekarang Aku Ada di Belakangmu'",
+    paragraphs: [
+      "引っ越しの時、少女は部屋の掃除をして、昔遊んでいた西洋人形のメリーさんをごみ箱に捨ててしまいました。新しい町のアパートに引っ越した最初の夜、部屋の固定電話がけたたましく鳴り響きました。",
+      "電話に出ると、幼い少女の声で「もしもし、わたしメリーさん。今ゴミ捨て場にいるの」と言って電話が切れました。いたずら電話だと思いましたが、十分後に再び電話が鳴り、「わたしメリーさん。今あなたの町の駅に着いたの」と言いました。",
+      "電話は数分おきに鳴り続け、少女の距離はどんどん近づいてきました。最後に「わたしメリーさん。今あなたの後ろにいるの」と囁かれ、振り返った少女が見たものは……。"
+    ],
+    translations: [
+      "Saat pindah rumah, seorang gadis membersihkan kamarnya dan membuang boneka gaun barat tua bernama Mary-san ke tempat sampah. Pada malam pertama di apartemen kota barunya, telepon kabel di ruangan berdering memekakkan telinga.",
+      "Ketika diangkat, terdengar suara anak kecil: 'Halo, aku Mary-san. Sekarang aku ada di tempat pembuangan sampah,' lalu telepon terputus. Mengira itu telepon iseng, sepuluh menit kemudian telepon berdering lagi: 'Aku Mary-san. Sekarang aku sudah tiba di stasiun kotamu'.",
+      "Telepon terus berdering setiap beberapa menit, dan jarak Mary-san semakin dekat. Hingga akhirnya berbisik: 'Aku Mary-san. Sekarang aku ada tepat di belakangmu,' dan saat gadis itu menoleh ke belakang, apa yang dilihatnya adalah..."
+    ]
+  },
+  {
+    id: "n4-hor-c4",
+    series: "Legenda Misteri & Horor Jepang",
+    seriesPart: 9,
+    nextId: null,
+    prevId: null,
+    level: "N4",
+    title: "夜中の鏡：合わせ鏡に映る十三番目の顔",
+    titleArti: "Cermin Tengah Malam: Wajah Ketiga Belas di Cermin Berhadapan",
+    paragraphs: [
+      "日本には「夜中に鏡を向かい合わせにしてはいけない」という有名なタブー（合わせ鏡の禁忌）があります。二枚の鏡を向かい合わせに置くと、鏡の中に鏡が無限に映り込み、奥へと続く長い光の通路ができます。",
+      "昔からの言い伝えでは、深夜の二時二分に合わせ鏡を覗き込むと、無限に続く自分の顔の中に、自分とは全く異なる「十三番目の顔」が浮かび上がると言われています。",
+      "その顔と目が合ってしまうと、鏡の中の霊に魂を吸い取られ、自分が鏡の中に閉じ込められてしまうそうです。夜寝る前には、鏡に布をかけておくのが日本の古い知恵です。"
+    ],
+    translations: [
+      "Di Jepang terdapat tabu terkenal: 'Jangan menghadapkan dua cermin di tengah malam' (Awase Kagami). Jika dua cermin diletakkan saling berhadapan, pantulannya akan memantul tanpa batas ke dalam, membentuk lorong cahaya panjang menuju kedalaman tak terhingga.",
+      "Menurut legenda lama, jika seseorang mengintip ke dalam cermin yang berhadapan tepat pada pukul dua lewat dua menit dini hari, di antara deretan pantulan wajah tanpa batas akan muncul 'wajah ketiga belas' yang sama sekali bukan wajah dirinya.",
+      "Konon jika mata Anda bertatapan dengan wajah tersebut, jiwa Anda akan diserap oleh roh di dalam cermin dan Anda akan terkurung di dalamnya selamanya. Menutup cermin dengan kain sebelum tidur di malam hari adalah kebiasaan kearifan kuno di Jepang."
+    ]
+  },
+  {
+    id: "n4-hor-c5",
+    series: "Legenda Misteri & Horor Jepang",
+    seriesPart: 10,
+    nextId: null,
+    prevId: null,
+    level: "N4",
+    title: "雨の日の赤い傘：追ってくる足音",
+    titleArti: "Payung Merah di Hari Hujan: Suara Langkah yang Mengejar",
+    paragraphs: [
+      "梅雨の季節、冷たい雨が降り続く深夜の住宅街を、一人の学生が傘をさして歩いていました。街灯が雨粒でぼんやりと光る中、後ろから「ペタ、ペタ」と濡れた足で地面を踏む音が聞こえてきました。",
+      "振り返ってみても、暗い路地には誰もいません。気のせいだと思って歩くスピードを上げると、後ろの足音も「ペタペタペタ」と早くなってついてきました。",
+      "路地の角を曲がった瞬間、前方の電柱の陰に、赤い傘を深くさした背の高い人物が立っていました。傘の下から白い手が伸びてきて、「傘に入れてくれませんか」と冷たい声が聞こえたとき、学生は悲鳴を上げて逃げ出しました。"
+    ],
+    translations: [
+      "Di musim hujan tsuyu, saat hujan dingin mengguyur kawasan pemukiman di larut malam, seorang mahasiswa berjalan mengenakan payung. Di tengah temaram lampu jalan yang kabur oleh bulir hujan, dari belakang terdengar suara derap basah: 'Plok, plok' melangkah di atas aspal.",
+      "Saat menoleh ke belakang, lorong gelap itu sunyi tak ada siapa-siapa. Mengira hanya halusinasi, ia mempercepat langkahnya, namun suara langkah di belakangnya pun berubah kian cepat mengejar: 'Plok-plok-plok'.",
+      "Begitu berbelok di tikungan gang, di balik bayang tiang listrik di depannya berdiri sosok jangkung mengenakan payung merah yang menutupi wajahnya. Tangan pucat menjulur dari balik payung seraya berbisik dingin: 'Bolehkah aku berteduh di payungmu?'. Seketika mahasiswa itu menjerit ketakutan dan lari terbirit-birit."
+    ]
+  },
+  {
+    id: "n4-hor-c6",
+    series: "Legenda Misteri & Horor Jepang",
+    seriesPart: 11,
+    nextId: null,
+    prevId: null,
+    level: "N4",
+    title: "古い人形の髪：少しずつ伸びる黒髪",
+    titleArti: "Rambut Boneka Kuno: Rambut Hitam yang Tumbuh Perlahan",
+    paragraphs: [
+      "祖母の古い日本家屋の押し入れの奥に、ガラスケースに入った伝統的な日本人形が飾られていました。黒い着物を着て、真っ直ぐな黒髪を切りそろえた人形は、家族を静かに見守っているようでした。",
+      "しかし、夏休みに遊びに来た孫娘は、人形の髪が去年の夏よりも肩の下まで長くなっていることに気づきました。「おばあちゃん、人形の髪を切ったの？」と聞きましたが、祖母は「一度も切っていないよ」と答えました。",
+      "日本では、大切にされた人形には魂が宿ると信じられています。夜中にケースの中で人形がまばたきをしたり、髪が伸びたりする人形は、神社でお祓い（おはらい）を受けて供養されることがあります。"
+    ],
+    translations: [
+      "Di bagian terdalam lemari geser rumah tradisional milik nenek, terpajang sebuah boneka tradisional Jepang di dalam kotak kaca. Mengenakan kimono hitam dengan rambut lurus terpotong rapi, boneka itu tampak tenang menatap seisi rumah.",
+      "Namun, sang cucu perempuan yang datang berlibur di musim panas menyadari bahwa rambut boneka tersebut lebih panjang melewati bahu dibanding musim panas tahun lalu. 'Nenek, apakah rambut bonekanya pernah dipotong?', tanyanya. Sang nenek menjawab: 'Sama sekali tidak pernah dipotong'.",
+      "Di Jepang dipercaya bahwa boneka yang dirawat penuh kasih sayang dapat bersemayam roh di dalamnya. Boneka yang konon berkedip di malam hari atau rambutnya tumbuh memanjang biasanya dibawa ke kuil Shinto untuk didoakan melalui upacara penyucian arwah (Ningyo Kuyo)."
+    ]
+  },
+  {
+    id: "n4-hor-c7",
+    series: "Legenda Misteri & Horor Jepang",
+    seriesPart: 12,
+    nextId: null,
+    prevId: null,
+    level: "N4",
+    title: "深夜の自動販売機：買えないボタン",
+    titleArti: "Mesin Minuman Otomatis Tengah Malam: Tombol yang Tak Terdaftar",
+    paragraphs: [
+      "人通りのない山道の入り口に、一台だけぽつんと光る古い自動販売機がありました。喉が渇いたドライバーが車を止め、温かいコーヒーを買おうとお金を入れました。",
+      "商品の列の右端に、名前も写真も貼られていない真っ黒なボタンがあることに気づきました。値段は「〇円」と表示されており、不思議に思った男はその黒いボタンを押してしまいました。",
+      "ガコンと大きな音がして取り出し口に落ちてきたのは、冷たく濡れた泥だらけの古い缶でした。缶の表面には赤い文字で「戻れない」と刻まれており、驚いた男が顔を上げると、周囲の景色が全く見知らぬ深い霧に包まれていました。"
+    ],
+    translations: [
+      "Di ujung jalan pegunungan yang sepi, berdiri satu mesin penjual otomatis (vending machine) tua yang menyala temaram. Seorang pengemudi yang kehausan menepikan mobilnya dan memasukkan uang koin untuk membeli sekaleng kopi hangat.",
+      "Di ujung paling kanan deretan produk, ia menyadari ada satu tombol berwarna hitam pekat tanpa label gambar maupun nama minuman. Harganya tertulis '0 Yen'. Merasa heran, pria itu tanpa sengaja menekan tombol hitam tersebut.",
+      "Suara dentuman keras terdengar saat sebuah kaleng jatuh ke lubang pengeluaran. Kaleng itu dingin, basah, dan berlumuran tanah liat. Di permukaannya terukir tulisan berwarna merah: 'Tak Bisa Kembali'. Ketika pria itu mengangkat kepalanya karena terkejut, pemandangan di sekitarnya telah tertutup oleh kabut tebal yang asing."
+    ]
+  }
+];
+
+fs.writeFileSync('./scripts/new_horror_n4.json', JSON.stringify(horrorN4, null, 2), 'utf-8');
+console.log('Successfully generated 12 N4 horror readings:', horrorN4.length);

@@ -1,0 +1,251 @@
+// Generator for 12 new N2 Horror & Urban Legend passages
+const fs = require('fs');
+
+const horrorN2 = [
+  // === SERIES HOROR N2: Arsip Investigasi Fenomena Gaib Urban (5 Bab) ===
+  {
+    id: "n2-hor-s1-1",
+    series: "Arsip Investigasi Fenomena Gaib",
+    seriesPart: 1,
+    nextId: "n2-hor-s1-2",
+    prevId: null,
+    level: "N2",
+    title: "異界への迷い込み：都市伝説の民俗学的考察",
+    titleArti: "Tersesat ke Alam Lain: Kajian Folklor Terhadap Legenda Urban Modern",
+    paragraphs: [
+      "東都大学の民俗学専攻で講師を務める神代宗助（かみしろ・そうすけ）は、現代社会においてインターネットを通じて急速に流布する「神隠し」や「異界訪問譚」の共通構造を研究していました。近代的なインフラが高度に発達した東京周辺においてさえ、特定の地理的結節点において時空間の歪みを示唆する証言が後を絶たなかったためです。",
+      "特に「きさらぎ駅」に代表される鉄道系異界伝説は、単なるネット上の創作実話の範疇を超え、実際の失踪事件の記録と不可解な符号を見せていました。失踪者の家族から提供された携帯端末の発信履歴には、現行の通信規格では到達不可能な未知の中継局を経由した痕跡が克明に残されていたのです。",
+      "神代は助手の麻美とともに、数々の証言が集中する深夜の私鉄路線へ実地調査に赴くことを決意しました。学術的好奇心の奥底で警鐘を鳴らす本能的な畏怖を振り払いながら、二人は終電間際の無人車両に乗り込みました。"
+    ],
+    translations: [
+      "Sosuke Kamishiro, seorang dosen folklor di Universitas Toto, mendedikasikan penelitiannya pada pola struktural 'Kamikakushi' (diculik alam gaib) dan kisah penjelajahan dimensi lain yang beredar luas di jagat maya modern. Pasalnya, kendati infrastruktur perkotaan Tokyo telah berevolusi menjadi sangat modern, kesaksian mengenai distorsi ruang dan waktu di titik-titik simpul geografis tertentu tak pernah surut.",
+      "Secara khusus, legenda dimensi kereta api seperti 'Stasiun Kisaragi' melampaui batasan fiksi horor daring belaka, memperlihatkan kecocokan tak terbantahkan dengan berkas laporan orang hilang kepolisian. Catatan log pemancar ponsel yang diberikan oleh keluarga korban memperlihatkan jejak koneksi ganjil melalui stasiun relai misterius yang mustahil diakses oleh frekuensi pita seluler modern.",
+      "Bersama sang asisten, Asami, Kamishiro memutuskan melakukan investigasi lapangan pada rute kereta swasta tengah malam di mana laporan anomali kerap terpusat. Mengesampingkan rasa gentar yang berdering di nuraninya, keduanya melangkah naik ke gerbong kosong menjelang jam keberangkatan kereta terakhir."
+    ]
+  },
+  {
+    id: "n2-hor-s1-2",
+    series: "Arsip Investigasi Fenomena Gaib",
+    seriesPart: 2,
+    nextId: "n2-hor-s1-3",
+    prevId: "n2-hor-s1-1",
+    level: "N2",
+    title: "封印された文書と旧家の忌み名",
+    titleArti: "Dokumen Tersegel dan Nama Tabu Keluarga Bangsawan Kuno",
+    paragraphs: [
+      "深夜零時を回った走行中、車内の蛍光灯が一斉に明滅を始め、窓外の漆黒の闇に霧のような澱みが立ち込めました。麻美が携行していた電磁波測定器の針が振り切れ、車両全体が不可解な無重力感に包まれた直後、電車は見知らぬ木造建築のホームへと滑り込みました。",
+      "改札口へ向かった二人の足元に転がっていたのは、昭和初期の消印が押された湿った封筒でした。中には「鬼去（きさらぎ）村開拓記録」と墨で記された古文書が収められており、かつて飢饉に際して集落全体が邪神を祀る禁忌の儀式を執り行い、現世から隔離された経緯が記されていました。",
+      "「『きさらぎ』とは単なる当て字ではなく、鬼が立ち去った——すなわち人外の領域と化した土地を指す隠語だったのか……」。古文書の行間から立ち上るおぞましい怨念に、神代の指先は微かに震えていました。"
+    ],
+    translations: [
+      "Selepas tengah malam saat kereta melaju kencang, lampu tabung fluoresen di gerbong berkedip serempak dan kabut pekat mulai membungkus kegelapan di luar jendela. Jarum detektor gelombang elektromagnetik yang dibawa Asami melesat melampaui skala batas; tepat setelah gerbong diselimuti sensasi hampa tanpa gravitasi, kereta merapat ke peron kayu kuno tak bertuan.",
+      "Saat melangkah menuju pintu keluar gerbang karcis, di dekat kaki mereka tergeletak sebuah amplop lembap berstempel pos era Showa awal. Di dalamnya tersimpan manuskrip bertinta kuas bertajuk 'Catatan Kolonisasi Desa Kisaragi (Desa Iblis Pergi)', yang meriwayatkan bagaimana seisi desa menggelar ritual tabu pemujaan entitas terlarang demi bertahan dari bencana kelaparan, hingga akhirnya terisolasi dari dunia fana.",
+      "'Rupanya nama Kisaragi bukan sekadar fonetik acak, melainkan eufemisme kuno bagi tanah yang ditinggalkan iblis—wilayah yang telah bermutasi menjadi domain di luar nalar manusia...'. Menyerap kebencian pekat yang menguar dari balik lembaran kuno tersebut, jemari Kamishiro bergetar halus."
+    ]
+  },
+  {
+    id: "n2-hor-s1-3",
+    series: "Arsip Investigasi Fenomena Gaib",
+    seriesPart: 3,
+    nextId: "n2-hor-s1-4",
+    prevId: "n2-hor-s1-2",
+    level: "N2",
+    title: "廃駅に響く存在しない発車ベル",
+    titleArti: "Bel Keberangkatan yang Berdentang di Stasiun Terbengkalai",
+    paragraphs: [
+      "二人が駅舎の出口を探しあぐねていたその時、朽ち果てたスピーカーから金属が軋むような発車ベルが鳴り響きました。しかし、線路の上には電車の姿など影も形もありません。ベルの音色は徐々に狂気を帯びた不協和音へと変貌し、二人の平衡感覚を激しく揺さぶりました。",
+      "プラットホームの端に目を凝らすと、濃霧の中から輪郭の定まらない人影が次々と現れ、空虚な視線を二人に注ぎながら無音で近づいてきました。彼らはかつてこの駅に迷い込み、時間の牢獄に囚われた失踪者たちの成れの果てにほかなりませんでした。",
+      "「神代先生、後ろの線路に赤い炎が見えます！」麻美の悲鳴に促されて振り返ると、レールの上を人魂のような蒼白い光が蛇のように這い回り、退路を断つように包囲網を狭めていました。"
+    ],
+    translations: [
+      "Tatkala keduanya kebingungan mencari pintu keluar dari gedung stasiun, pengeras suara tua yang lapuk mendadak mendengungkan dering bel keberangkatan kereta yang melengking parau. Kendati demikian, di atas rel tidak tampak batang hidung kereta apa pun. Irama bel tersebut lambat laun bermutasi menjadi disonansi nada kacau yang merusak keseimbangan spasial mereka secara brutal.",
+      "Memperhatikan ujung peron dengan saksama, dari balik kabut pekat bermunculan siluet manusia tanpa raut wajah yang jelas, melangkah mendekat tanpa suara sembari menghujamkan tatapan kosong ke arah mereka. Mereka tak lain adalah wujud mengenaskan dari para pengelana malang yang pernah tersesat di stasiun ini dan terperangkap abadi di dalam jeruji waktu.",
+      "'Profesor Kamishiro, ada kobaran api merah di atas rel di belakang kita!' Tersentak oleh jeritan Asami, Kamishiro menoleh; di atas rel, lidah-lidah cahaya biru pucat merayap laksana ular melingkar, mempersempit kepungan demi memutus jalan kembali."
+    ]
+  },
+  {
+    id: "n2-hor-s1-4",
+    series: "Arsip Investigasi Fenomena Gaib",
+    seriesPart: 4,
+    nextId: "n2-hor-s1-5",
+    prevId: "n2-hor-s1-3",
+    level: "N2",
+    title: "歪む空間と鏡像の侵食",
+    titleArti: "Ruang yang Terdistorsi dan Erosi Bayangan Cermin",
+    paragraphs: [
+      "二人は待合室の片隅に残された古い姿見（鏡）の前に追い詰められました。鏡の表面は水面のように波打ち、映し出された自分たちの姿が現実の動作と微妙に遅れて動き、歪んだ笑みを浮かべていました。鏡像が独自の意思を持ち、こちらの現実を乗っ取ろうとしていることは明白でした。",
+      "腕時計の針は猛烈な勢いで反時計回りに回転し、空間の幾何学的整合性は完全に崩壊していました。足元の床板が泥のように溶け始め、底知れぬ暗黒の奈落へと引きずり込もうとする引力が強まります。",
+      "「民俗学における境界儀礼の原理を応用する！麻美、持参した清めの切麻（きりぬさ）と粗塩を床に撒くんだ！」神代は懐から護符を取り出し、空間の亀裂を修復するための言霊を唱え始めました。"
+    ],
+    translations: [
+      "Keduanya terpojok di depan sebuah cermin berdiri antik yang tersisa di sudut ruang tunggu. Permukaan kaca cermin itu beriak lembut laksana genangan air; bayangan diri mereka di dalam cermin bergerak dengan keterlambatan ritme yang ganjil dibanding tubuh aslinya, sembari menyunggingkan seringai mengerikan. Sangat jelas bahwa pantulan cermin itu telah memiliki kehendak mandiri dan berupaya merebut eksistensi raga mereka.",
+      "Jarum jam tangan berputar berlawanan arah dengan kecepatan ekstrem, sementara logika geometri ruang di sekitar mereka runtuh total. Papan lantai kayu di bawah kaki mulai mencair seperti lumpur hisap, memancarkan gravitasi gaib yang hendak menyeret mereka ke dalam palung kegelapan abadi.",
+      "'Kita harus menerapkan prinsip ritus ambang batas (liminal boundary ritual) folklor kuno! Asami, tebarkan potongan kertas suci Kirinusa dan garam murni ke lantai!' Kamishiro merogoh jimat pelindung dari sakunya dan mulai merapalkan mantra purba demi merekatkan kembali celah dimensi yang koyak."
+    ]
+  },
+  {
+    id: "n2-hor-s1-5",
+    series: "Arsip Investigasi Fenomena Gaib",
+    seriesPart: 5,
+    nextId: null,
+    prevId: "n2-hor-s1-4",
+    level: "N2",
+    title: "結界の修復と記憶の代償",
+    titleArti: "Pemulihan Segel Penghalang dan Harga Sebuah Ingatan",
+    paragraphs: [
+      "白塩が描く円環の結界が淡い光を放ち、迫り来る人影と空間の歪みを一時的に押し戻しました。鏡が甲高い破裂音とともに砕け散った瞬間、二人は猛烈な突風に煽られて激しい眩暈に襲われ、意識を手放しました。",
+      "目を覚ました時、二人は早朝の始発電車が滑り込むいつもの駅のベンチに横たわっていました。手元に残されていたのは、ボロボロに焦げた民俗学の調査ノート一冊のみでした。怪異から脱出することに成功した代償として、二人は幼少期の最も幸福な思い出の一部を完全に失っていました。",
+      "日常という脆い薄氷の下には、今なお論理と理性を呑み込む漆黒の異界が口を開けて待っている——神代は朝日を浴びながら、背筋を伝う消えない寒気を感じていました。"
+    ],
+    translations: [
+      "Lingkaran pembatas garam murni memancarkan kilau pendar lembut, membendung laju siluet makhluk bayangan dan mendesak mundur distorsi ruang. Saat cermin antik itu pecah berkeping-keping dengan suara ledakan melengking, angin puting beliung dahsyat menghantam tubuh mereka hingga kesadaran keduanya padam seketika di tengah rasa pening yang menusuk.",
+      "Ketika membuka mata, keduanya terbaring di bangku stasiun harian mereka yang biasa saat kereta pertama fajar mulai merapat. Satu-satunya bukti fisik yang tersisa di genggaman tangan adalah buku catatan ekspedisi folklor yang telah hangus compang-camping. Namun sebagai harga tebusan atas pelarian dari dimensi terkutuk itu, sebagian dari memori masa kecil mereka yang paling membahagiakan telah lenyap tak berbekas.",
+      "Di balik lapisan tipis kehidupan normal sehari-hari, dimensi kegelapan purba yang siap menelan nalar manusia masih terus menganga lebar menanti korban berikutnya—bermandikan hangatnya sinar surya pagi, Kamishiro merasakan hawa dingin yang takkan pernah sirna di punggungnya."
+    ]
+  },
+
+  // === CERITA HOROR TEMATIK N2 (7 Bab) ===
+  {
+    id: "n2-hor-c1",
+    series: "Wacana Kaidan & Horor Filosofis",
+    seriesPart: 6,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "青木ヶ原樹海の地磁気異常と死生観の変遷",
+    titleArti: "Anomali Geomagnetik Hutan Aokigahara dan Transformasi Filosofi Kematian",
+    paragraphs: [
+      "富士山北西麓に広がる約三千ヘクタールの原生林「青木ヶ原樹海」は、西暦八百六十四年の貞観大噴火によって流出した膨大な溶岩流の上に形成された特異な生態系を有しています。地下に伏在する強磁性鉱物により局所的な地磁気異常が生じ、従来型の磁気羅針盤が機能不全に陥ることは科学的にも実証されています。",
+      "しかしながら、この地理的閉鎖性が帯びる超自然的な神秘性は、近代以降の文学やメディアを通じて「黄泉の国への境界」という文化的表象へと変容を遂げていきました。木々の密度による音波の極端な吸収がもたらす無音空間は、人間の聴覚認知を狂わせ、自己の内奥の不安を幻聴として外界に投影させる心理的要因となります。",
+      "自然科学の精緻な分析をもってしても解明し得ない「生と死のあわい」に佇む空間として、樹海は現代人が喪失した始原的な自然への畏敬の念を喚起し続けています。"
+    ],
+    translations: [
+      "Hutan Aokigahara Jukai seluas kurang lebih tiga ribu hektare yang membentang di kaki barat laut Gunung Fuji memiliki formasi ekosistem unik yang lahir di atas lapisan lahar letusan dahsyat era Jougan tahun 864 Masehi. Keberadaan mineral feromagnetik di dalam lapisan geologi bawah tanah yang memicu anomali geomagnetik lokal hingga melumpuhkan fungsi kompas magnetik konvensional telah dibuktikan secara empiris oleh sains.",
+      "Kendati demikian, isolasi topografis ini melalui karya sastra dan media modern bertransformasi menjadi representasi kultural sebagai 'gerbang menuju dunia alam baka'. Kerapatan vegetasi pohon yang menyerap gelombang suara secara ekstrem melahirkan keheningan mutlak yang mendistorsi persepsi auditori manusia, memproyeksikan kecemasan bawah sadar menjadi halusinasi suara.",
+      "Sebagai ruang sakral yang berdiri di ambang perbatasan antara hidup dan mati yang tak terjamah tuntas oleh kalkulasi sains modern, belantara Jukai senantiasa membangkitkan kembali rasa gentar manusia modern terhadap keagungan alam purba."
+    ]
+  },
+  {
+    id: "n2-hor-c2",
+    series: "Wacana Kaidan & Horor Filosofis",
+    seriesPart: 7,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "杉沢村伝説の深層：共同体崩壊とタブーの誕生",
+    titleArti: "Misteri Mendalam Legenda Desa Sugisawa: Keruntuhan Komunitas dan Lahirnya Tabu",
+    paragraphs: [
+      "青森県の山奥に存在し、一夜にして村民全員が狂気によって惨殺された末に地図から抹消されたと伝えられる「杉沢村伝説」は、昭和から平成にかけて列島を席巻した最恐の都市伝説の一つです。村の入口とされる朽ちた鳥居と頭蓋骨のような巨石の伝承は、多くのオカルト探訪者を魅了してきました。",
+      "民俗学的見地からこの伝説を解体すると、近代化の過程で過疎化と産業構造の転換に追いつけず、自律的な存続を断念せざるを得なかった限界集落の悲劇的な記憶が、怪談という意匠を纏って再構築されたものであることが浮き彫りになります。",
+      "外部者の侵入を拒む血塗られた排他性の物語は、近代国家の管理下から零れ落ちた「法が及ばぬ聖域（アサイラム）」に対する現代人の無意識の恐怖と憧憬を鮮やかに映し出しています。"
+    ],
+    translations: [
+      "Legenda Desa Sugisawa—sebuah desa terpencil di pegunungan Aomori yang dikabarkan seluruh warganya tewas dibantai dalam semalam akibat kegilaan massal lalu dihapus dari peta administratif—merupakan salah satu legenda urban paling mengerikan yang mengguncang Jepang dari era Showa hingga Heisei. Kisah mengenai gerbang torii lapuk dan batu raksasa berbentuk tengkorak di pintu masuk desa telah memikat banyak peneliti misteri.",
+      "Jika dibedah dari perspektif antropologi folklor, legenda ini sesungguhnya merefleksikan rekonsiliasi trauma kolektif atas kepunahan komunitas pedesaan terpencil yang terpinggirkan oleh industrialisasi modern, yang dikemas ulang dalam balutan narasi kaidan mistis.",
+      "Kisah mengenai eksklusivisme berdarah yang menolak jamahan orang luar ini mencerminkan rasa takut sekaligus kekaguman bawah sadar masyarakat kontemporer terhadap teritori suaka terlarang yang lolos dari jangkauan kedaulatan hukum negara."
+    ]
+  },
+  {
+    id: "n2-hor-c3",
+    series: "Wacana Kaidan & Horor Filosofis",
+    seriesPart: 8,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "テケテケ伝説にみる近代化の影と都市の疎外感",
+    titleArti: "Bayang-bayang Modernisasi dan Keterasingan Urban di Balik Legenda Teke-Teke",
+    paragraphs: [
+      "下半身を欠損した女性の霊が、両腕と肘のみを猛烈な速度で大地に叩きつけ、「テケテケ、テケテケ」という乾いた音を立てて通行人を追走するという都市伝説は、鉄道網が網の目のように発達した戦後の高度経済成長期に誕生しました。",
+      "厳冬期の踏切事故によって肉体を分断された犠牲者の無念が怨霊化するというプロットの背後には、機械化と合理化を最優先し、個人の生命の尊厳を軽視してきた近代産業社会の病理に対する無言の告発が潜在しています。",
+      "自動車に匹敵する時速百キロメートル以上で疾走し、逃走者を確実に捕縛するという冷酷な不可避性は、過密ダイヤに縛られ、逃げ場を奪われた現代都市生活者の精神的圧迫感を象徴しています。"
+    ],
+    translations: [
+      "Legenda urban mengenai entitas wanita tanpa paruh tubuh bawah yang merayap dengan kecepatan mengerikan menggunakan kedua lengan dan sikunya—menimbulkan derit ketukan 'teke-teke-teke' saat mengejar orang yang melintas—lahir pada era ledakan ekonomi pascaperang seiring pesatnya ekspansi jaringan rel kereta perkotaan.",
+      "Di balik plot mengenai dendam arwah korban insiden perlintasan kereta musim dingin yang tubuhnya terbelah dua, tersimpan dakwaan implisit terhadap patologi tatanan sosial industri modern yang memprioritaskan efisiensi mekanis di atas martabat kemanusiaan.",
+      "Kecepatan jelajahnya yang menandingi mobil hingga melampaui seratus kilometer per jam serta keniscayaan takdir penangkapan korban menyimbolkan tekanan mental warga urban modern yang terbelenggu jadwal hidup mekanis tanpa celah pelarian."
+    ]
+  },
+  {
+    id: "n2-hor-c4",
+    series: "Wacana Kaidan & Horor Filosofis",
+    seriesPart: 9,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "牛の首（牛首）：語ることを禁じられた最凶の怪談",
+    titleArti: "Kepala Sapi (Ushi no Kubi): Kaidan Terkutuk yang Dilarang untuk Diceritakan",
+    paragraphs: [
+      "「あまりの恐怖のために、その全貌を聞いた者はショック死するか発狂を免れず、語り手自身も命を削られるため、誰も真の内容を知らない」というパラドキシカルな構造を持つ怪談が「牛の首」です。実体としての物語が存在しないにもかかわらず、題名のみが恐怖の記号として流通し続けています。",
+      "歴史的背景として、江戸時代の天保の大飢饉における極限状態での人肉食（カニバリズム）の記憶を隠蔽・風化させるため、牛の皮を被せて人間性を否定した悲惨な処刑儀礼に由来するという説が有力視されています。",
+      "言語化を厳格に拒むメタ怪談の最高峰として、人間の想像力が生み出す「不可知の恐怖」こそが最も根源的な戦慄であることを雄弁に物語っています。"
+    ],
+    translations: [
+      "Kaidan bertajuk 'Ushi no Kubi' (Kepala Sapi) mengusung premis paradoksal yang unik: 'Konon siapa pun yang mendengar keutuhan ceritanya akan tewas terkena serangan jantung atau hilang ingatan karena kengerian yang teramat dahsyat, sehingga tak seorang pun yang mengetahui isi narasinya yang sesungguhnya'. Meski narasinya nihil, judulnya terus beredar sebagai simbol teror murni.",
+      "Secara historis, beredar hipotesis kuat bahwa legenda ini bermula dari upaya menyembunyikan tragedi kanibalisme ekstrem pada bencana kelaparan hebat era Tenpo zaman Edo, di mana korban dipakaikan kulit sapi demi menanggalkan martabat kemanusiaannya dalam ritual keji.",
+      "Sebagai puncak meta-kaidan yang menolak artikulasi bahasa, kisah ini membuktikan secara meyakinkan bahwa 'teror atas hal yang tak dapat diketahui' (the fear of the unknown) yang diproduksi oleh imajinasi manusia adalah puncak kengerian paling purba."
+    ]
+  },
+  {
+    id: "n2-hor-c5",
+    series: "Wacana Kaidan & Horor Filosofis",
+    seriesPart: 10,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "猿の手と等価交換の呪縛：願望成就の代償",
+    titleArti: "Kutukan Tangan Monyet dan Pertukaran Setara: Harga dari Pengabulan Hasrat",
+    paragraphs: [
+      "持ち主のいかなる願いも三つまで成就させるが、その実現の過程において必ず最悪の災厄と代償を強要する呪いの魔具「猿の手」のモチーフは、西洋文学から翻案され、日本の近代怪談においても広く浸透しました。",
+      "金銭を望めば最愛の息子の事故死による弔慰金として支払われ、息子の蘇生を願えば腐敗した肉体を持つ異形のものとして扉を叩くという因果の皮肉は、運命を人為的に改変しようとする人間の傲慢に対する峻烈な警鐘です。",
+      "「不条理な欲望の充足が、より深淵な破滅を招致する」という構造は、テクノロジーの万能感に酔いしれる現代文明が直面している生命倫理や環境破壊のジレンマとも不気味に共鳴しています。"
+    ],
+    translations: [
+      "Motif artefak kutukan 'Tangan Monyet'—yang mampu mengabulkan tiga permohonan sang pemilik namun menuntut tumbal petaka terburuk dalam proses pemenuhannya—diadaptasi dari literatur klasik dan berakar kuat dalam narasi kaidan modern Jepang.",
+      "Ironi takdir kausalitas di mana permohonan harta kekayaan dikabulkan lewat uang santunan atas kecelakaan fatal putra tercinta, lalu permohonan membangkitkan sang anak berujung pada entitas jasad busuk yang mengetuk pintu malam hari, merupakan peringatan keras atas keangkuhan manusia dalam merekayasa takdir.",
+      "Premis bahwa 'pemenuhan hasrat tanpa batas niscaya mengundang kehancuran yang lebih katastropik' beresonansi secara gamblang dengan dilema bioetika dan krisis ekologis yang kini dihadapi peradaban modern di tengah euforia teknologi mutakhir."
+    ]
+  },
+  {
+    id: "n2-hor-c6",
+    series: "Wacana Kaidan & Horor Filosofis",
+    seriesPart: 11,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "事故物件の怪異：壁のシミと残留思念の科学",
+    titleArti: "Misteri Rumah Bekas Tragedi / Jiko Bukken: Noda di Dinding dan Sisa Pikiran",
+    paragraphs: [
+      "過去に自殺、他殺、あるいは孤独死といった変死事案が発生した不動産を指す「事故物件」は、相場よりも著しく廉価な賃料で提供される一方で、入居者の心理的瑕疵や不可解な心霊現象が絶えない対象として知られています。",
+      "音響物理学や環境心理学の観点からは、壁面の染みや配管の異音、建物の微細な低周波振動が居住者の潜在的な恐怖心を増幅させ、睡眠障害や幻視を誘発するメカニズムが解明されつつあります。",
+      "しかし、論理的解釈では説明のつかない「空間に焼き付けられた強烈な感情の痕跡（残留思念）」の存在を完全に否定することはできず、生と死が日常の住居空間において交錯する現代のリアリズムを提示しています。"
+    ],
+    translations: [
+      "'Jiko Bukken'—istilah bagi properti residensial yang pernah menjadi lokasi kematian tak wajar seperti bunuh diri, pembunuhan, maupun kematian terisolasi (kodokushi)—disewakan dengan tarif anjlok jauh di bawah harga pasar, namun identik dengan cacat psikologis serta laporan fenomena supranatural berulang.",
+      "Dari perspektif fisika akustik dan psikologi lingkungan, interaksi antara noda dinding, dengung pipa air, serta getaran infrasonik bangunan terbukti mampu mengamplifikasi kecemasan bawah sadar penghuni hingga memicu gangguan tidur dan halusinasi visual.",
+      "Kendati demikian, sains tidak dapat sepenuhnya menyangkal eksistensi jejak emosi ekstrem yang terpatri dalam memori spasial suatu ruangan (residu psikis), menghadirkan realisme kontemporer di mana garis batas antara kematian dan kehidupan sehari-hari bertaut begitu tipis."
+    ]
+  },
+  {
+    id: "n2-hor-c7",
+    series: "Wacana Kaidan & Horor Filosofis",
+    seriesPart: 12,
+    nextId: null,
+    prevId: null,
+    level: "N2",
+    title: "深夜のドライブレコーダー：存在しないトンネルの映像",
+    titleArti: "Dashcam Mobil Tengah Malam: Rekaman Terowongan yang Tak Ada di Peta GPS",
+    paragraphs: [
+      "車載記録装置（ドライブレコーダー）の普及に伴い、肉眼では捉えきれなかった不可解な映像がデジタル記録として客観的に残される事例が相次いでいます。山岳地帯の国道を深夜に走行していた車両が、最新の衛星ナビゲーションシステムには存在しない古い素掘りのトンネルを通過する映像はその典型です。",
+      "赤外線カメラが捉えた映像には、トンネルの壁面に無数に埋め込まれた人型の陰影と、時速六十キロメートルで併走する着物姿の影がノイズとして記録されていました。ドライバーは当時の記憶が完全に欠落しており、車両の走行距離計（オドメーター）のみが数十キロメートル不自然に進んでいました。",
+      "デジタルテクノロジーの監視網が地球上を覆い尽くそうとも、電波の届かぬ山河の深淵には、未だ人類が解き明かしてはならない領域が静かに息づいている証左と言えます。"
+    ],
+    translations: [
+      "Seiring dengan meluasnya perangkat kamera pengawas mobil (dashcam), kian banyak anomali visual yang tak sempat tertangkap mata telanjang terdokumentasi secara objektif dalam format digital. Rekaman mobil yang melintasi jalan pegunungan tengah malam dan menerobos terowongan pahat batu kuno yang tak terdaftar di sistem GPS satelit adalah contoh tipikal.",
+      "Kamera inframerah merekam siluet-siluet berbentuk postur manusia yang tertanam di dinding terowongan serta bayangan berbusana kimono yang melayang sejajar mobil pada kecepatan enam puluh kilometer per jam di sela gangguan noise visual. Sang pengemudi kehilangan memori atas kejadian tersebut, sementara odometer mobil melompat puluhan kilometer secara misterius.",
+      "Sekalipun jaring pengawasan teknologi digital telah menyelimuti permukaan bumi, di palung-palung pegunungan yang sunyi dari gelombang sinyal, masih bersemayam domain purba yang tak seharusnya diusik oleh peradaban manusia."
+    ]
+  }
+];
+
+fs.writeFileSync('./scripts/new_horror_n2.json', JSON.stringify(horrorN2, null, 2), 'utf-8');
+console.log('Successfully generated 12 N2 horror readings:', horrorN2.length);
