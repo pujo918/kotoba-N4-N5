@@ -988,6 +988,7 @@ const I18N = {
     "stats_reset_btn": "Reset semua progress",
     "stats_reset_confirm": "Yakin ingin menghapus semua progress belajar? Tindakan ini tidak bisa dibatalkan.",
     "stats_reset_toast": "Progress direset",
+    "stats_no_wrong_tip": "Belum ada kosakata yang dijawab salah! Lanjutkan belajar untuk menguji pemahaman.",
     "stats_detail_correct_title": "Daftar Jawaban Benar",
     "stats_detail_correct_sub": "Kosakata yang dijawab benar setidaknya satu kali",
     "stats_detail_wrong_title": "Daftar Jawaban Salah",
@@ -1218,6 +1219,7 @@ const I18N = {
     "stats_reset_btn": "すべての進捗をリセット",
     "stats_reset_confirm": "すべての学習進捗をリセットしますか？この操作は取り消せません。",
     "stats_reset_toast": "進捗をリセットしました",
+    "stats_no_wrong_tip": "まだ間違えた単語はありません！この調子で学習を続けましょう。",
     "stats_detail_correct_title": "正解単語リスト",
     "stats_detail_correct_sub": "1回以上正解した単語",
     "stats_detail_wrong_title": "不正解・苦手単語リスト",
@@ -3097,6 +3099,10 @@ function buildJLPTSentence(v, type) {
   return type === 1 ? (replacement + 'の意味を考えます。') : (replacement + 'を漢字で書きます。');
 }
 
+function isKanjiChar(str) {
+  return /[\u4e00-\u9faf]/.test(str);
+}
+
 function generateJLPTFuriganaDistractors(v) {
   const answer = v.furigana;
   const traps = new Set();
@@ -3286,6 +3292,60 @@ function getTrapTip(v, type) {
       ? '部首（さんずい 氵・にんべん 亻・ぎょうにんべん 彳・ごんべん 言・てへん 扌等）の細かな違いや、前後の漢字の組み合わせに注意しましょう（例: 側 vs 測, 経 vs 軽, 待 vs 持）。'
       : 'Perhatikan perbedaan halus pada radikal (sanzui 氵, nimben 亻, gyoninben 彳, gonben 言, tehen 扌, dll) serta variasi kombinasi kanji depan/belakang (contoh: 側 vs 測, 経 vs 軽, 待 vs 持).';
   }
+}
+
+function getArtiDistractors(vOrAnswer, level) {
+  let answer, lv;
+  if (typeof vOrAnswer === 'object' && vOrAnswer !== null) {
+    answer = vOrAnswer.arti;
+    lv = vOrAnswer.level;
+  } else {
+    answer = vOrAnswer;
+    lv = level;
+  }
+  
+  const distractors = new Set();
+  const clean = s => (s || '').toLowerCase().replace(/[(),;.?\/!]/g, ' ').split(/\s+/).filter(w => w.length >= 3);
+  const answerWords = clean(answer);
+
+  const pool = State.vocab.filter(x => x.arti !== answer && (!lv || lv === 'all' || x.level === lv));
+
+  if (answerWords.length > 0) {
+    const sharing = pool.filter(x => {
+      const words = clean(x.arti);
+      return words.some(w => answerWords.includes(w));
+    });
+    shuffle(sharing).forEach(x => distractors.add(x.arti));
+  }
+
+  if (distractors.size < 3) {
+    shuffle(pool).forEach(x => distractors.add(x.arti));
+  }
+
+  if (distractors.size < 3) {
+    const allPool = State.vocab.filter(x => x.arti !== answer);
+    shuffle(allPool).forEach(x => distractors.add(x.arti));
+  }
+
+  return Array.from(distractors).slice(0, 3);
+}
+
+function getFuriganaDistractors(vOrAnswer, level) {
+  if (typeof vOrAnswer === 'object' && vOrAnswer !== null) {
+    return generateJLPTFuriganaDistractors(vOrAnswer);
+  }
+  const found = State.vocab.find(x => x.furigana === vOrAnswer);
+  if (found) return generateJLPTFuriganaDistractors(found);
+  return generateJLPTFuriganaDistractors({ furigana: vOrAnswer, level: level || 'N4', kanji: vOrAnswer });
+}
+
+function getKanjiDistractors(vOrAnswer, level) {
+  if (typeof vOrAnswer === 'object' && vOrAnswer !== null) {
+    return generateJLPTKanjiDistractors(vOrAnswer);
+  }
+  const found = State.vocab.find(x => x.kanji === vOrAnswer);
+  if (found) return generateJLPTKanjiDistractors(found);
+  return generateJLPTKanjiDistractors({ kanji: vOrAnswer, level: level || 'N4', furigana: vOrAnswer });
 }
 
 /* ============================================================
@@ -3953,13 +4013,23 @@ Views.stats = (app) => {
       </section>
 
       <section>
-        <p class="section-label">Aktivitas Review (Klik untuk detail)</p>
+        <p class="section-label">${t('stats_activity_title') || 'Aktivitas Review (Klik untuk detail)'}</p>
         <div class="grid stat-grid">
-          <div class="stat" data-stat="reviews"><span class="ico">${ICONS.refresh}</span><div class="val">${totalReviews}</div><div class="lbl">Total review</div></div>
-          <div class="stat clickable" id="btnCorrectReviews" data-stat="correct"><span class="ico">${ICONS.check}</span><div class="val">${totalCorrect}</div><div class="lbl">Jawaban benar</div></div>
-          <div class="stat clickable" id="btnWrongReviews" data-stat="wrong"><span class="ico">${ICONS.cross}</span><div class="val">${totalWrong}</div><div class="lbl">Jawaban salah</div></div>
-          <div class="stat" data-stat="streak"><span class="ico">${ICONS.flame}</span><div class="val">${currentStreak()}</div><div class="lbl">Streak (hari)</div></div>
+          <div class="stat" data-stat="reviews"><span class="ico">${ICONS.refresh}</span><div class="val">${totalReviews}</div><div class="lbl">${t('stats_total_reviews') || 'Total review'}</div></div>
+          <div class="stat clickable" id="btnCorrectReviews" data-stat="correct"><span class="ico">${ICONS.check}</span><div class="val">${totalCorrect}</div><div class="lbl">${t('stats_correct_answers') || 'Jawaban benar'}</div></div>
+          <div class="stat clickable" id="btnWrongReviews" data-stat="wrong"><span class="ico">${ICONS.cross}</span><div class="val">${totalWrong}</div><div class="lbl">${t('stats_wrong_answers') || 'Jawaban salah'}</div></div>
+          <div class="stat" data-stat="streak"><span class="ico">${ICONS.flame}</span><div class="val">${currentStreak()}</div><div class="lbl">${t('stats_streak_label') || 'Streak (hari)'}</div></div>
         </div>
+        ${totalWrong > 0 ? `
+        <div style="margin-top: 14px;">
+          <button class="btn block" id="btnDirectWrongQuiz" style="background: linear-gradient(135deg, var(--red), #ff7e5f); color: white; border: none; font-weight: 700; box-shadow: 0 4px 12px var(--red-soft); display:flex; align-items:center; justify-content:center; gap:8px; height:44px; border-radius:12px; cursor:pointer;">
+            ${ICONS.target} ${t('stats_detail_practice_btn') || 'Latihan Soal Salah'} (${totalWrong} ${t('stats_word_unit') || 'kata'})
+          </button>
+        </div>` : `
+        <div style="margin-top: 12px; padding: 12px 16px; border-radius: 12px; background: var(--bg-soft); border: 1px solid var(--border-soft); font-size: 13px; color: var(--text-dim); display: flex; align-items: center; gap: 8px;">
+          <span>🎉</span>
+          <span>${t('stats_no_wrong_tip') || 'Belum ada kosakata yang dijawab salah! Lanjutkan belajar untuk menguji pemahaman.'}</span>
+        </div>`}
       </section>
 
       <section>
@@ -3989,6 +4059,14 @@ Views.stats = (app) => {
     StatsDetailState.type = 'wrong';
     navigate('statsDetail');
   };
+  const directWrongBtn = app.querySelector('#btnDirectWrongQuiz');
+  if (directWrongBtn) {
+    directWrongBtn.onclick = () => {
+      WQ.queue = [];
+      WQ.idx = 0;
+      navigate('statsDetailQuiz');
+    };
+  }
   app.querySelector('#reset').onclick = () => {
     if (confirm('Yakin ingin menghapus semua progress belajar? Tindakan ini tidak bisa dibatalkan.')) {
       State.progress = {}; State.streak = { current: 0, last: null, best: 0 }; State.wrongSolved = {};
@@ -4005,18 +4083,18 @@ const StatsDetailState = { type: 'correct' };
 Views.statsDetail = (app) => {
   const type = StatsDetailState.type;
   const isCorrect = type === 'correct';
-  const title = isCorrect ? 'Daftar Jawaban Benar' : 'Daftar Jawaban Salah';
-  const subtitle = isCorrect ? 'Kosakata yang dijawab benar setidaknya satu kali' : 'Kosakata yang dijawab salah setidaknya satu kali';
-  const label = isCorrect ? 'Benar' : 'Salah';
+  const title = isCorrect ? (t('stats_detail_correct_title') || 'Daftar Jawaban Benar') : (t('stats_detail_wrong_title') || 'Daftar Jawaban Salah');
+  const subtitle = isCorrect ? (t('stats_detail_correct_sub') || 'Kosakata yang dijawab benar setidaknya satu kali') : (t('stats_detail_wrong_sub') || 'Kosakata yang dijawab salah setidaknya satu kali');
+  const label = isCorrect ? (t('label_correct') || 'Benar') : (t('label_wrong') || 'Salah');
   const color = isCorrect ? 'var(--green)' : 'var(--red)';
   const icon = isCorrect ? '✔' : '✖';
 
   const filtered = State.vocab.filter(v => {
+    const s = State.progress[v.id];
     if (isCorrect) {
-      const s = State.progress[v.id];
       return s && s.correct > 0;
     } else {
-      return effectiveWrong(v.id) > 0;
+      return s && s.wrong > 0;
     }
   }).sort((a, b) => {
     if (isCorrect) {
@@ -4024,44 +4102,51 @@ Views.statsDetail = (app) => {
       const sB = State.progress[b.id];
       return (sB ? sB.correct || 0 : 0) - (sA ? sA.correct || 0 : 0);
     } else {
-      return effectiveWrong(b.id) - effectiveWrong(a.id);
+      const effA = effectiveWrong(a.id);
+      const effB = effectiveWrong(b.id);
+      if (effA !== effB) return effB - effA;
+      const sA = State.progress[a.id];
+      const sB = State.progress[b.id];
+      return (sB ? sB.wrong || 0 : 0) - (sA ? sA.wrong || 0 : 0);
     }
   });
 
   app.innerHTML = `
     <div class="view">
       <div class="toolbar" style="margin-bottom: 20px; justify-content: space-between; align-items: center; width: 100%; display: flex; flex-wrap: wrap; gap: 10px;">
-        <button class="btn ghost" id="backToStats" style="height: 40px; padding: 0 16px; border-radius: 12px; font-size: 14px;">
-          ← Kembali ke Statistik
+        <button class="btn ghost" id="backToStats" style="height: 40px; padding: 0 16px; border-radius: 12px; font-size: 14px; cursor: pointer;">
+          ← ${t('stats_detail_back') || 'Kembali ke Statistik'}
         </button>
         ${!isCorrect && filtered.length > 0 ? `
-        <button class="btn" id="startWrongQuiz" style="height: 40px; padding: 0 16px; border-radius: 12px; font-size: 14px; background: linear-gradient(135deg, var(--red), #ff7e5f); color: white; border: none; box-shadow: 0 4px 10px var(--red-soft); font-weight: 700;">
-          ${ICONS.target} Latihan Soal Salah
+        <button class="btn" id="startWrongQuiz" style="height: 40px; padding: 0 16px; border-radius: 12px; font-size: 14px; background: linear-gradient(135deg, var(--red), #ff7e5f); color: white; border: none; box-shadow: 0 4px 10px var(--red-soft); font-weight: 700; cursor: pointer;">
+          ${ICONS.target} ${t('stats_detail_practice_btn') || 'Latihan Soal Salah'}
         </button>` : ''}
       </div>
 
       <h1 class="page-title">${esc(title)}<span class="sub">${esc(subtitle)}</span></h1>
       
-      <p class="count-note">${filtered.length} kosakata ditemukan</p>
+      <p class="count-note">${t('found_vocab_count', filtered.length, '')}</p>
       
       <div class="vocab-grid">
         ${filtered.length ? filtered.map(v => {
     const s = State.progress[v.id];
-    const count = isCorrect ? (s ? s.correct : 0) : effectiveWrong(v.id);
+    const rawCount = s ? (isCorrect ? s.correct : s.wrong) : 0;
+    const eff = !isCorrect ? effectiveWrong(v.id) : 0;
     return `
             <div class="vocab-card">
               <span class="lv ${v.level}">${v.level}</span>
               <div class="kanji">${esc(v.kanji)}</div>
               <div class="furi">${esc(v.furigana)}</div>
               <div class="arti">${esc(v.arti)}</div>
-              <div style="margin-top:10px; font-size:12.5px; font-weight:700; color:${color}; display:flex; align-items:center; gap:6px; border-top:1px solid var(--border-soft); padding-top:8px;">
-                <span>${icon} ${count}x ${label}</span>
+              <div style="margin-top:10px; font-size:12.5px; font-weight:700; color:${color}; display:flex; align-items:center; justify-content:space-between; gap:6px; border-top:1px solid var(--border-soft); padding-top:8px;">
+                <span>${icon} ${rawCount}x ${label}</span>
+                ${!isCorrect && eff === 0 ? `<span style="font-size:11px; font-weight:600; color:var(--green); background:var(--green-soft); padding:2px 7px; border-radius:99px;">Terselesaikan ✔</span>` : ''}
               </div>
             </div>`;
   }).join('') : `
           <div class="empty" style="grid-column: 1 / -1">
             <div class="big">${ICONS.emptyDoc}</div>
-            Belum ada data review.
+            ${t('stats_detail_no_data') || 'Belum ada data review.'}
           </div>
         `}
       </div>
@@ -4070,7 +4155,11 @@ Views.statsDetail = (app) => {
   app.querySelector('#backToStats').onclick = () => navigate('stats');
   const startBtn = app.querySelector('#startWrongQuiz');
   if (startBtn) {
-    startBtn.onclick = () => navigate('statsDetailQuiz');
+    startBtn.onclick = () => {
+      WQ.queue = [];
+      WQ.idx = 0;
+      navigate('statsDetailQuiz');
+    };
   }
 };
 
@@ -4079,21 +4168,27 @@ Views.statsDetail = (app) => {
    ============================================================ */
 const WQ = { queue: [], idx: 0, correct: 0, wrong: 0, answered: false, q: null };
 
+function getWrongVocabPool() {
+  const unresolved = State.vocab.filter(v => effectiveWrong(v.id) > 0).sort((a, b) => effectiveWrong(b.id) - effectiveWrong(a.id));
+  if (unresolved.length >= 10) return unresolved.slice(0, 10);
+
+  const unresolvedIds = new Set(unresolved.map(v => v.id));
+  const resolved = State.vocab.filter(v => !unresolvedIds.has(v.id) && (State.progress[v.id]?.wrong || 0) > 0)
+    .sort((a, b) => (State.progress[b.id]?.wrong || 0) - (State.progress[a.id]?.wrong || 0));
+
+  return [...unresolved, ...resolved].slice(0, 10);
+}
+
 Views.statsDetailQuiz = (app) => {
   if (!WQ.queue.length || WQ.idx >= WQ.queue.length) {
-    const wrongVocab = State.vocab.filter(v => {
-      return effectiveWrong(v.id) > 0;
-    }).sort((a, b) => {
-      return effectiveWrong(b.id) - effectiveWrong(a.id);
-    });
-
-    WQ.queue = wrongVocab.slice(0, 10);
+    WQ.queue = getWrongVocabPool();
     WQ.idx = 0;
     WQ.correct = 0;
     WQ.wrong = 0;
     WQ.answered = false;
 
     if (WQ.queue.length === 0) {
+      toast('Belum ada data kata salah.');
       navigate('statsDetail');
       return;
     }
@@ -4103,19 +4198,14 @@ Views.statsDetailQuiz = (app) => {
 };
 
 function startWrongQuiz(app) {
-  const wrongVocab = State.vocab.filter(v => {
-    return effectiveWrong(v.id) > 0;
-  }).sort((a, b) => {
-    return effectiveWrong(b.id) - effectiveWrong(a.id);
-  });
-
-  WQ.queue = wrongVocab.slice(0, 10);
+  WQ.queue = getWrongVocabPool();
   WQ.idx = 0;
   WQ.correct = 0;
   WQ.wrong = 0;
   WQ.answered = false;
 
   if (WQ.queue.length === 0) {
+    toast('Belum ada data kata salah.');
     navigate('statsDetail');
     return;
   }
@@ -4125,19 +4215,42 @@ function startWrongQuiz(app) {
 
 function buildWrongQuestion() {
   const v = WQ.queue[WQ.idx];
-  let type = 1 + Math.floor(Math.random() * 3);
+  const hasKanji = Array.from(v.kanji).some(isKanjiChar);
+
+  let type;
+  if (!hasKanji) {
+    type = 1;
+  } else {
+    type = 1 + Math.floor(Math.random() * 3);
+  }
+
   let prompt, promptFuri = '', tag, answer, field;
-  if (type === 1) { field = 'arti'; prompt = v.kanji; promptFuri = v.furigana; tag = 'Apa arti kata ini?'; answer = v.arti; }
-  else if (type === 2) { field = 'furigana'; prompt = v.kanji; tag = 'Bagaimana cara bacanya?'; answer = v.furigana; }
-  else { field = 'kanji'; prompt = v.arti; tag = 'Kanji mana yang tepat?'; answer = v.kanji; promptFuri = ''; }
+  if (type === 1) {
+    field = 'arti';
+    prompt = v.kanji;
+    promptFuri = v.furigana;
+    tag = t('quiz_tag_arti') || 'Apa arti kata ini?';
+    answer = v.arti;
+  } else if (type === 2) {
+    field = 'furigana';
+    prompt = v.kanji;
+    tag = t('quiz_tag_furi') || 'Bagaimana cara bacanya?';
+    answer = v.furigana;
+  } else {
+    field = 'kanji';
+    prompt = v.arti;
+    tag = t('quiz_tag_kanji') || 'Kanji mana yang tepat?';
+    answer = v.kanji;
+    promptFuri = '';
+  }
 
   let distract;
   if (type === 1) {
-    distract = getArtiDistractors(answer, v.level);
+    distract = getArtiDistractors(v);
   } else if (type === 2) {
-    distract = getFuriganaDistractors(answer, v.level);
+    distract = generateJLPTFuriganaDistractors(v);
   } else {
-    distract = getKanjiDistractors(answer, v.level);
+    distract = generateJLPTKanjiDistractors(v);
   }
 
   const options = shuffle([answer, ...distract]).slice(0, 4);
