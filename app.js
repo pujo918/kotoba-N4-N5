@@ -2803,19 +2803,19 @@ function renderFlashcard(app) {
             <span class="lv ${v.level}">${v.level}</span>
             <div class="kanji">${esc(v.kanji)}</div>
             <div class="furi">${esc(v.furigana)}</div>
-            <div class="hint">${t('fc_hint_front')}</div>
+            <div class="hint">${t('fc_hint_front')} <kbd class="fc-kbd">Space</kbd></div>
           </div>
           <div class="face back">
             <div class="arti">${esc(v.arti)}</div>
             <div class="sub">${esc(v.kanji)} · ${esc(v.furigana)}</div>
-            <div class="hint" style="color:rgba(255,255,255,.7)">${t('fc_hint_back')}</div>
+            <div class="hint" style="color:rgba(255,255,255,.7)">${t('fc_hint_back')} <kbd class="fc-kbd">Space</kbd></div>
           </div>
         </div>
       </div>
       <div class="fc-buttons ${FC.flipped ? '' : 'locked'}" id="fcBtns">
-        <button class="fc-btn hard" data-q="hard"><span class="e">😵</span>${t('fc_hard')}</button>
-        <button class="fc-btn med" data-q="medium"><span class="e">🤔</span>${t('fc_med')}</button>
-        <button class="fc-btn easy" data-q="easy"><span class="e">😎</span>${t('fc_easy')}</button>
+        <button class="fc-btn hard" data-q="hard"><span class="e">😵</span><span>${t('fc_hard')}</span><kbd class="fc-kbd">←</kbd></button>
+        <button class="fc-btn med" data-q="medium"><span class="e">🤔</span><span>${t('fc_med')}</span><kbd class="fc-kbd">↓</kbd></button>
+        <button class="fc-btn easy" data-q="easy"><span class="e">😎</span><span>${t('fc_easy')}</span><kbd class="fc-kbd">→</kbd></button>
       </div>
     </div>`;
   const card = app.querySelector('#card');
@@ -4872,6 +4872,61 @@ async function boot() {
     if (e.key === 'Escape') {
       closeKotobaModal();
       closeCloudModal();
+      return;
+    }
+
+    // Ignore keyboard shortcuts if user is typing in an input / textarea
+    const activeEl = document.activeElement;
+    if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.isContentEditable)) {
+      return;
+    }
+
+    // Flashcard keyboard shortcuts
+    if (State.route === 'flashcard') {
+      const modalBackdrop = document.getElementById('kotobaModalBackdrop');
+      const cloudBackdrop = document.getElementById('cloudModalBackdrop');
+      if (modalBackdrop && modalBackdrop.classList.contains('show')) return;
+      if (cloudBackdrop && cloudBackdrop.classList.contains('show')) return;
+
+      if (e.code === 'Space' || e.key === ' ') {
+        e.preventDefault();
+        const card = document.getElementById('card');
+        if (card) {
+          card.click();
+        } else {
+          // If finished screen (renderFlashDone)
+          const againBtn = document.getElementById('again');
+          if (againBtn) againBtn.click();
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const hardBtn = document.querySelector('#fcBtns .fc-btn.hard');
+        if (hardBtn && FC.flipped) {
+          hardBtn.click();
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        const medBtn = document.querySelector('#fcBtns .fc-btn.med');
+        if (medBtn && FC.flipped) {
+          medBtn.click();
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        const easyBtn = document.querySelector('#fcBtns .fc-btn.easy');
+        if (easyBtn && FC.flipped) {
+          easyBtn.click();
+        }
+        return;
+      }
     }
   });
 

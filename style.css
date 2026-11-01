@@ -1189,6 +1189,27 @@ body.furi-off .face .furi {
   pointer-events: none;
 }
 
+.fc-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 1px 7px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.14);
+  color: inherit;
+  margin-top: 2px;
+  letter-spacing: 0.02em;
+  opacity: 0.85;
+}
+html[data-theme="dark"] .fc-kbd {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
 /* ===== Quiz View ===== */
 .quiz-wrap {
   max-width: 520px;
