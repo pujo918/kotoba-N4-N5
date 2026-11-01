@@ -2813,9 +2813,9 @@ function renderFlashcard(app) {
         </div>
       </div>
       <div class="fc-buttons ${FC.flipped ? '' : 'locked'}" id="fcBtns">
-        <button class="fc-btn hard" data-q="hard"><span class="e">😵</span><span>${t('fc_hard')}</span><kbd class="fc-kbd">←</kbd></button>
-        <button class="fc-btn med" data-q="medium"><span class="e">🤔</span><span>${t('fc_med')}</span><kbd class="fc-kbd">↓</kbd></button>
-        <button class="fc-btn easy" data-q="easy"><span class="e">😎</span><span>${t('fc_easy')}</span><kbd class="fc-kbd">→</kbd></button>
+        <button class="fc-btn hard" data-q="hard"><span class="e">😵</span><span>${t('fc_hard')}</span><kbd class="fc-kbd">A / ←</kbd></button>
+        <button class="fc-btn med" data-q="medium"><span class="e">🤔</span><span>${t('fc_med')}</span><kbd class="fc-kbd">W / ↓</kbd></button>
+        <button class="fc-btn easy" data-q="easy"><span class="e">😎</span><span>${t('fc_easy')}</span><kbd class="fc-kbd">D / →</kbd></button>
       </div>
     </div>`;
   const card = app.querySelector('#card');
@@ -4901,7 +4901,8 @@ async function boot() {
         return;
       }
 
-      if (e.key === 'ArrowLeft') {
+      const k = (e.key || '').toLowerCase();
+      if (e.key === 'ArrowLeft' || k === 'a') {
         e.preventDefault();
         const hardBtn = document.querySelector('#fcBtns .fc-btn.hard');
         if (hardBtn && FC.flipped) {
@@ -4910,7 +4911,7 @@ async function boot() {
         return;
       }
 
-      if (e.key === 'ArrowDown') {
+      if (e.key === 'ArrowDown' || k === 'w' || k === 's') {
         e.preventDefault();
         const medBtn = document.querySelector('#fcBtns .fc-btn.med');
         if (medBtn && FC.flipped) {
@@ -4919,7 +4920,7 @@ async function boot() {
         return;
       }
 
-      if (e.key === 'ArrowRight') {
+      if (e.key === 'ArrowRight' || k === 'd') {
         e.preventDefault();
         const easyBtn = document.querySelector('#fcBtns .fc-btn.easy');
         if (easyBtn && FC.flipped) {
