@@ -14,7 +14,12 @@ const K = {
   readCompleted: 'kotoba.readCompleted',
 };
 const load = (k, def) => { try { const v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch { return def; } };
-const save = (k, v) => localStorage.setItem(k, JSON.stringify(v));
+const save = (k, v) => {
+  localStorage.setItem(k, JSON.stringify(v));
+  if (typeof CloudSync !== 'undefined' && CloudSync && typeof CloudSync.schedulePush === 'function') {
+    CloudSync.schedulePush();
+  }
+};
 const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
 const now = () => Date.now();
 const DAY = 86400000;
@@ -3974,6 +3979,7 @@ Views.stats = (app) => {
   Object.values(State.progress).forEach(s => { totalCorrect += s.correct || 0; totalWrong += s.wrong || 0; });
   totalReviews = totalCorrect + totalWrong;
   const acc = totalReviews ? Math.round(totalCorrect / totalReviews * 100) : 0;
+  const isJa = (State.settings && State.settings.lang === 'ja');
 
   app.innerHTML = `
     <div class="view">
@@ -4035,6 +4041,30 @@ Views.stats = (app) => {
       </section>
 
       <section>
+        <p class="section-label">${isJa ? 'クラウド同期 (スマホ ↔ PC)' : 'Sinkronisasi Cloud (HP ↔ Laptop)'}</p>
+        <div class="card" style="padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer;" id="btnStatsCloud">
+          <div style="display:flex; align-items:center; gap:14px; min-width:0;">
+            <div style="width:42px; height:42px; border-radius:12px; background:var(--primary-soft); color:var(--primary); display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+              <svg style="width:22px;height:22px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+              </svg>
+            </div>
+            <div style="min-width:0;">
+              <div style="font-weight:700; font-size:14.5px;">
+                ${(typeof CloudSync !== 'undefined' && CloudSync.user) ? (isJa ? 'クラウド同期中' : 'Sinkronisasi Aktif') : (isJa ? 'スマホとPCを連携' : 'Hubungkan HP & Laptop')}
+              </div>
+              <div style="font-size:12.5px; color:var(--text-dim); margin-top:2px; word-break:break-all; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
+                ${(typeof CloudSync !== 'undefined' && CloudSync.user) ? CloudSync.user.email : (isJa ? '進捗・ストリークをリアルタイム共有' : 'Sinkronkan progres & streak realtime')}
+              </div>
+            </div>
+          </div>
+          <span style="font-size:13px; font-weight:700; color:var(--primary); flex-shrink:0;">
+            ${(typeof CloudSync !== 'undefined' && CloudSync.user) ? '✓ ON' : (isJa ? '設定 →' : 'Masuk →')}
+          </span>
+        </div>
+      </section>
+
+      <section>
         <button class="btn ghost block" id="reset">${ICONS.trash} ${t('stats_reset_btn') || 'Reset semua progress'}</button>
       </section>
     </div>`;
@@ -4068,6 +4098,10 @@ Views.stats = (app) => {
       WQ.idx = 0;
       navigate('statsDetailQuiz');
     };
+  }
+  const statsCloudBtn = app.querySelector('#btnStatsCloud');
+  if (statsCloudBtn) {
+    statsCloudBtn.onclick = () => openCloudModal();
   }
   app.querySelector('#reset').onclick = () => {
     if (confirm(t('stats_reset_confirm') || 'Yakin ingin menghapus semua progress belajar? Tindakan ini tidak bisa dibatalkan.')) {
@@ -4374,6 +4408,437 @@ function renderWrongQuizResult(app) {
 function emptyState(msg) { return `<div class="view"><div class="empty"><div class="big">${ICONS.emptyDoc}</div>${esc(msg)}</div></div>`; }
 
 /* ============================================================
+   SUPABASE CLOUD SYNC & REALTIME (HP ↔ LAPTOP)
+   ============================================================ */
+const SUPABASE_CONFIG = {
+  url: 'https://vugsjgcxiomctjshlpuy.supabase.co',
+  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ1Z3NqZ2N4aW9tY3Rqc2hscHV5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1MTYyNzksImV4cCI6MjEwOTA5MjI3OX0.3Hz-64jVuKcUct0m2HFbEtjzUWp9rgq4lIHKhZs8Zy4'
+};
+
+const CloudSync = {
+  client: null,
+  user: null,
+  channel: null,
+  isPushing: false,
+  pushTimer: null,
+  lastSyncTime: null,
+
+  init() {
+    if (!window.supabase || !window.supabase.createClient) {
+      console.warn('Supabase SDK not loaded or offline');
+      return;
+    }
+    try {
+      this.client = window.supabase.createClient(SUPABASE_CONFIG.url, SUPABASE_CONFIG.anonKey);
+      this.client.auth.getSession().then(({ data, error }) => {
+        if (!error && data && data.session) {
+          this.user = data.session.user;
+          this.onAuthSuccess(false);
+        } else {
+          this.updateStatusUI();
+        }
+      });
+
+      this.client.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          this.user = session.user;
+          this.onAuthSuccess(true);
+        } else if (event === 'SIGNED_OUT') {
+          this.user = null;
+          if (this.channel) {
+            this.client.removeChannel(this.channel);
+            this.channel = null;
+          }
+          this.updateStatusUI();
+        }
+      });
+    } catch (e) {
+      console.error('Failed to init Supabase:', e);
+    }
+  },
+
+  updateStatusUI() {
+    const dot = document.getElementById('cloudStatusDot');
+    if (dot) dot.style.display = this.user ? 'block' : 'none';
+    const toggle = document.getElementById('cloudToggle');
+    if (toggle) {
+      toggle.title = this.user ? `Terhubung: ${this.user.email} (Sinkron Aktif)` : 'Hubungkan Cloud (HP ↔ Laptop)';
+    }
+    const statsCloudBtn = document.getElementById('btnStatsCloud');
+    if (statsCloudBtn && State.route === 'stats') {
+      const isJa = (State.settings && State.settings.lang === 'ja');
+      const titleEl = statsCloudBtn.querySelector('div > div:first-child');
+      const subEl = statsCloudBtn.querySelector('div > div:last-child');
+      const badgeEl = statsCloudBtn.querySelector('span:last-child');
+      if (titleEl) titleEl.textContent = this.user ? (isJa ? 'クラウド同期中' : 'Sinkronisasi Aktif') : (isJa ? 'スマホとPCを連携' : 'Hubungkan HP & Laptop');
+      if (subEl) subEl.textContent = this.user ? this.user.email : (isJa ? '進捗・ストリークをリアルタイム共有' : 'Sinkronkan progres & streak realtime');
+      if (badgeEl) badgeEl.textContent = this.user ? '✓ ON' : (isJa ? '設定 →' : 'Masuk →');
+    }
+  },
+
+  async onAuthSuccess(isNewLogin = false) {
+    this.updateStatusUI();
+    this.subscribeRealtime();
+    await this.pullAndMerge(isNewLogin);
+  },
+
+  subscribeRealtime() {
+    if (!this.client || !this.user) return;
+    if (this.channel) {
+      this.client.removeChannel(this.channel);
+      this.channel = null;
+    }
+    this.channel = this.client
+      .channel('public:user_sync:' + this.user.id)
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'user_sync',
+        filter: `user_id=eq.${this.user.id}`
+      }, (payload) => {
+        if (payload.new && !this.isPushing) {
+          this.applyRemoteData(payload.new, true);
+        }
+      })
+      .subscribe();
+  },
+
+  schedulePush() {
+    if (!this.client || !this.user) return;
+    if (this.pushTimer) clearTimeout(this.pushTimer);
+    this.pushTimer = setTimeout(() => {
+      this.pushToCloud();
+    }, 1500);
+  },
+
+  async pushToCloud() {
+    if (!this.client || !this.user) return;
+    this.isPushing = true;
+    try {
+      const payload = {
+        user_id: this.user.id,
+        progress: State.progress,
+        streak: State.streak,
+        wrong_solved: State.wrongSolved,
+        custom_readings: State.customReadings,
+        read_completed: State.readCompleted,
+        settings: State.settings,
+        updated_at: new Date().toISOString()
+      };
+      const { error } = await this.client.from('user_sync').upsert(payload);
+      if (error) console.error('Cloud push error:', error);
+      else {
+        this.lastSyncTime = new Date();
+      }
+    } catch (err) {
+      console.error('Error during pushToCloud:', err);
+    } finally {
+      setTimeout(() => { this.isPushing = false; }, 500);
+    }
+  },
+
+  async pullAndMerge(showToastOnAutoMigrate = false) {
+    if (!this.client || !this.user) return;
+    try {
+      const { data, error } = await this.client
+        .from('user_sync')
+        .select('*')
+        .eq('user_id', this.user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error('Cloud pull error:', error);
+        return;
+      }
+
+      if (!data) {
+        await this.pushToCloud();
+        if (showToastOnAutoMigrate) {
+          toast('✅ Progres lokal berhasil disimpan ke cloud akun Anda!');
+        }
+      } else {
+        this.applyRemoteData(data, false);
+        await this.pushToCloud();
+        if (showToastOnAutoMigrate) {
+          toast('☁️ Progres berhasil disinkronkan!');
+        }
+      }
+    } catch (err) {
+      console.error('Error during pullAndMerge:', err);
+    }
+  },
+
+  applyRemoteData(remote, isRealtimeEvent = false) {
+    let changed = false;
+
+    if (remote.progress && typeof remote.progress === 'object') {
+      for (const [k, v] of Object.entries(remote.progress)) {
+        const cur = State.progress[k];
+        if (!cur) {
+          State.progress[k] = v;
+          changed = true;
+        } else {
+          const newBox = Math.max(cur.box || 0, v.box || 0);
+          const newCorrect = Math.max(cur.correct || 0, v.correct || 0);
+          const newWrong = Math.max(cur.wrong || 0, v.wrong || 0);
+          const newLast = Math.max(cur.last || 0, v.last || 0);
+          if (newBox !== cur.box || newCorrect !== cur.correct || newWrong !== cur.wrong) {
+            State.progress[k] = {
+              ...cur,
+              ...v,
+              box: newBox,
+              correct: newCorrect,
+              wrong: newWrong,
+              last: newLast
+            };
+            changed = true;
+          }
+        }
+      }
+      localStorage.setItem(K.progress, JSON.stringify(State.progress));
+    }
+
+    if (remote.streak && typeof remote.streak === 'object') {
+      const curSt = State.streak || { current: 0, best: 0, last: null };
+      const remSt = remote.streak;
+      const newCurrent = Math.max(curSt.current || 0, remSt.current || 0);
+      const newBest = Math.max(curSt.best || 0, remSt.best || 0);
+      const newLast = (remSt.last && (!curSt.last || remSt.last > curSt.last)) ? remSt.last : curSt.last;
+      State.streak = { current: newCurrent, best: newBest, last: newLast };
+      localStorage.setItem(K.streak, JSON.stringify(State.streak));
+      changed = true;
+    }
+
+    if (remote.wrong_solved && typeof remote.wrong_solved === 'object') {
+      for (const [k, v] of Object.entries(remote.wrong_solved)) {
+        State.wrongSolved[k] = Math.max(State.wrongSolved[k] || 0, v || 0);
+      }
+      localStorage.setItem(K.wrongSolved, JSON.stringify(State.wrongSolved));
+      changed = true;
+    }
+
+    if (Array.isArray(remote.custom_readings)) {
+      const curList = State.customReadings || [];
+      const idMap = new Map(curList.map(r => [r.id, r]));
+      for (const r of remote.custom_readings) {
+        if (!idMap.has(r.id)) {
+          curList.push(r);
+          changed = true;
+        }
+      }
+      State.customReadings = curList;
+      localStorage.setItem(K.customReadings, JSON.stringify(State.customReadings));
+    }
+
+    if (remote.read_completed && typeof remote.read_completed === 'object') {
+      State.readCompleted = { ...(State.readCompleted || {}), ...remote.read_completed };
+      localStorage.setItem(K.readCompleted, JSON.stringify(State.readCompleted));
+      changed = true;
+    }
+
+    this.lastSyncTime = new Date();
+
+    if (changed) {
+      if (isRealtimeEvent) {
+        toast('☁️ Progres terupdate dari perangkat lain!');
+      }
+      if (typeof navigate === 'function' && State.route) {
+        const curRoute = State.route;
+        const app = document.getElementById('app');
+        if (app && Views[curRoute]) {
+          Views[curRoute](app);
+        }
+      }
+    }
+  }
+};
+
+function openCloudModal() {
+  const backdrop = document.getElementById('cloudModalBackdrop');
+  const content = document.getElementById('cloudModalContent');
+  if (!backdrop || !content) return;
+
+  const isJa = (State.settings && State.settings.lang === 'ja');
+
+  if (CloudSync.user) {
+    const email = CloudSync.user.email || 'Pengguna';
+    const lastSyncStr = CloudSync.lastSyncTime ? new Date(CloudSync.lastSyncTime).toLocaleTimeString() : (isJa ? 'たった今' : 'Baru saja');
+    content.innerHTML = `
+      <div style="text-align: center; padding: 10px 0 20px 0;">
+        <div style="width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(6,182,212,0.15)); border: 2px solid #10b981; margin: 0 auto 16px auto; display: flex; align-items: center; justify-content: center; color: #10b981;">
+          <svg style="width:28px;height:28px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/><polyline points="9 11 12 14 22 4"/>
+          </svg>
+        </div>
+        <h2 style="font-size: 19px; font-weight: 800; margin-bottom: 6px;">${isJa ? 'クラウド同期中' : 'Sinkronisasi Cloud Aktif'}</h2>
+        <div style="font-size: 13.5px; color: var(--text-soft); word-break: break-all; margin-bottom: 12px;">
+          ${esc(email)}
+        </div>
+        <div style="display:inline-flex; align-items:center; gap:6px; background: rgba(16,185,129,0.1); color:#10b981; padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 700; margin-bottom: 16px;">
+          <span style="width:7px; height:7px; border-radius:50%; background:#10b981;"></span>
+          ${isJa ? 'リアルタイム同期ON (スマホ ↔ PC)' : 'Realtime Sync Aktif (HP ↔ Laptop)'}
+        </div>
+        <p style="font-size: 13px; color: var(--text-dim); line-height: 1.5; margin-bottom: 18px;">
+          ${isJa ? 'スマホとPCで同じアカウントを使用しているため、学習進捗やストリークが自動で同期されます。' : 'Progres belajar, hafalan kata, dan api streak Anda otomatis tersinkron antara HP dan Laptop.'}
+        </p>
+        <div style="font-size: 12px; color: var(--text-dim); margin-bottom: 20px;">
+          ${isJa ? '最終同期' : 'Terakhir disinkronkan'}: <b>${lastSyncStr}</b>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button class="btn" id="btnForceSync" style="height: 42px; font-weight: 700; border-radius: 12px; background: var(--primary); color: white; cursor:pointer;">
+            🔄 ${isJa ? '今すぐ同期' : 'Sinkronkan Sekarang'}
+          </button>
+          <button class="btn ghost" id="btnSignOut" style="height: 40px; border-radius: 12px; color: var(--red); cursor:pointer;">
+            ${isJa ? 'ログアウト' : 'Keluar Akun'}
+          </button>
+          <button class="btn ghost" id="btnCloseCloudModal" style="height: 38px; border-radius: 12px; font-size: 13px; cursor:pointer;">
+            ${isJa ? '閉じる' : 'Tutup'}
+          </button>
+        </div>
+      </div>
+    `;
+
+    content.querySelector('#btnForceSync').onclick = async () => {
+      const btn = content.querySelector('#btnForceSync');
+      btn.disabled = true;
+      btn.textContent = isJa ? '同期中...' : 'Menyinkronkan...';
+      await CloudSync.pullAndMerge(true);
+      btn.disabled = false;
+      btn.textContent = '🔄 ' + (isJa ? '今すぐ同期' : 'Sinkronkan Sekarang');
+      closeCloudModal();
+    };
+
+    content.querySelector('#btnSignOut').onclick = async () => {
+      if (confirm(isJa ? 'ログアウトしますか？ローカルのデータは端末に残ります。' : 'Yakin ingin keluar akun? Data lokal akan tetap tersimpan di perangkat ini.')) {
+        await CloudSync.client.auth.signOut();
+        toast(isJa ? 'ログアウトしました' : 'Berhasil keluar akun');
+        closeCloudModal();
+      }
+    };
+
+    content.querySelector('#btnCloseCloudModal').onclick = closeCloudModal;
+  } else {
+    let isRegister = false;
+
+    const renderAuthForm = () => {
+      content.innerHTML = `
+        <div style="padding: 6px 0 16px 0;">
+          <div style="text-align: center; margin-bottom: 20px;">
+            <div style="width: 52px; height: 52px; border-radius: 16px; background: var(--primary-soft); margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+              <svg style="width:26px;height:26px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+              </svg>
+            </div>
+            <h2 style="font-size: 18.5px; font-weight: 800; margin-bottom: 6px;">
+              ${isRegister ? (isJa ? '新規アカウント作成' : 'Buat Akun Cloud Baru') : (isJa ? 'クラウド同期ログイン' : 'Masuk Akun Cloud Kotoba')}
+            </h2>
+            <p style="font-size: 13px; color: var(--text-dim); line-height: 1.45;">
+              ${isJa ? 'スマホとPCで同じアカウントでログインすると、進捗がリアルタイムに連動します。' : 'Gunakan akun yang sama di HP & Laptop agar hafalan dan api streak Anda terhubung real-time.'}
+            </p>
+          </div>
+
+          <div style="display:flex; background:var(--bg-soft); padding:3px; border-radius:12px; margin-bottom:18px;">
+            <button id="tabLogin" type="button" style="flex:1; padding:8px; border-radius:10px; font-weight:700; font-size:13px; border:none; cursor:pointer; background:${!isRegister ? 'var(--bg-elev)' : 'transparent'}; color:${!isRegister ? 'var(--text)' : 'var(--text-dim)'}; box-shadow:${!isRegister ? 'var(--shadow-sm)' : 'none'};">
+              ${isJa ? 'ログイン' : 'Masuk'}
+            </button>
+            <button id="tabRegister" type="button" style="flex:1; padding:8px; border-radius:10px; font-weight:700; font-size:13px; border:none; cursor:pointer; background:${isRegister ? 'var(--bg-elev)' : 'transparent'}; color:${isRegister ? 'var(--text)' : 'var(--text-dim)'}; box-shadow:${isRegister ? 'var(--shadow-sm)' : 'none'};">
+              ${isJa ? 'アカウント作成' : 'Daftar Akun'}
+            </button>
+          </div>
+
+          <form id="cloudAuthForm" style="display:flex; flex-direction:column; gap:12px;">
+            <div>
+              <label style="display:block; font-size:12px; font-weight:700; color:var(--text-soft); margin-bottom:5px;">
+                Email
+              </label>
+              <input type="email" id="authEmail" required placeholder="nama@gmail.com" style="width:100%; height:42px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text); padding:0 12px; font-size:14px; outline:none;" />
+            </div>
+
+            <div>
+              <label style="display:block; font-size:12px; font-weight:700; color:var(--text-soft); margin-bottom:5px;">
+                Password
+              </label>
+              <input type="password" id="authPassword" required minlength="6" placeholder="${isJa ? '6文字以上' : 'Minimal 6 karakter'}" style="width:100%; height:42px; border-radius:10px; border:1px solid var(--border); background:var(--bg); color:var(--text); padding:0 12px; font-size:14px; outline:none;" />
+            </div>
+
+            <div id="authErrorMsg" style="display:none; color:var(--red); font-size:12.5px; line-height:1.4; background:var(--red-soft); padding:8px 12px; border-radius:8px;"></div>
+
+            <button type="submit" id="btnAuthSubmit" class="btn block" style="height:44px; border-radius:12px; font-weight:700; margin-top:6px; background:var(--primary); color:white; border:none; cursor:pointer;">
+              ${isRegister ? (isJa ? '無料アカウント作成' : 'Daftar Akun Cloud') : (isJa ? 'ログイン' : 'Masuk & Sinkronkan')}
+            </button>
+
+            <div style="font-size:11.5px; color:var(--text-dim); text-align:center; line-height:1.4; margin-top:4px;">
+              🛡️ ${isJa ? '現在の端末の学習進捗は自動で引き継がれ、消失しません。' : 'Progres belajar di perangkat Anda saat ini akan otomatis tersimpan aman ke cloud.'}
+            </div>
+
+            <button type="button" id="btnCancelAuth" class="btn ghost block" style="height:36px; border-radius:10px; font-size:13px; margin-top:4px; cursor:pointer;">
+              ${isJa ? 'キャンセル' : 'Batal'}
+            </button>
+          </form>
+        </div>
+      `;
+
+      content.querySelector('#tabLogin').onclick = () => { isRegister = false; renderAuthForm(); };
+      content.querySelector('#tabRegister').onclick = () => { isRegister = true; renderAuthForm(); };
+      content.querySelector('#btnCancelAuth').onclick = closeCloudModal;
+
+      const form = content.querySelector('#cloudAuthForm');
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        const email = content.querySelector('#authEmail').value.trim();
+        const password = content.querySelector('#authPassword').value;
+        const errDiv = content.querySelector('#authErrorMsg');
+        const submitBtn = content.querySelector('#btnAuthSubmit');
+
+        errDiv.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.textContent = isJa ? '処理中...' : 'Memproses...';
+
+        try {
+          if (isRegister) {
+            const { data, error } = await CloudSync.client.auth.signUp({ email, password });
+            if (error) throw error;
+            if (data.session) {
+              toast(isJa ? 'アカウントを作成しました！' : 'Akun berhasil dibuat & tersambung! 🎉');
+              closeCloudModal();
+            } else {
+              errDiv.style.display = 'block';
+              errDiv.style.background = 'var(--primary-soft)';
+              errDiv.style.color = 'var(--primary)';
+              errDiv.textContent = isJa 
+                ? '確認メールを送信しました。メール内のリンクをクリックして登録を完了してください。' 
+                : 'Pendaftaran berhasil! Cek inbox email Anda untuk klik link konfirmasi akun.';
+            }
+          } else {
+            const { data, error } = await CloudSync.client.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            toast(isJa ? 'ログインしました！' : 'Berhasil masuk & tersinkron! ☁️');
+            closeCloudModal();
+          }
+        } catch (err) {
+          errDiv.style.display = 'block';
+          errDiv.style.background = 'var(--red-soft)';
+          errDiv.style.color = 'var(--red)';
+          errDiv.textContent = err.message || (isJa ? 'エラーが発生しました' : 'Gagal menghubungkan. Cek email dan password Anda.');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = isRegister ? (isJa ? '無料アカウント作成' : 'Daftar Akun Cloud') : (isJa ? 'ログイン' : 'Masuk & Sinkronkan');
+        }
+      };
+    };
+
+    renderAuthForm();
+  }
+
+  backdrop.classList.add('show');
+}
+
+function closeCloudModal() {
+  const backdrop = document.getElementById('cloudModalBackdrop');
+  if (backdrop) backdrop.classList.remove('show');
+}
+
+/* ============================================================
    BOOT
    ============================================================ */
 async function boot() {
@@ -4383,7 +4848,20 @@ async function boot() {
   const ltBtn = document.getElementById('langToggle');
   if (ltBtn) ltBtn.onclick = () => toggleLang();
 
-  // Global dismiss for kotoba modal
+  // Cloud Sync setup
+  const cloudBtn = document.getElementById('cloudToggle');
+  if (cloudBtn) cloudBtn.onclick = openCloudModal;
+  const cloudBackdrop = document.getElementById('cloudModalBackdrop');
+  if (cloudBackdrop) {
+    cloudBackdrop.onclick = (e) => {
+      if (e.target === cloudBackdrop) closeCloudModal();
+    };
+  }
+  if (typeof CloudSync !== 'undefined' && CloudSync.init) {
+    CloudSync.init();
+  }
+
+  // Global dismiss for modals
   const modalBackdrop = document.getElementById('kotobaModalBackdrop');
   if (modalBackdrop) {
     modalBackdrop.onclick = (e) => {
@@ -4391,7 +4869,10 @@ async function boot() {
     };
   }
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeKotobaModal();
+    if (e.key === 'Escape') {
+      closeKotobaModal();
+      closeCloudModal();
+    }
   });
 
   document.querySelectorAll('.nav-item').forEach(b => b.onclick = () => {

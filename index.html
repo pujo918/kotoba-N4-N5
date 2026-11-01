@@ -37,6 +37,12 @@
           <svg class="svg-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
           <span id="furiLabel">Furigana ON</span>
         </button>
+        <button class="icon-btn sq" id="cloudToggle" title="Cloud Sync (HP ↔ Laptop)" style="position:relative;">
+          <svg class="svg-ico" id="cloudIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+          </svg>
+          <span id="cloudStatusDot" style="display:none; position:absolute; top:5px; right:5px; width:7px; height:7px; border-radius:50%; background:#10b981; box-shadow:0 0 6px #10b981;"></span>
+        </button>
         <button class="icon-btn sq" id="themeToggle" title="Ganti tema">
           <svg class="svg-ico" id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         </button>
@@ -196,10 +202,20 @@
     </div>
   </div>
 
+  <!-- Pop-up modal for Cloud Sync & Auth -->
+  <div class="kotoba-modal-backdrop" id="cloudModalBackdrop">
+    <div class="kotoba-bottom-sheet" id="cloudBottomSheet" style="max-width: 460px;">
+      <div class="kb-handle"></div>
+      <div id="cloudModalContent"></div>
+    </div>
+  </div>
+
+  <!-- Supabase Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <!-- Embedded data fallback: lets the app work even when opened via file:// (double-click). -->
   <script src="data/vocabulary.js"></script>
   <script src="data/readings.js"></script>
-  <script src="app.js?v=62"></script>
+  <script src="app.js?v=63"></script>
 </body>
 
 </html>
