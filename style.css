@@ -79,10 +79,16 @@ body {
   transition: background 0.3s ease, color 0.3s ease;
 }
 
+html {
+  scroll-behavior: smooth;
+  scroll-padding-bottom: 120px;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  scroll-padding-bottom: 120px;
 }
 
 button {
@@ -190,6 +196,31 @@ input {
 .toggle-furi {
   min-width: 134px;
   justify-content: center;
+}
+
+.toggle-lang {
+  padding: 0 12px;
+  font-weight: 600;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .toggle-lang #langLabel {
+    display: none;
+  }
+  .toggle-lang {
+    width: 42px;
+    padding: 0;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 768px) {
+  .toggle-lang {
+    padding: 0 16px;
+    font-size: 15px;
+  }
 }
 
 /* ===== Layout ===== */
@@ -1162,6 +1193,7 @@ body.furi-off .face .furi {
 .quiz-wrap {
   max-width: 520px;
   margin: 0 auto;
+  padding-bottom: 96px;
 }
 
 .quiz-setup {
@@ -3270,26 +3302,73 @@ html:not([data-theme="dark"]) .segmented button.active {
   margin-bottom: 0;
 }
 
-/* Dokkai Kotoba Highlight: 1 Unified Elegant Style */
+/* Dokkai Kotoba Base: Accessible Touch Target */
 .dokkai-word {
   display: inline;
+  cursor: pointer;
+  user-select: text;
+  touch-action: manipulation;
+  transition: all 0.15s ease;
+  border-radius: 4px;
+}
+
+/* Target vocabulary in the website list (Highlighted) */
+.dokkai-word.is-target,
+.dokkai-word:not(.is-plain) {
   padding: 2px 4px;
   margin: 0 1px;
   border-radius: 6px;
   background: var(--primary-soft);
   color: var(--primary-text);
   border-bottom: 2px solid var(--primary);
-  cursor: pointer;
   font-weight: 600;
-  transition: background 0.15s ease, filter 0.15s ease;
-  user-select: text;
-  touch-action: manipulation;
 }
 
-.dokkai-word:hover,
-.dokkai-word:active {
+.dokkai-word.is-target:hover,
+.dokkai-word.is-target:active,
+.dokkai-word:not(.is-plain):hover,
+.dokkai-word:not(.is-plain):active {
   background: rgba(99, 102, 241, 0.28);
   filter: brightness(1.08);
+}
+
+/* Plain words (Not highlighted in text, clean text look, subtle hover/active touch response) */
+.dokkai-word.is-plain {
+  padding: 1px 1px;
+  margin: 0;
+  color: inherit;
+  background: transparent;
+  border-bottom: 1px solid transparent;
+}
+
+.dokkai-word.is-plain:hover,
+.dokkai-word.is-plain:active {
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--primary-text);
+  border-bottom-color: rgba(99, 102, 241, 0.4);
+}
+
+.reading-badge {
+  background: rgba(99, 102, 241, 0.15);
+  color: var(--primary-text);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.kb-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+.kb-loading svg {
+  animation: spin 1s linear infinite;
+  width: 16px;
+  height: 16px;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 }
 
 /* Translation toggle and container */
@@ -3620,4 +3699,1246 @@ html:not([data-theme="dark"]) .segmented button.active {
 
 .custom-del-btn:hover {
   background: var(--red-soft);
+}
+
+/* ============================================================
+   JLPT Moji-Goi Style Quiz & Simulation (Refined Modern UI)
+   ============================================================ */
+
+.quiz-header-banner {
+  text-align: center;
+  margin-bottom: 22px;
+}
+
+.quiz-header-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--primary);
+  background: var(--primary-soft);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  padding: 3px 12px;
+  border-radius: 99px;
+  margin-bottom: 8px;
+}
+
+.quiz-subtitle {
+  font-size: 13.5px;
+  color: var(--text-soft);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.jlpt-tabs {
+  display: flex;
+  background: var(--bg-soft);
+  padding: 5px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  margin-bottom: 22px;
+  gap: 6px;
+}
+
+.jlpt-tab-btn {
+  flex: 1;
+  padding: 11px 16px;
+  border-radius: 12px;
+  font-weight: 750;
+  font-size: 14px;
+  color: var(--text-soft);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.jlpt-tab-btn:hover:not(.active) {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.jlpt-tab-btn.active {
+  background: var(--bg-elev);
+  color: var(--text);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.jlpt-tab-btn .tab-ico {
+  font-size: 16px;
+}
+
+/* ============================================================
+   JLPT Modes Grid (2 Columns on top + 1 Full Row on bottom)
+   ============================================================ */
+.jlpt-modes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.jlpt-mode-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  padding: 16px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  user-select: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.jlpt-mode-card.span-full {
+  grid-column: 1 / -1;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+}
+
+.jlpt-mode-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(99, 102, 241, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.jlpt-mode-card.selected {
+  border-color: var(--primary);
+  background: linear-gradient(145deg, rgba(99, 102, 241, 0.12) 0%, rgba(139, 92, 246, 0.04) 100%);
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.22);
+}
+
+.jlpt-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.jlpt-mode-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.jlpt-mode-card:hover .jlpt-mode-icon-box {
+  transform: scale(1.06);
+}
+
+.box-m1 {
+  background: rgba(46, 134, 222, 0.15);
+  border: 1px solid rgba(72, 219, 251, 0.3);
+}
+
+.box-m2 {
+  background: rgba(254, 202, 87, 0.15);
+  border: 1px solid rgba(255, 159, 67, 0.3);
+}
+
+.box-m3 {
+  background: rgba(29, 209, 161, 0.15);
+  border: 1px solid rgba(29, 209, 161, 0.3);
+}
+
+.mode-svg-colored {
+  width: 32px;
+  height: 32px;
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+}
+
+.jlpt-mode-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 99px;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.jlpt-mode-check svg {
+  width: 14px;
+  height: 14px;
+}
+
+.jlpt-mode-card.selected .jlpt-mode-check {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+.jlpt-mode-content {
+  min-width: 0;
+}
+
+.jlpt-mode-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.jlpt-mode-pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin: 6px 0 8px;
+  line-height: 1;
+}
+
+.pill-blue {
+  background: rgba(59, 130, 246, 0.14);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.pill-amber {
+  background: rgba(245, 158, 11, 0.14);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.pill-emerald {
+  background: rgba(16, 185, 129, 0.14);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.jlpt-mode-desc {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  line-height: 1.35;
+  margin: 0;
+}
+
+/* Flashcard pill badges */
+.fc-pill-badge {
+  font-size: 10px;
+  letter-spacing: 2px;
+  display: inline-block;
+  margin-right: 6px;
+}
+.hard-badge { color: #ff6b6b; }
+.med-badge { color: #feca57; }
+.easy-badge { color: #1dd1a1; }
+
+.quiz-res-symbol-wrap {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+}
+.quiz-res-symbol-wrap svg {
+  width: 64px;
+  height: 64px;
+  filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.4));
+}
+
+/* Modern Start Button */
+.btn-start-jlpt {
+  width: 100%;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-top: 10px;
+}
+
+.btn-start-jlpt:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+  filter: brightness(1.08);
+}
+
+.btn-start-jlpt:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+.btn-start-jlpt.sim-glow {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4);
+}
+
+.btn-start-jlpt.sim-glow:hover {
+  box-shadow: 0 8px 25px rgba(139, 92, 246, 0.55);
+}
+
+.btn-start-jlpt .btn-icon {
+  font-size: 18px;
+}
+
+/* Segmented active override for crisp contrast */
+.segmented button.active {
+  background: var(--primary) !important;
+  color: #ffffff !important;
+  font-weight: 750 !important;
+  box-shadow: 0 3px 12px rgba(99, 102, 241, 0.35) !important;
+}
+
+/* Simulation Banner */
+.jlpt-sim-banner {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.16) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border: 1.5px solid rgba(99, 102, 241, 0.35);
+  border-radius: 20px;
+  padding: 24px 22px;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.jlpt-sim-badge {
+  align-self: flex-start;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a78bfa;
+  background: rgba(139, 92, 246, 0.18);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+.jlpt-sim-title {
+  font-size: 19px;
+  font-weight: 850;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.sim-title-icon {
+  font-size: 22px;
+}
+
+.jlpt-sim-desc {
+  font-size: 13.5px;
+  color: var(--text-soft);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.jlpt-sim-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  background: var(--bg-elev);
+  padding: 14px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.jlpt-sim-info-item .item-icon {
+  font-size: 18px;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.jlpt-sim-info-item .val {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.jlpt-sim-info-item .lbl {
+  font-size: 11px;
+  color: var(--text-dim);
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.jlpt-timer-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--primary-text);
+  font-family: monospace;
+}
+
+.jlpt-timer-pill.warning {
+  background: var(--red-soft);
+  color: var(--red);
+  border-color: var(--red);
+  animation: pulse-warn 1s infinite;
+}
+
+@keyframes pulse-warn {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* JLPT Question View */
+.jlpt-mondai-header {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.jlpt-mondai-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  background: var(--primary);
+  padding: 3px 10px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+  letter-spacing: 0.05em;
+}
+
+.jlpt-mondai-instruction {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+.jlpt-sentence-card {
+  background: var(--bg-elev);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  text-align: left;
+}
+
+.jlpt-sentence-text {
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.7;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+u.jlpt-target {
+  font-weight: 800;
+  color: var(--primary-text);
+  text-decoration: none;
+  border-bottom: 3px solid var(--primary);
+  padding-bottom: 2px;
+  transition: all 0.2s;
+}
+
+.jlpt-options {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.jlpt-opt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: var(--bg-elev);
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.jlpt-opt:hover:not(:disabled) {
+  border-color: var(--primary);
+  background: var(--primary-soft);
+  transform: translateY(-2px);
+}
+
+.jlpt-opt-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--bg-soft);
+  color: var(--text-soft);
+  font-size: 14px;
+  font-weight: 800;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.jlpt-opt.correct {
+  border-color: #22c55e !important;
+  background: rgba(34, 197, 94, 0.15) !important;
+  color: #22c55e !important;
+}
+
+.jlpt-opt.correct .jlpt-opt-num {
+  background: #22c55e !important;
+  color: #ffffff !important;
+}
+
+.jlpt-opt.wrong {
+  border-color: #ef4444 !important;
+  background: rgba(239, 68, 68, 0.15) !important;
+  color: #ef4444 !important;
+}
+
+.jlpt-opt.wrong .jlpt-opt-num {
+  background: #ef4444 !important;
+  color: #ffffff !important;
+}
+
+/* Kaisetsu Box */
+.jlpt-kaisetsu-box {
+  background: var(--bg-elev);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  margin-top: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-lg);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.kaisetsu-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.kaisetsu-result-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13.5px;
+  font-weight: 800;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.kaisetsu-result-badge.ok {
+  background: rgba(34, 197, 94, 0.18);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.kaisetsu-result-badge.ng {
+  background: rgba(239, 68, 68, 0.18);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.kaisetsu-word-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kaisetsu-kanji {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.kaisetsu-furi {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--primary-text);
+}
+
+.kaisetsu-arti {
+  font-size: 14.5px;
+  color: var(--text);
+  line-height: 1.5;
+  background: var(--bg-soft);
+  padding: 10px 14px;
+  border-radius: 10px;
+  border-left: 3px solid var(--primary);
+}
+
+.kaisetsu-trap {
+  font-size: 13px;
+  color: #f59e0b;
+  line-height: 1.5;
+  background: rgba(245, 158, 11, 0.1);
+  padding: 10px 14px;
+  border-radius: 10px;
+  border-left: 3px solid #f59e0b;
+}
+
+/* JLPT Simulation Result Card & Stamp */
+.jlpt-result-card {
+  background: var(--bg-elev);
+  border: 1.5px solid var(--border);
+  border-radius: 24px;
+  padding: 32px 24px;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.jlpt-stamp-wrap {
+  display: inline-block;
+  margin-bottom: 16px;
+  animation: stampIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes stampIn {
+  from {
+    transform: scale(2) rotate(-15deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(-4deg);
+    opacity: 1;
+  }
+}
+
+.jlpt-pass-stamp {
+  display: inline-block;
+  font-size: 26px;
+  font-weight: 900;
+  color: #22c55e;
+  border: 4px solid #22c55e;
+  border-radius: 12px;
+  padding: 6px 20px;
+  letter-spacing: 0.15em;
+  transform: rotate(-4deg);
+  text-shadow: 0 0 12px rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
+}
+
+.jlpt-fail-stamp {
+  display: inline-block;
+  font-size: 26px;
+  font-weight: 900;
+  color: #ef4444;
+  border: 4px solid #ef4444;
+  border-radius: 12px;
+  padding: 6px 20px;
+  letter-spacing: 0.15em;
+  transform: rotate(-4deg);
+  text-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+}
+
+.jlpt-score-breakdown {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.jlpt-breakdown-box {
+  background: var(--bg-soft);
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.jlpt-breakdown-box .b-val {
+  font-size: 20px;
+  font-weight: 850;
+  color: var(--text);
+}
+
+.jlpt-breakdown-box .b-lbl {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-top: 3px;
+}
+
+.jlpt-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 24px;
+  text-align: left;
+}
+
+.jlpt-review-item {
+  background: var(--bg-elev);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.jlpt-review-item.is-correct {
+  border-left: 4px solid #22c55e;
+}
+
+.jlpt-review-item.is-wrong {
+  border-left: 4px solid #ef4444;
+}
+
+/* ============================================================
+   SVG SYMBOL & VECTOR ICON STYLES (No Emojis)
+   ============================================================ */
+
+.svg-ico {
+  display: inline-block;
+  width: 1.15em;
+  height: 1.15em;
+  vertical-align: -0.16em;
+  stroke: currentColor;
+  fill: none;
+  flex-shrink: 0;
+}
+
+.svg-ico.lg {
+  width: 1.45em;
+  height: 1.45em;
+}
+
+.svg-ico.xl {
+  width: 2.2em;
+  height: 2.2em;
+}
+
+.nav-svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-width: 2;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), stroke 0.2s;
+}
+
+.nav-item.active .nav-svg {
+  stroke: var(--primary);
+  transform: translateY(-2px);
+}
+
+.symbol-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  border: 1px solid rgba(99, 102, 241, 0.3);
+  vertical-align: 1px;
+  margin-right: 4px;
+}
+
+.trap-ico {
+  display: inline-flex;
+  align-items: center;
+  color: #f59e0b;
+  margin-right: 4px;
+}
+
+.lv-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 99px;
+}
+
+.lv-dot.n4 {
+  background: #3b82f6;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+.lv-dot.n3 {
+  background: #22c55e;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.5);
+}
+
+.lv-dot.n2 {
+  background: #f97316;
+  box-shadow: 0 0 8px rgba(249, 115, 22, 0.5);
+}
+
+.btn-start-jlpt .btn-icon .svg-ico {
+  width: 1.25em;
+  height: 1.25em;
+}
+
+/* ============================================================
+   COLORED VECTOR NAV ICONS (Vibrant, Handcrafted, No Emojis)
+   ============================================================ */
+.nav-svg-colored {
+  width: 25px;
+  height: 25px;
+  display: block;
+  transition: transform 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.28s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+.nav-item .ni {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-item:hover .nav-svg-colored {
+  transform: translateY(-2px) scale(1.08);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
+}
+
+.nav-item.active .nav-svg-colored {
+  transform: translateY(-3px) scale(1.18);
+  filter: drop-shadow(0 5px 12px rgba(99, 102, 241, 0.45));
+}
+
+.nav-item .nav-lbl {
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--text-dim);
+  font-weight: 700;
+  transition: color 0.2s, font-weight 0.2s;
+}
+
+.nav-item.active .nav-lbl {
+  color: var(--primary-text);
+  font-weight: 850;
+}
+
+
+
+/* ==========================================================
+   STREAK FLAME TIERS & ANIMATIONS (TIKTOK STYLE EVOLUTION)
+   ========================================================== */
+
+/* Streak Card Clickable & Base */
+.streak {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 22px;
+  border-radius: var(--radius);
+  color: #ffffff;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease;
+  user-select: none;
+}
+
+.streak:active {
+  transform: scale(0.98);
+}
+
+/* Tier Themes */
+.streak.streak-tier-yellow {
+  background: linear-gradient(135deg, #b45309 0%, #d97706 45%, #f59e0b 100%);
+  box-shadow: 0 10px 28px rgba(245, 158, 11, 0.35);
+  border: 1px solid rgba(254, 240, 138, 0.35);
+}
+
+.streak.streak-tier-red {
+  background: linear-gradient(135deg, #9f1239 0%, #be123c 45%, #f43f5e 100%);
+  box-shadow: 0 10px 28px rgba(244, 63, 94, 0.4);
+  border: 1px solid rgba(254, 205, 211, 0.35);
+}
+
+.streak.streak-tier-blue {
+  background: linear-gradient(135deg, #075985 0%, #0284c7 45%, #38bdf8 100%);
+  box-shadow: 0 10px 28px rgba(2, 132, 199, 0.42);
+  border: 1px solid rgba(186, 230, 253, 0.35);
+}
+
+.streak.streak-tier-green {
+  background: linear-gradient(135deg, #065f46 0%, #059669 45%, #10b981 100%);
+  box-shadow: 0 10px 28px rgba(16, 185, 129, 0.4);
+  border: 1px solid rgba(167, 243, 208, 0.35);
+}
+
+.streak.streak-tier-purple {
+  background: linear-gradient(135deg, #581c87 0%, #7c3aed 45%, #9333ea 100%);
+  box-shadow: 0 10px 30px rgba(147, 51, 234, 0.45);
+  border: 1px solid rgba(233, 213, 255, 0.35);
+}
+
+.streak.streak-tier-white {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 45%, #334155 100%);
+  box-shadow: 0 10px 32px rgba(255, 255, 255, 0.28), inset 0 0 20px rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.streak.streak-tier-black {
+  background: linear-gradient(135deg, #050505 0%, #09090b 45%, #18181b 100%);
+  box-shadow: 0 10px 35px rgba(168, 85, 247, 0.38), inset 0 0 25px rgba(0, 0, 0, 0.95);
+  border: 1px solid rgba(168, 85, 247, 0.55);
+}
+
+/* Tier Pill */
+.streak-tier-pill {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Flame Button Container */
+.streak-flame-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.15s ease;
+}
+
+.streak-flame-btn:active {
+  transform: scale(0.92);
+}
+
+/* SVG Flame Organic Animation */
+.streak-flame-svg {
+  transform-origin: 50% 88%;
+  animation: flame-organic-dance 2.4s infinite ease-in-out;
+  filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.3));
+  will-change: transform, filter;
+  display: block;
+}
+
+@keyframes flame-organic-dance {
+  0%, 100% {
+    transform: scale(1) rotate(-1.5deg);
+  }
+  25% {
+    transform: scale(1.06, 0.95) rotate(2.2deg) skewX(1deg);
+  }
+  50% {
+    transform: scale(0.96, 1.05) rotate(-2deg);
+  }
+  75% {
+    transform: scale(1.05, 0.97) rotate(1.5deg) skewX(-1deg);
+  }
+}
+
+/* Flare / Berkobar on Tap */
+.streak-flame-btn.flame-bursting .streak-flame-svg {
+  animation: flame-intense-flare 0.85s cubic-bezier(0.18, 0.89, 0.32, 1.28) !important;
+}
+
+@keyframes flame-intense-flare {
+  0% {
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1);
+  }
+  25% {
+    transform: scale(1.48) rotate(-7deg);
+    filter: brightness(1.7) drop-shadow(0 0 20px white);
+  }
+  50% {
+    transform: scale(1.3) rotate(5deg);
+    filter: brightness(1.45);
+  }
+  75% {
+    transform: scale(1.12) rotate(-2deg);
+    filter: brightness(1.2);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    filter: brightness(1);
+  }
+}
+
+/* Floating Flame Embers / Sparks */
+.flame-spark {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 20;
+  box-shadow: 0 0 6px currentColor;
+  animation: flame-spark-rise 0.8s ease-out forwards;
+}
+
+@keyframes flame-spark-rise {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(var(--tx), var(--ty)) scale(0.15);
+    opacity: 0;
+  }
+}
+
+
+/* ==========================================================
+   DOPAMINE ESCALATING FLAME VFX (TIERS 1 - 7)
+   ========================================================== */
+
+.flame-vfx-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 99999;
+  overflow: hidden;
+}
+
+/* Screen Shakes */
+.screen-shake-sm {
+  animation: shake-sm 0.3s ease-in-out;
+}
+
+.screen-shake-md {
+  animation: shake-md 0.45s ease-in-out;
+}
+
+.screen-shake-heavy {
+  animation: shake-heavy 0.7s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+@keyframes shake-sm {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-3px, 2px); }
+  40% { transform: translate(3px, -2px); }
+  60% { transform: translate(-2px, 1px); }
+  80% { transform: translate(2px, -1px); }
+}
+
+@keyframes shake-md {
+  0%, 100% { transform: translate(0, 0); }
+  15% { transform: translate(-6px, 4px) rotate(-0.5deg); }
+  30% { transform: translate(6px, -4px) rotate(0.5deg); }
+  45% { transform: translate(-4px, 3px); }
+  60% { transform: translate(4px, -2px); }
+  75% { transform: translate(-2px, 1px); }
+}
+
+@keyframes shake-heavy {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-10px, 8px) rotate(-1.2deg); }
+  20% { transform: translate(10px, -8px) rotate(1.2deg); }
+  30% { transform: translate(-8px, 6px) rotate(-0.8deg); }
+  40% { transform: translate(8px, -6px) rotate(0.8deg); }
+  55% { transform: translate(-5px, 4px); }
+  70% { transform: translate(5px, -3px); }
+  85% { transform: translate(-2px, 2px); }
+}
+
+/* Level 6: Solar Flash (Blinding White) */
+.vfx-solar-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.96) 0%, rgba(254, 240, 138, 0.75) 45%, rgba(255, 255, 255, 0) 80%);
+  animation: solar-flash-anim 0.75s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+@keyframes solar-flash-anim {
+  0% { opacity: 0; transform: scale(0.6); }
+  20% { opacity: 1; transform: scale(1.1); }
+  100% { opacity: 0; transform: scale(1.5); }
+}
+
+/* Level 7: Full Screen Burn (Amaterasu Void) */
+.vfx-screen-burn {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 80px 30px rgba(168, 85, 247, 0.8), inset 0 0 180px 90px rgba(0, 0, 0, 0.96);
+  animation: screen-burn-anim 1.6s ease-out forwards;
+}
+
+@keyframes screen-burn-anim {
+  0% { opacity: 0; transform: scale(1.05); }
+  25% { opacity: 1; transform: scale(1); }
+  75% { opacity: 0.9; }
+  100% { opacity: 0; transform: scale(0.98); }
+}
+
+/* Perimeter Flame Tongues for Level 7 */
+.vfx-fire-border {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(168, 85, 247, 0.6) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(147, 51, 234, 0.7) 0%, transparent 60%),
+    radial-gradient(ellipse at 0% 50%, rgba(88, 28, 135, 0.6) 0%, transparent 60%),
+    radial-gradient(ellipse at 100% 50%, rgba(88, 28, 135, 0.6) 0%, transparent 60%);
+  animation: border-fire-pulse 1.6s ease-out forwards;
+}
+
+@keyframes border-fire-pulse {
+  0% { opacity: 0; filter: brightness(1); }
+  30% { opacity: 1; filter: brightness(1.7); }
+  70% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+/* Shockwave Ring */
+.vfx-shockwave-ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  animation: ring-expand 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes ring-expand {
+  0% { width: 30px; height: 30px; opacity: 1; border-width: 5px; }
+  100% { width: var(--target-size, 450px); height: var(--target-size, 450px); opacity: 0; border-width: 1px; }
+}
+
+/* Sparks */
+.vfx-spark {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: vfx-spark-fly var(--dur, 0.8s) cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes vfx-spark-fly {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  60% { opacity: 0.9; }
+  100% { transform: translate(var(--tx), var(--ty)) scale(0.1); opacity: 0; }
+}
+
+/* Ash particle for black flame */
+.vfx-ash {
+  position: absolute;
+  border-radius: 2px;
+  pointer-events: none;
+  animation: ash-float 1.5s ease-out forwards;
+}
+
+@keyframes ash-float {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)) rotate(var(--rot)); opacity: 0; }
+}
+
+
+/* ==========================================================
+   MULTI-LAYER LIVING FLAME ANIMATION (SVG LAYERS)
+   ========================================================== */
+.streak-flame-svg .flame-outer {
+  transform-origin: 50% 90%;
+  animation: flame-outer-sway 2.6s infinite ease-in-out;
+}
+.streak-flame-svg .flame-mid {
+  transform-origin: 50% 85%;
+  animation: flame-mid-lick 1.5s infinite ease-in-out alternate;
+}
+.streak-flame-svg .flame-inner {
+  transform-origin: 50% 80%;
+  animation: flame-inner-flutter 0.95s infinite ease-in-out alternate;
+}
+.streak-flame-svg .flame-core {
+  transform-origin: 50% 75%;
+  animation: flame-core-pulse 0.65s infinite ease-in-out alternate;
+}
+
+@keyframes flame-outer-sway {
+  0%, 100% { transform: rotate(-2deg) scale(1); }
+  50% { transform: rotate(2.5deg) scale(1.04, 0.97); }
+}
+@keyframes flame-mid-lick {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-3px) scale(0.97, 1.08) rotate(-1.5deg); }
+}
+@keyframes flame-inner-flutter {
+  0% { transform: scale(1); opacity: 0.9; }
+  100% { transform: scale(1.05, 0.95); opacity: 1; }
+}
+@keyframes flame-core-pulse {
+  0% { transform: scale(0.92); opacity: 0.85; }
+  100% { transform: scale(1.12); opacity: 1; filter: drop-shadow(0 0 5px white); }
+}
+
+/* Procedural Real-time Canvas Fire Layer */
+#fireCanvasOverlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99999;
 }
