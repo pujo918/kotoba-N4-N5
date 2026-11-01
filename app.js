@@ -998,6 +998,7 @@ const I18N = {
     "stats_detail_no_data": "Belum ada data review.",
     "label_correct": "Benar",
     "label_wrong": "Salah",
+    "label_resolved": "Terselesaikan ✔",
     "wrong_quiz_title": "Latihan Kosakata Salah",
     "wrong_quiz_sub": "Prioritas kata yang sering salah",
     "wrong_quiz_exit_btn": "Keluar Latihan",
@@ -1229,6 +1230,7 @@ const I18N = {
     "stats_detail_no_data": "復習データがまだありません。",
     "label_correct": "正解",
     "label_wrong": "不正解",
+    "label_resolved": "克服済 ✔",
     "wrong_quiz_title": "苦手単語集中特訓",
     "wrong_quiz_sub": "間違えたことのある単語を重点的に復習",
     "wrong_quiz_exit_btn": "特訓を終了",
@@ -3975,39 +3977,39 @@ Views.stats = (app) => {
 
   app.innerHTML = `
     <div class="view">
-      <h1 class="page-title">Statistik<span class="sub">Pantau perkembangan belajarmu</span></h1>
+      <h1 class="page-title">${t('stats_title') || 'Statistik'}<span class="sub">${t('stats_sub') || 'Pantau perkembangan belajarmu'}</span></h1>
 
       <section>
         <div class="grid stat-grid">
-          <div class="stat clickable" data-stat="learned"><span class="ico">${ICONS.book}</span><div class="val">${learned}</div><div class="lbl">Total dipelajari</div></div>
-          <div class="stat clickable" data-stat="mastered"><span class="ico">${ICONS.award}</span><div class="val">${mastered}</div><div class="lbl">Total dikuasai</div></div>
-          <div class="stat" data-stat="notyet"><span class="ico">${ICONS.document}</span><div class="val">${notyet}</div><div class="lbl">Belum dipelajari</div></div>
-          <div class="stat" data-stat="accuracy"><span class="ico">${ICONS.target}</span><div class="val">${acc}%</div><div class="lbl">Akurasi review</div></div>
+          <div class="stat clickable" data-stat="learned"><span class="ico">${ICONS.book}</span><div class="val">${learned}</div><div class="lbl">${t('stats_total_learned') || 'Total dipelajari'}</div></div>
+          <div class="stat clickable" data-stat="mastered"><span class="ico">${ICONS.award}</span><div class="val">${mastered}</div><div class="lbl">${t('stats_total_mastered') || 'Total dikuasai'}</div></div>
+          <div class="stat" data-stat="notyet"><span class="ico">${ICONS.document}</span><div class="val">${notyet}</div><div class="lbl">${t('stats_notyet') || 'Belum dipelajari'}</div></div>
+          <div class="stat" data-stat="accuracy"><span class="ico">${ICONS.target}</span><div class="val">${acc}%</div><div class="lbl">${t('stats_accuracy') || 'Akurasi review'}</div></div>
         </div>
       </section>
 
       <section>
-        <p class="section-label">Ringkasan Penguasaan</p>
+        <p class="section-label">${t('stats_mastery_summary') || 'Ringkasan Penguasaan'}</p>
         <div class="card donut-wrap">
           <div class="donut" style="--a:${segMaster}%;--b:${segLearned}%">
-            <div class="mid"><b>${total ? Math.round(learned / total * 100) : 0}%</b><small>dipelajari</small></div>
+            <div class="mid"><b>${total ? Math.round(learned / total * 100) : 0}%</b><small>${t('stats_donut_learned') || 'dipelajari'}</small></div>
           </div>
           <div class="legend">
-            <div class="row"><span class="dot" style="background:var(--green)"></span> Dikuasai <b>${mastered}</b></div>
-            <div class="row"><span class="dot" style="background:var(--orange)"></span> Dipelajari <b>${learned - mastered}</b></div>
-            <div class="row"><span class="dot" style="background:var(--bg-soft)"></span> Belum <b>${notyet}</b></div>
+            <div class="row"><span class="dot" style="background:var(--green)"></span> ${t('stats_legend_mastered') || 'Dikuasai'} <b>${mastered}</b></div>
+            <div class="row"><span class="dot" style="background:var(--orange)"></span> ${t('stats_legend_learned') || 'Dipelajari'} <b>${learned - mastered}</b></div>
+            <div class="row"><span class="dot" style="background:var(--bg-soft)"></span> ${t('stats_legend_notyet') || 'Belum'} <b>${notyet}</b></div>
           </div>
         </div>
       </section>
 
       <section>
-        <p class="section-label">Progress per Level</p>
+        <p class="section-label">${t('stats_progress_per_level') || 'Progress per Level'}</p>
         <div class="card progress-level-card" style="padding:24px">
           ${levels.map(x => `
             <div class="bar-row">
-              <div class="top"><span>${x.lv} <span class="muted">· ${x.tot} kata</span></span><span>${x.lp}%</span></div>
+              <div class="top"><span>${x.lv} <span class="muted">· ${x.tot} ${t('stats_word_unit') || 'kata'}</span></span><span>${x.lp}%</span></div>
               <div class="bar ${x.lv.toLowerCase()}"><i style="width:${x.lp}%"></i></div>
-              <div class="top" style="margin-top:6px;font-size:12px;color:var(--text-dim)"><span>Dikuasai: ${x.m}</span><span>${x.mp}%</span></div>
+              <div class="top" style="margin-top:6px;font-size:12px;color:var(--text-dim)"><span>${t('stats_mastered_sub') || 'Dikuasai'}: ${x.m}</span><span>${x.mp}%</span></div>
             </div>`).join('')}
         </div>
       </section>
@@ -4033,7 +4035,7 @@ Views.stats = (app) => {
       </section>
 
       <section>
-        <button class="btn ghost block" id="reset">${ICONS.trash} ${t('stats_reset') || 'Reset semua progress'}</button>
+        <button class="btn ghost block" id="reset">${ICONS.trash} ${t('stats_reset_btn') || 'Reset semua progress'}</button>
       </section>
     </div>`;
 
@@ -4068,10 +4070,10 @@ Views.stats = (app) => {
     };
   }
   app.querySelector('#reset').onclick = () => {
-    if (confirm('Yakin ingin menghapus semua progress belajar? Tindakan ini tidak bisa dibatalkan.')) {
+    if (confirm(t('stats_reset_confirm') || 'Yakin ingin menghapus semua progress belajar? Tindakan ini tidak bisa dibatalkan.')) {
       State.progress = {}; State.streak = { current: 0, last: null, best: 0 }; State.wrongSolved = {};
       save(K.progress, State.progress); save(K.streak, State.streak); save(K.wrongSolved, State.wrongSolved);
-      toast('Progress direset'); navigate('stats');
+      toast(t('stats_reset_toast') || 'Progress direset'); navigate('stats');
     }
   };
 };
@@ -4115,7 +4117,7 @@ Views.statsDetail = (app) => {
     <div class="view">
       <div class="toolbar" style="margin-bottom: 20px; justify-content: space-between; align-items: center; width: 100%; display: flex; flex-wrap: wrap; gap: 10px;">
         <button class="btn ghost" id="backToStats" style="height: 40px; padding: 0 16px; border-radius: 12px; font-size: 14px; cursor: pointer;">
-          ← ${t('stats_detail_back') || 'Kembali ke Statistik'}
+          ${t('stats_detail_back') || '← Kembali ke Statistik'}
         </button>
         ${!isCorrect && filtered.length > 0 ? `
         <button class="btn" id="startWrongQuiz" style="height: 40px; padding: 0 16px; border-radius: 12px; font-size: 14px; background: linear-gradient(135deg, var(--red), #ff7e5f); color: white; border: none; box-shadow: 0 4px 10px var(--red-soft); font-weight: 700; cursor: pointer;">
@@ -4140,7 +4142,7 @@ Views.statsDetail = (app) => {
               <div class="arti">${esc(v.arti)}</div>
               <div style="margin-top:10px; font-size:12.5px; font-weight:700; color:${color}; display:flex; align-items:center; justify-content:space-between; gap:6px; border-top:1px solid var(--border-soft); padding-top:8px;">
                 <span>${icon} ${rawCount}x ${label}</span>
-                ${!isCorrect && eff === 0 ? `<span style="font-size:11px; font-weight:600; color:var(--green); background:var(--green-soft); padding:2px 7px; border-radius:99px;">Terselesaikan ✔</span>` : ''}
+                ${!isCorrect && eff === 0 ? `<span style="font-size:11px; font-weight:600; color:var(--green); background:var(--green-soft); padding:2px 7px; border-radius:99px;">${t('label_resolved') || 'Terselesaikan ✔'}</span>` : ''}
               </div>
             </div>`;
   }).join('') : `
