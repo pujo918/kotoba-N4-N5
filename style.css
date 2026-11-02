@@ -746,6 +746,142 @@ body.furi-off .furi-line {
   margin: 4px 0;
 }
 
+/* Level Dropdown Specifics */
+.lv-label-n4 {
+  font-weight: 750;
+  color: var(--blue-text, #3b82f6);
+}
+.lv-label-n3 {
+  font-weight: 750;
+  color: var(--green-text, #10b981);
+}
+.lv-label-n2 {
+  font-weight: 750;
+  color: var(--orange-text, #f59e0b);
+}
+
+.counter-dropdown-trigger.lv-n4 {
+  background: var(--blue-soft);
+  color: var(--blue-text, #3b82f6);
+  border-color: rgba(59, 130, 246, 0.45);
+}
+.counter-dropdown-trigger.lv-n4 .cdd-chevron {
+  color: var(--blue-text, #3b82f6);
+}
+.counter-dropdown-trigger.lv-n4:hover {
+  background: var(--blue-soft);
+  border-color: var(--blue);
+  filter: brightness(1.05);
+}
+.counter-dropdown.open .counter-dropdown-trigger.lv-n4 {
+  background: var(--blue-soft);
+  border-color: var(--blue);
+  color: var(--blue-text, #3b82f6);
+  box-shadow: 0 0 0 2px var(--blue-soft);
+}
+
+.counter-dropdown-trigger.lv-n3 {
+  background: var(--green-soft);
+  color: var(--green-text, #10b981);
+  border-color: rgba(16, 185, 129, 0.45);
+}
+.counter-dropdown-trigger.lv-n3 .cdd-chevron {
+  color: var(--green-text, #10b981);
+}
+.counter-dropdown-trigger.lv-n3:hover {
+  background: var(--green-soft);
+  border-color: var(--green);
+  filter: brightness(1.05);
+}
+.counter-dropdown.open .counter-dropdown-trigger.lv-n3 {
+  background: var(--green-soft);
+  border-color: var(--green);
+  color: var(--green-text, #10b981);
+  box-shadow: 0 0 0 2px var(--green-soft);
+}
+
+.counter-dropdown-trigger.lv-n2 {
+  background: var(--orange-soft);
+  color: var(--orange-text, #f59e0b);
+  border-color: rgba(245, 158, 11, 0.45);
+}
+.counter-dropdown-trigger.lv-n2 .cdd-chevron {
+  color: var(--orange-text, #f59e0b);
+}
+.counter-dropdown-trigger.lv-n2:hover {
+  background: var(--orange-soft);
+  border-color: var(--orange);
+  filter: brightness(1.05);
+}
+.counter-dropdown.open .counter-dropdown-trigger.lv-n2 {
+  background: var(--orange-soft);
+  border-color: var(--orange);
+  color: var(--orange-text, #f59e0b);
+  box-shadow: 0 0 0 2px var(--orange-soft);
+}
+
+.counter-dropdown-trigger.lv-all {
+  background: var(--bg-soft);
+  color: var(--text);
+  border-color: var(--border-soft);
+}
+
+.cdd-item[data-lv="N4"].active {
+  background: var(--blue-soft);
+  color: var(--blue-text);
+  font-weight: 700;
+}
+.cdd-item[data-lv="N3"].active {
+  background: var(--green-soft);
+  color: var(--green-text);
+  font-weight: 700;
+}
+.cdd-item[data-lv="N2"].active {
+  background: var(--orange-soft);
+  color: var(--orange-text);
+  font-weight: 700;
+}
+
+/* Red Button: Pelajari (Materi) */
+.btn-study-materi {
+  height: 48px;
+  padding: 0 18px;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: #ffffff;
+  border: none;
+  border-radius: 14px;
+  font-size: 13.5px;
+  font-weight: 750;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.28);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  font-family: inherit;
+  letter-spacing: 0.02em;
+}
+
+.btn-study-materi:hover {
+  background: linear-gradient(135deg, #f87171, #ef4444);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.38);
+}
+
+.btn-study-materi:active {
+  transform: translateY(0);
+}
+
+.btn-study-materi:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  filter: grayscale(0.5);
+}
+
 @keyframes fadeInDown {
   from {
     opacity: 0;
@@ -796,20 +932,23 @@ body.furi-off .furi-line {
     display: flex;
     align-items: center;
     gap: 8px;
+    flex-wrap: nowrap;
   }
 
-  .segmented {
-    flex-shrink: 0;
+  #levelDropdown {
+    flex: 0 0 auto;
+    min-width: 90px;
   }
 
-  .segmented button {
-    padding: 0 13px;
-    font-size: 13px;
-  }
-
-  .counter-dropdown {
-    flex: 1;
+  #counterDropdown {
+    flex: 1 1 auto;
     min-width: 0;
+  }
+
+  .btn-study-materi {
+    flex: 0 0 auto;
+    padding: 0 14px;
+    height: 48px;
   }
 
   .counter-dropdown-trigger {
@@ -821,20 +960,26 @@ body.furi-off .furi-line {
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 420px) {
   .toolbar-controls {
     gap: 6px;
   }
 
-  .segmented button {
-    padding: 0 9px;
-    font-size: 12px;
+  #levelDropdown {
+    min-width: 78px;
   }
 
   .counter-dropdown-trigger {
-    padding: 0 9px;
+    padding: 0 8px;
     font-size: 12px;
     gap: 4px;
+    height: 44px;
+  }
+
+  .btn-study-materi {
+    padding: 0 11px;
+    font-size: 12px;
+    height: 44px;
   }
 }
 

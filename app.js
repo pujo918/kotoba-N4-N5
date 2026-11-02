@@ -1056,6 +1056,13 @@ const I18N = {
     "stats_sort_most_correct": "Paling Banyak Benar",
     "stats_sort_recent_correct": "Akhir-akhir Ini Benar",
     "time_just_now": "Baru saja",
+    "btn_study_materi": "Pelajari",
+    "status_fc_title": "Flashcard Materi",
+    "status_fc_sub": "Latihan flashcard khusus status pembelajaran",
+    "status_fc_back": "Kembali ke Materi",
+    "status_fc_empty": "Tidak ada kosakata untuk dipelajari pada filter ini.",
+    "status_fc_done_desc": (n, s) => `Kamu telah mereview ${n} kata pada status ${s}! Terus tingkatkan penguasaanmu.`,
+    "filter_level_title": "Filter Level JLPT",
     "label_correct": "Benar",
     "label_wrong": "Salah",
     "label_resolved": "Terselesaikan ✔",
@@ -1293,6 +1300,13 @@ const I18N = {
     "stats_sort_most_correct": "正解最多順",
     "stats_sort_recent_correct": "最近の正解順",
     "time_just_now": "たった今",
+    "btn_study_materi": "学習",
+    "status_fc_title": "単語帳フラッシュカード",
+    "status_fc_sub": "習得状況に応じた集中復習",
+    "status_fc_back": "単語リストに戻る",
+    "status_fc_empty": "この条件に一致する単語はありません。",
+    "status_fc_done_desc": (n, s) => `${s}の単語を${n}語復習しました！着実にレベルアップしています。`,
+    "filter_level_title": "JLPTレベルを選択",
     "label_correct": "正解",
     "label_wrong": "不正解",
     "label_resolved": "克服済 ✔",
@@ -1897,7 +1911,7 @@ function navigate(route) {
   let activeNav = route;
   if (route === 'statsDetail' || route === 'statsDetailQuiz') {
     activeNav = 'stats';
-  } else if (route === 'reading' || route === 'readingDetail') {
+  } else if (route === 'reading' || route === 'readingDetail' || route === 'statusFlashcard') {
     activeNav = 'list';
   }
   document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.dataset.nav === activeNav));
@@ -2035,6 +2049,17 @@ Views.list = (app) => {
   else if (ListState.filter === 'belum') triggerText = `${t('status_notyet')} : ${stats.belum}`;
   else if (ListState.filter === 'all') triggerText = `${t('status_all')} : ${stats.dikuasai + stats.hampir + stats.setengah + stats.seperempat + stats.belum}`;
 
+  const allCount = State.vocab.length;
+  const n4Count = State.vocab.filter(v => v.level === 'N4').length;
+  const n3Count = State.vocab.filter(v => v.level === 'N3').length;
+  const n2Count = State.vocab.filter(v => v.level === 'N2').length;
+
+  let levelTriggerText = t('filter_all');
+  let levelBadgeClass = 'lv-all';
+  if (ListState.level === 'N4') { levelTriggerText = 'N4'; levelBadgeClass = 'lv-n4'; }
+  else if (ListState.level === 'N3') { levelTriggerText = 'N3'; levelBadgeClass = 'lv-n3'; }
+  else if (ListState.level === 'N2') { levelTriggerText = 'N2'; levelBadgeClass = 'lv-n2'; }
+
   app.innerHTML = `
     <div class="view">
       <div class="materi-tabs">
@@ -2050,14 +2075,40 @@ Views.list = (app) => {
           <input id="q" type="text" placeholder="${t('search_placeholder')}" value="${esc(ListState.q)}" />
         </div>
         <div class="toolbar-controls">
-          <div class="segmented" id="lvFilter">
-            <button data-lv="all" class="${ListState.level === 'all' ? 'active' : ''}">${t('filter_all')}</button>
-            <button data-lv="N4" class="${ListState.level === 'N4' ? 'active' : ''}">N4</button>
-            <button data-lv="N3" class="${ListState.level === 'N3' ? 'active' : ''}">N3</button>
-            <button data-lv="N2" class="${ListState.level === 'N2' ? 'active' : ''}">N2</button>
+          <!-- DROPDOWN LEVEL -->
+          <div class="counter-dropdown" id="levelDropdown">
+            <button class="counter-dropdown-trigger ${levelBadgeClass}" id="levelTrigger" type="button" title="${t('filter_level_title') || 'Filter Level'}">
+              <span>${levelTriggerText}</span>
+              <svg class="cdd-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <div class="counter-dropdown-menu" id="levelMenu">
+              <div class="cdd-item ${ListState.level === 'all' ? 'active' : ''}" data-lv="all">
+                <span class="cdd-lbl">${t('filter_all')}</span>
+                <span class="cdd-sep">:</span>
+                <span class="cdd-num">${allCount}</span>
+              </div>
+              <div class="cdd-divider"></div>
+              <div class="cdd-item ${ListState.level === 'N4' ? 'active' : ''}" data-lv="N4">
+                <span class="cdd-lbl lv-label-n4">N4</span>
+                <span class="cdd-sep">:</span>
+                <span class="cdd-num">${n4Count}</span>
+              </div>
+              <div class="cdd-item ${ListState.level === 'N3' ? 'active' : ''}" data-lv="N3">
+                <span class="cdd-lbl lv-label-n3">N3</span>
+                <span class="cdd-sep">:</span>
+                <span class="cdd-num">${n3Count}</span>
+              </div>
+              <div class="cdd-item ${ListState.level === 'N2' ? 'active' : ''}" data-lv="N2">
+                <span class="cdd-lbl lv-label-n2">N2</span>
+                <span class="cdd-sep">:</span>
+                <span class="cdd-num">${n2Count}</span>
+              </div>
+            </div>
           </div>
 
-          <!-- DROPDOWN COUNTER TEPAT DI SAMPING SEMUA/N4/N3 -->
+          <!-- DROPDOWN STATUS -->
           <div class="counter-dropdown" id="counterDropdown">
             <button class="counter-dropdown-trigger" id="cdTrigger" type="button" title="${t('status_filter_title')}">
               <span>${triggerText}</span>
@@ -2099,6 +2150,11 @@ Views.list = (app) => {
               </div>
             </div>
           </div>
+
+          <!-- TOMBOL PELAJARI (MERAH, TANPA ICON) -->
+          <button class="btn-study-materi" id="btnStudyMateri" type="button" title="Latih flashcard berdasarkan status materi ini">
+            ${t('btn_study_materi') || 'Pelajari'}
+          </button>
         </div>
       </div>
 
@@ -2119,36 +2175,61 @@ Views.list = (app) => {
   const q = app.querySelector('#q');
   q.oninput = () => { ListState.q = q.value; ListState.limit = 60; renderList(); };
 
-  app.querySelectorAll('#lvFilter button').forEach(b => b.onclick = () => {
-    ListState.level = b.dataset.lv;
-    ListState.limit = 60;
-    navigate('list');
-  });
+  const levelDd = app.querySelector('#levelDropdown');
+  const levelTrigger = app.querySelector('#levelTrigger');
+  const statusDd = app.querySelector('#counterDropdown');
+  const statusTrigger = app.querySelector('#cdTrigger');
 
-  const dd = app.querySelector('#counterDropdown');
-  const trigger = app.querySelector('#cdTrigger');
-  if (trigger && dd) {
-    trigger.onclick = (e) => {
+  if (levelTrigger && levelDd) {
+    levelTrigger.onclick = (e) => {
       e.stopPropagation();
-      dd.classList.toggle('open');
+      if (statusDd) statusDd.classList.remove('open');
+      levelDd.classList.toggle('open');
     };
-    app.querySelectorAll('.cdd-item').forEach(item => {
+    app.querySelectorAll('#levelMenu .cdd-item').forEach(item => {
+      item.onclick = (e) => {
+        e.stopPropagation();
+        ListState.level = item.dataset.lv;
+        ListState.limit = 60;
+        levelDd.classList.remove('open');
+        navigate('list');
+      };
+    });
+  }
+
+  if (statusTrigger && statusDd) {
+    statusTrigger.onclick = (e) => {
+      e.stopPropagation();
+      if (levelDd) levelDd.classList.remove('open');
+      statusDd.classList.toggle('open');
+    };
+    app.querySelectorAll('#cdMenu .cdd-item').forEach(item => {
       item.onclick = (e) => {
         e.stopPropagation();
         ListState.filter = item.dataset.filter;
         ListState.limit = 60;
-        dd.classList.remove('open');
+        statusDd.classList.remove('open');
         navigate('list');
       };
     });
   }
 
   const closeMenu = (e) => {
-    if (dd && !dd.contains(e.target)) {
-      dd.classList.remove('open');
+    if (levelDd && !levelDd.contains(e.target)) {
+      levelDd.classList.remove('open');
+    }
+    if (statusDd && !statusDd.contains(e.target)) {
+      statusDd.classList.remove('open');
     }
   };
   document.addEventListener('click', closeMenu);
+
+  const btnStudy = app.querySelector('#btnStudyMateri');
+  if (btnStudy) {
+    btnStudy.onclick = () => {
+      startStatusFlashcard(ListState.level, ListState.filter);
+    };
+  }
 
   renderList();
 };
@@ -2905,6 +2986,155 @@ function renderFlashDone(app) {
     </div>`;
   app.querySelector('#again').onclick = () => { startFlashcards(FC.level); renderFlashcard(app); };
   app.querySelector('#home').onclick = () => navigate('home');
+}
+
+/* ============================================================
+   VIEW: FLASHCARD STATUS MATERI
+   ============================================================ */
+const StatusFC = {
+  queue: [],
+  idx: 0,
+  flipped: false,
+  done: 0,
+  level: 'all',
+  filter: 'all',
+  statusLabel: ''
+};
+
+function getStatusLabel(filter) {
+  if (filter === 'dikuasai') return t('status_mastered') || 'Dikuasai';
+  if (filter === 'hampir') return t('status_almost') || 'Hampir Dikuasai';
+  if (filter === 'setengah') return t('status_half') || 'Setengah Dikuasai';
+  if (filter === 'seperempat') return t('status_quarter') || 'Seperempat Dikuasai';
+  if (filter === 'belum') return t('status_notyet') || 'Belum Dipelajari';
+  return t('status_all') || 'Semua Status';
+}
+
+function startStatusFlashcard(level, filter) {
+  const pool = State.vocab.filter(v => {
+    if (level !== 'all' && v.level !== level) return false;
+    const s = State.progress[v.id];
+    const box = s ? s.box || 0 : 0;
+    const learned = s && (s.seen || s.correct + s.wrong > 0);
+
+    if (filter === 'dikuasai' && box < 5) return false;
+    if (filter === 'hampir' && box !== 4) return false;
+    if (filter === 'setengah' && box !== 3) return false;
+    if (filter === 'seperempat' && (box < 1 || box > 2)) return false;
+    if (filter === 'belum' && (learned && box > 0)) return false;
+
+    return true;
+  });
+
+  if (!pool.length) {
+    toast(t('status_fc_empty') || 'Tidak ada kosakata untuk dipelajari pada filter ini.');
+    return;
+  }
+
+  // Shuffle pool
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  StatusFC.queue = shuffled.slice(0, 50);
+  StatusFC.idx = 0;
+  StatusFC.flipped = false;
+  StatusFC.done = 0;
+  StatusFC.level = level;
+  StatusFC.filter = filter;
+  StatusFC.statusLabel = getStatusLabel(filter);
+  navigate('statusFlashcard');
+}
+
+Views.statusFlashcard = (app) => {
+  renderStatusFlashcard(app);
+};
+
+function renderStatusFlashcard(app) {
+  if (!StatusFC.queue.length) {
+    app.innerHTML = emptyState(t('status_fc_empty') || 'Tidak ada kata pada status ini.');
+    return;
+  }
+  if (StatusFC.idx >= StatusFC.queue.length) {
+    renderStatusFlashDone(app);
+    return;
+  }
+  const v = StatusFC.queue[StatusFC.idx];
+  const levelText = StatusFC.level === 'all' ? (t('filter_all') || 'Semua Level') : StatusFC.level;
+
+  app.innerHTML = `
+    <div class="view fc-wrap">
+      <div class="toolbar" style="margin-bottom:14px; justify-content:space-between; align-items:center; width:100%;">
+        <button class="btn ghost" id="backToMateri" style="height:38px; padding:0 14px; border-radius:12px; font-size:13px; cursor:pointer;">
+          ${t('status_fc_back') || '← Kembali ke Materi'}
+        </button>
+        <span style="font-size:12.5px; font-weight:700; color:var(--text-dim); background:var(--bg-soft); padding:4px 12px; border-radius:99px; border:1px solid var(--border-soft);">
+          ${esc(StatusFC.statusLabel)} · ${esc(levelText)}
+        </span>
+      </div>
+
+      <h1 class="page-title" style="text-align:center;">${t('status_fc_title') || 'Flashcard Materi'}<span class="sub">${t('status_fc_sub') || 'Review kosakata untuk menaikkan tingkat penguasaan'}</span></h1>
+      
+      <div class="fc-top"><span>${t('fc_card_counter', StatusFC.idx + 1, StatusFC.queue.length)}</span><span>${v.level}</span></div>
+      
+      <div class="flashcard ${StatusFC.flipped ? 'flipped' : ''}" id="card">
+        <div class="inner">
+          <div class="face front">
+            <span class="lv ${v.level}">${v.level}</span>
+            <div class="kanji">${esc(v.kanji)}</div>
+            <div class="furi">${esc(v.furigana)}</div>
+            <div class="hint">${t('fc_hint_front')} <kbd class="fc-kbd">S / Space</kbd></div>
+          </div>
+          <div class="face back">
+            <div class="arti">${esc(v.arti)}</div>
+            <div class="sub">${esc(v.kanji)} · ${esc(v.furigana)}</div>
+            <div class="hint" style="color:rgba(255,255,255,.7)">${t('fc_hint_back')} <kbd class="fc-kbd">S / Space</kbd></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="fc-buttons ${StatusFC.flipped ? '' : 'locked'}" id="fcBtns">
+        <button class="fc-btn hard" data-q="hard"><span class="e">😵</span><span>${t('fc_hard')}</span><kbd class="fc-kbd">A / ←</kbd></button>
+        <button class="fc-btn med" data-q="medium"><span class="e">🤔</span><span>${t('fc_med')}</span><kbd class="fc-kbd">W / ↓</kbd></button>
+        <button class="fc-btn easy" data-q="easy"><span class="e">😎</span><span>${t('fc_easy')}</span><kbd class="fc-kbd">D / →</kbd></button>
+      </div>
+    </div>`;
+
+  const card = app.querySelector('#card');
+  if (card) {
+    card.onclick = () => {
+      StatusFC.flipped = !StatusFC.flipped;
+      card.classList.toggle('flipped', StatusFC.flipped);
+      app.querySelector('#fcBtns').classList.toggle('locked', !StatusFC.flipped);
+    };
+  }
+
+  app.querySelector('#backToMateri').onclick = () => navigate('list');
+
+  app.querySelectorAll('#fcBtns .fc-btn').forEach(b => b.onclick = () => {
+    if (!StatusFC.flipped) return;
+    review(v.id, b.dataset.q);
+    StatusFC.done++;
+    StatusFC.idx++;
+    StatusFC.flipped = false;
+    renderStatusFlashcard(app);
+  });
+}
+
+function renderStatusFlashDone(app) {
+  app.innerHTML = `
+    <div class="view fc-wrap">
+      <div class="result">
+        <div class="big" style="color:var(--primary);">${ICONS.award}</div>
+        <h2>${t('fc_done_title')}</h2>
+        <p>${t('status_fc_done_desc', StatusFC.done, StatusFC.statusLabel)}</p>
+        <div class="btn-row" style="justify-content:center">
+          <button class="btn" id="again">${t('fc_btn_again')}</button>
+          <button class="btn ghost" id="backToMateriDone">${t('status_fc_back') || 'Kembali ke Materi'}</button>
+        </div>
+      </div>
+    </div>`;
+  app.querySelector('#again').onclick = () => {
+    startStatusFlashcard(StatusFC.level, StatusFC.filter);
+  };
+  app.querySelector('#backToMateriDone').onclick = () => navigate('list');
 }
 
 /* ============================================================
@@ -4995,12 +5225,13 @@ async function boot() {
     }
 
     // Flashcard keyboard shortcuts
-    if (State.route === 'flashcard') {
+    if (State.route === 'flashcard' || State.route === 'statusFlashcard') {
       const modalBackdrop = document.getElementById('kotobaModalBackdrop');
       const cloudBackdrop = document.getElementById('cloudModalBackdrop');
       if (modalBackdrop && modalBackdrop.classList.contains('show')) return;
       if (cloudBackdrop && cloudBackdrop.classList.contains('show')) return;
 
+      const isFlipped = State.route === 'statusFlashcard' ? StatusFC.flipped : FC.flipped;
       const k = (e.key || '').toLowerCase();
 
       if (e.code === 'Space' || e.key === ' ' || k === 's' || e.key === 'Enter') {
@@ -5012,7 +5243,7 @@ async function boot() {
             return;
           }
         } else {
-          // If finished screen (renderFlashDone)
+          // If finished screen (renderFlashDone or renderStatusFlashDone)
           const againBtn = document.getElementById('again');
           if (againBtn) {
             e.preventDefault();
@@ -5025,7 +5256,7 @@ async function boot() {
       if (e.key === 'ArrowLeft' || k === 'a') {
         e.preventDefault();
         const hardBtn = document.querySelector('#fcBtns .fc-btn.hard');
-        if (hardBtn && FC.flipped) {
+        if (hardBtn && isFlipped) {
           hardBtn.click();
         }
         return;
@@ -5034,7 +5265,7 @@ async function boot() {
       if (e.key === 'ArrowDown' || k === 'w') {
         e.preventDefault();
         const medBtn = document.querySelector('#fcBtns .fc-btn.med');
-        if (medBtn && FC.flipped) {
+        if (medBtn && isFlipped) {
           medBtn.click();
         }
         return;
@@ -5043,7 +5274,7 @@ async function boot() {
       if (e.key === 'ArrowRight' || k === 'd') {
         e.preventDefault();
         const easyBtn = document.querySelector('#fcBtns .fc-btn.easy');
-        if (easyBtn && FC.flipped) {
+        if (easyBtn && isFlipped) {
           easyBtn.click();
         }
         return;
