@@ -4498,12 +4498,12 @@ Views.statsDetail = (app) => {
               <div class="kanji">${esc(v.kanji)}</div>
               <div class="furi">${esc(v.furigana)}</div>
               <div class="arti">${esc(v.arti)}</div>
-              <div style="margin-top:10px; font-size:12.5px; font-weight:700; color:${color}; display:flex; align-items:center; justify-content:space-between; gap:6px; border-top:1px solid var(--border-soft); padding-top:8px;">
-                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                  <span>${icon} ${rawCount}x ${label}</span>
-                  ${timeStr ? `<span style="font-size:11px; font-weight:500; color:var(--text-dim);">· ${timeStr}</span>` : ''}
+              <div style="margin-top:10px; font-size:12px; font-weight:700; color:${color}; display:flex; align-items:center; justify-content:space-between; gap:6px; border-top:1px solid var(--border-soft); padding-top:8px; min-width:0;">
+                <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap; min-width:0; overflow:hidden;">
+                  <span style="white-space:nowrap;">${icon} ${rawCount}x ${label}</span>
+                  ${timeStr ? `<span style="font-size:11px; font-weight:500; color:var(--text-dim); white-space:nowrap;">· ${timeStr}</span>` : ''}
                 </div>
-                ${!isCorrect && eff === 0 ? `<span style="font-size:11px; font-weight:600; color:var(--green); background:var(--green-soft); padding:2px 7px; border-radius:99px;">${t('label_resolved') || 'Terselesaikan ✔'}</span>` : ''}
+                ${!isCorrect && eff === 0 ? `<span style="font-size:10.5px; font-weight:600; color:var(--green); background:var(--green-soft); padding:2px 6px; border-radius:99px; white-space:nowrap; flex-shrink:0;">${t('label_resolved') || 'Terselesaikan ✔'}</span>` : ''}
               </div>
             </div>`;
   }).join('') : `

@@ -689,6 +689,11 @@ body.furi-off .furi-line {
   animation: fadeInDown 0.15s ease-out;
 }
 
+#levelDropdown .counter-dropdown-menu {
+  left: 0;
+  right: auto;
+}
+
 .counter-dropdown.open .counter-dropdown-menu {
   display: flex;
 }
@@ -1054,13 +1059,13 @@ body.furi-off .furi-line {
 
 .vocab-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
 
-@media (min-width: 480px) {
+@media (min-width: 600px) {
   .vocab-grid {
-    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: 14px;
   }
 }
@@ -1073,6 +1078,8 @@ body.furi-off .furi-line {
   box-shadow: var(--shadow);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .vocab-card:hover {
@@ -1134,6 +1141,8 @@ body.furi-off .vocab-card .furi {
   padding-top: 10px;
   border-top: 1px solid var(--border-soft);
   line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
 .vocab-card .mastery {
