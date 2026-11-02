@@ -72,7 +72,7 @@ const MASTER_BOX = 5; // box >= 5 dianggap dikuasai
 /* ---------- Progress utils ---------- */
 function stat(id) {
   let s = State.progress[id];
-  if (!s) { s = { correct: 0, wrong: 0, last: null, box: 0, due: 0, seen: false, lastIncorrect: false }; State.progress[id] = s; }
+  if (!s) { s = { correct: 0, wrong: 0, last: null, lastWrong: null, box: 0, due: 0, seen: false, lastIncorrect: false }; State.progress[id] = s; }
   return s;
 }
 function isLearned(id) { const s = State.progress[id]; return !!(s && (s.seen || s.correct + s.wrong > 0)); }
@@ -112,10 +112,12 @@ function getMasteryStats(level = 'all') {
 function review(id, quality) {
   const s = stat(id);
   s.seen = true;
+  const nowIso = new Date().toISOString();
   if (quality === 'hard' || quality === false) {
     s.wrong++;
     s.box = Math.max(0, s.box - 1);
     s.lastIncorrect = true;
+    s.lastWrong = nowIso;
   } else if (quality === 'medium') {
     s.correct++;
     s.box = Math.min(MAX_BOX, s.box + 1);
@@ -125,10 +127,58 @@ function review(id, quality) {
     s.box = Math.min(MAX_BOX, s.box + 2);
     s.lastIncorrect = false;
   }
-  s.last = new Date().toISOString();
+  s.last = nowIso;
   s.due = now() + BOX_DAYS[s.box] * DAY;
   save(K.progress, State.progress);
   bumpStreak();
+}
+
+function getWrongTimestamp(s) {
+  if (!s) return 0;
+  if (s.lastWrong) {
+    const t = new Date(s.lastWrong).getTime();
+    if (!isNaN(t) && t > 0) return t;
+  }
+  if (s.lastIncorrect && s.last) {
+    const t = new Date(s.last).getTime();
+    if (!isNaN(t) && t > 0) return t;
+  }
+  if (s.last) {
+    const t = new Date(s.last).getTime();
+    if (!isNaN(t) && t > 0) return t;
+  }
+  return 0;
+}
+
+function getCorrectTimestamp(s) {
+  if (!s) return 0;
+  if (!s.lastIncorrect && s.last) {
+    const t = new Date(s.last).getTime();
+    if (!isNaN(t) && t > 0) return t;
+  }
+  if (s.last) {
+    const t = new Date(s.last).getTime();
+    if (!isNaN(t) && t > 0) return t;
+  }
+  return 0;
+}
+
+function timeAgo(isoOrTs) {
+  if (!isoOrTs) return '';
+  const ts = typeof isoOrTs === 'number' ? isoOrTs : new Date(isoOrTs).getTime();
+  if (isNaN(ts) || ts <= 0) return '';
+  const diffMs = Date.now() - ts;
+  const isJa = (State.settings && State.settings.lang === 'ja');
+  if (diffMs < 0 || diffMs < 45000) return t('time_just_now') || (isJa ? 'たった今' : 'Baru saja');
+  const min = Math.floor(diffMs / 60000);
+  if (min < 60) return isJa ? `${min}分前` : `${min} mnt lalu`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return isJa ? `${hr}時間前` : `${hr} jam lalu`;
+  const day = Math.floor(hr / 24);
+  if (day === 1) return isJa ? '昨日' : 'Kemarin';
+  if (day < 30) return isJa ? `${day}日前` : `${day} hr lalu`;
+  const month = Math.floor(day / 30);
+  return isJa ? `${month}か月前` : `${month} bln lalu`;
 }
 
 /* ---------- Streak ---------- */
@@ -1001,6 +1051,11 @@ const I18N = {
     "stats_detail_back": "← Kembali ke Statistik",
     "stats_detail_practice_btn": "Latihan Kata Salah",
     "stats_detail_no_data": "Belum ada data review.",
+    "stats_sort_most_wrong": "Paling Banyak Salah",
+    "stats_sort_recent_wrong": "Akhir-akhir Ini Salah",
+    "stats_sort_most_correct": "Paling Banyak Benar",
+    "stats_sort_recent_correct": "Akhir-akhir Ini Benar",
+    "time_just_now": "Baru saja",
     "label_correct": "Benar",
     "label_wrong": "Salah",
     "label_resolved": "Terselesaikan ✔",
@@ -1233,6 +1288,11 @@ const I18N = {
     "stats_detail_back": "← 統計に戻る",
     "stats_detail_practice_btn": "苦手単語を特訓",
     "stats_detail_no_data": "復習データがまだありません。",
+    "stats_sort_most_wrong": "間違い最多順",
+    "stats_sort_recent_wrong": "最近の間違い順",
+    "stats_sort_most_correct": "正解最多順",
+    "stats_sort_recent_correct": "最近の正解順",
+    "time_just_now": "たった今",
     "label_correct": "正解",
     "label_wrong": "不正解",
     "label_resolved": "克服済 ✔",
@@ -4115,10 +4175,11 @@ Views.stats = (app) => {
 /* ============================================================
    VIEW: DETAIL STATISTIK (Correct/Wrong list)
    ============================================================ */
-const StatsDetailState = { type: 'correct' };
+const StatsDetailState = { type: 'correct', sortBy: 'most' };
 Views.statsDetail = (app) => {
   const type = StatsDetailState.type;
   const isCorrect = type === 'correct';
+  const sortBy = StatsDetailState.sortBy || 'most';
   const title = isCorrect ? (t('stats_detail_correct_title') || 'Daftar Jawaban Benar') : (t('stats_detail_wrong_title') || 'Daftar Jawaban Salah');
   const subtitle = isCorrect ? (t('stats_detail_correct_sub') || 'Kosakata yang dijawab benar setidaknya satu kali') : (t('stats_detail_wrong_sub') || 'Kosakata yang dijawab salah setidaknya satu kali');
   const label = isCorrect ? (t('label_correct') || 'Benar') : (t('label_wrong') || 'Salah');
@@ -4133,17 +4194,36 @@ Views.statsDetail = (app) => {
       return s && s.wrong > 0;
     }
   }).sort((a, b) => {
+    const sA = State.progress[a.id];
+    const sB = State.progress[b.id];
     if (isCorrect) {
-      const sA = State.progress[a.id];
-      const sB = State.progress[b.id];
-      return (sB ? sB.correct || 0 : 0) - (sA ? sA.correct || 0 : 0);
+      if (sortBy === 'recent') {
+        const tA = getCorrectTimestamp(sA);
+        const tB = getCorrectTimestamp(sB);
+        if (tA !== tB) return tB - tA;
+        return (sB?.correct || 0) - (sA?.correct || 0);
+      } else {
+        const cA = sA?.correct || 0;
+        const cB = sB?.correct || 0;
+        if (cA !== cB) return cB - cA;
+        return getCorrectTimestamp(sB) - getCorrectTimestamp(sA);
+      }
     } else {
-      const effA = effectiveWrong(a.id);
-      const effB = effectiveWrong(b.id);
-      if (effA !== effB) return effB - effA;
-      const sA = State.progress[a.id];
-      const sB = State.progress[b.id];
-      return (sB ? sB.wrong || 0 : 0) - (sA ? sA.wrong || 0 : 0);
+      if (sortBy === 'recent') {
+        const tA = getWrongTimestamp(sA);
+        const tB = getWrongTimestamp(sB);
+        if (tA !== tB) return tB - tA;
+        return (sB?.wrong || 0) - (sA?.wrong || 0);
+      } else {
+        // Paling banyak salah
+        const wA = sA?.wrong || 0;
+        const wB = sB?.wrong || 0;
+        if (wA !== wB) return wB - wA;
+        const effA = effectiveWrong(a.id);
+        const effB = effectiveWrong(b.id);
+        if (effA !== effB) return effB - effA;
+        return getWrongTimestamp(sB) - getWrongTimestamp(sA);
+      }
     }
   });
 
@@ -4161,6 +4241,18 @@ Views.statsDetail = (app) => {
 
       <h1 class="page-title">${esc(title)}<span class="sub">${esc(subtitle)}</span></h1>
       
+      <!-- Filter / Urutkan Berdasarkan Kategori -->
+      <div class="stats-sort-tabs">
+        <button class="stats-sort-btn ${sortBy === 'most' ? 'active' : ''}" data-sort="most">
+          <span>🔥</span>
+          <span>${isCorrect ? (t('stats_sort_most_correct') || 'Paling Banyak Benar') : (t('stats_sort_most_wrong') || 'Paling Banyak Salah')}</span>
+        </button>
+        <button class="stats-sort-btn ${sortBy === 'recent' ? 'active' : ''}" data-sort="recent">
+          <span>🕒</span>
+          <span>${isCorrect ? (t('stats_sort_recent_correct') || 'Akhir-akhir Ini Benar') : (t('stats_sort_recent_wrong') || 'Akhir-akhir Ini Salah')}</span>
+        </button>
+      </div>
+
       <p class="count-note">${t('found_vocab_count', filtered.length, '')}</p>
       
       <div class="vocab-grid">
@@ -4168,14 +4260,19 @@ Views.statsDetail = (app) => {
     const s = State.progress[v.id];
     const rawCount = s ? (isCorrect ? s.correct : s.wrong) : 0;
     const eff = !isCorrect ? effectiveWrong(v.id) : 0;
+    const wTime = !isCorrect ? getWrongTimestamp(s) : getCorrectTimestamp(s);
+    const timeStr = wTime ? timeAgo(wTime) : '';
     return `
-            <div class="vocab-card">
+            <div class="vocab-card" data-vid="${v.id}" style="cursor:pointer;" title="Klik untuk lihat detail kata">
               <span class="lv ${v.level}">${v.level}</span>
               <div class="kanji">${esc(v.kanji)}</div>
               <div class="furi">${esc(v.furigana)}</div>
               <div class="arti">${esc(v.arti)}</div>
               <div style="margin-top:10px; font-size:12.5px; font-weight:700; color:${color}; display:flex; align-items:center; justify-content:space-between; gap:6px; border-top:1px solid var(--border-soft); padding-top:8px;">
-                <span>${icon} ${rawCount}x ${label}</span>
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                  <span>${icon} ${rawCount}x ${label}</span>
+                  ${timeStr ? `<span style="font-size:11px; font-weight:500; color:var(--text-dim);">· ${timeStr}</span>` : ''}
+                </div>
                 ${!isCorrect && eff === 0 ? `<span style="font-size:11px; font-weight:600; color:var(--green); background:var(--green-soft); padding:2px 7px; border-radius:99px;">${t('label_resolved') || 'Terselesaikan ✔'}</span>` : ''}
               </div>
             </div>`;
@@ -4189,6 +4286,20 @@ Views.statsDetail = (app) => {
     </div>`;
 
   app.querySelector('#backToStats').onclick = () => navigate('stats');
+
+  app.querySelectorAll('.stats-sort-btn').forEach(b => {
+    b.onclick = () => {
+      const s = b.dataset.sort;
+      if (StatsDetailState.sortBy === s) return;
+      StatsDetailState.sortBy = s;
+      Views.statsDetail(app);
+    };
+  });
+
+  app.querySelectorAll('.vocab-card[data-vid]').forEach(card => {
+    card.onclick = () => openKotobaModal(card.dataset.vid);
+  });
+
   const startBtn = app.querySelector('#startWrongQuiz');
   if (startBtn) {
     startBtn.onclick = () => {
@@ -4581,15 +4692,17 @@ const CloudSync = {
           const newBox = Math.max(cur.box || 0, v.box || 0);
           const newCorrect = Math.max(cur.correct || 0, v.correct || 0);
           const newWrong = Math.max(cur.wrong || 0, v.wrong || 0);
-          const newLast = Math.max(cur.last || 0, v.last || 0);
-          if (newBox !== cur.box || newCorrect !== cur.correct || newWrong !== cur.wrong) {
+          const newLast = (v.last && (!cur.last || v.last > cur.last)) ? v.last : (cur.last || v.last);
+          const newLastWrong = (v.lastWrong && (!cur.lastWrong || v.lastWrong > cur.lastWrong)) ? v.lastWrong : (cur.lastWrong || v.lastWrong);
+          if (newBox !== cur.box || newCorrect !== cur.correct || newWrong !== cur.wrong || newLastWrong !== cur.lastWrong) {
             State.progress[k] = {
               ...cur,
               ...v,
               box: newBox,
               correct: newCorrect,
               wrong: newWrong,
-              last: newLast
+              last: newLast,
+              lastWrong: newLastWrong
             };
             changed = true;
           }

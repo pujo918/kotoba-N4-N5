@@ -4963,3 +4963,51 @@ u.jlpt-target {
   pointer-events: none;
   z-index: 99999;
 }
+
+/* Stats Detail Sort Tabs */
+.stats-sort-tabs {
+  display: inline-flex;
+  background: var(--bg-soft);
+  padding: 4px;
+  border-radius: 14px;
+  border: 1px solid var(--border-soft);
+  margin: 14px 0 16px 0;
+  gap: 6px;
+  max-width: 100%;
+}
+
+.stats-sort-btn {
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-dim);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.stats-sort-btn:hover:not(.active) {
+  color: var(--text);
+  background: rgba(128, 128, 128, 0.08);
+}
+
+.stats-sort-btn.active {
+  background: var(--bg-card);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-color: var(--border-soft);
+}
+
+[data-theme="dark"] .stats-sort-btn.active {
+  background: var(--bg-elev, #1e2230);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  border-color: rgba(255, 255, 255, 0.12);
+}
