@@ -2803,12 +2803,12 @@ function renderFlashcard(app) {
             <span class="lv ${v.level}">${v.level}</span>
             <div class="kanji">${esc(v.kanji)}</div>
             <div class="furi">${esc(v.furigana)}</div>
-            <div class="hint">${t('fc_hint_front')} <kbd class="fc-kbd">Space</kbd></div>
+            <div class="hint">${t('fc_hint_front')} <kbd class="fc-kbd">S / Space</kbd></div>
           </div>
           <div class="face back">
             <div class="arti">${esc(v.arti)}</div>
             <div class="sub">${esc(v.kanji)} · ${esc(v.furigana)}</div>
-            <div class="hint" style="color:rgba(255,255,255,.7)">${t('fc_hint_back')} <kbd class="fc-kbd">Space</kbd></div>
+            <div class="hint" style="color:rgba(255,255,255,.7)">${t('fc_hint_back')} <kbd class="fc-kbd">S / Space</kbd></div>
           </div>
         </div>
       </div>
@@ -4888,20 +4888,27 @@ async function boot() {
       if (modalBackdrop && modalBackdrop.classList.contains('show')) return;
       if (cloudBackdrop && cloudBackdrop.classList.contains('show')) return;
 
-      if (e.code === 'Space' || e.key === ' ') {
-        e.preventDefault();
+      const k = (e.key || '').toLowerCase();
+
+      if (e.code === 'Space' || e.key === ' ' || k === 's' || e.key === 'Enter') {
         const card = document.getElementById('card');
         if (card) {
-          card.click();
+          if (e.key !== 'Enter') {
+            e.preventDefault();
+            card.click();
+            return;
+          }
         } else {
           // If finished screen (renderFlashDone)
           const againBtn = document.getElementById('again');
-          if (againBtn) againBtn.click();
+          if (againBtn) {
+            e.preventDefault();
+            againBtn.click();
+            return;
+          }
         }
-        return;
       }
 
-      const k = (e.key || '').toLowerCase();
       if (e.key === 'ArrowLeft' || k === 'a') {
         e.preventDefault();
         const hardBtn = document.querySelector('#fcBtns .fc-btn.hard');
@@ -4911,7 +4918,7 @@ async function boot() {
         return;
       }
 
-      if (e.key === 'ArrowDown' || k === 'w' || k === 's') {
+      if (e.key === 'ArrowDown' || k === 'w') {
         e.preventDefault();
         const medBtn = document.querySelector('#fcBtns .fc-btn.med');
         if (medBtn && FC.flipped) {
